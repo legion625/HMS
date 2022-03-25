@@ -1,6 +1,5 @@
 syntax: glob
 .classpath
-.hgignore
 .project
 .settings/*
 WebContent/META-INF/MANIFEST.MF
