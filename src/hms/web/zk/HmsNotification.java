@@ -1,0 +1,17 @@
+package hms.web.zk;
+
+import org.zkoss.zk.ui.util.Clients;
+
+public class HmsNotification {
+	public static void info(String _msg) {
+		Clients.showNotification(_msg, Clients.NOTIFICATION_TYPE_INFO, null, "middle_center", 1500);
+	}
+
+	public static void warning(String _msg) {
+		Clients.showNotification(_msg, Clients.NOTIFICATION_TYPE_WARNING, null, "middle_center", 1500);
+	}
+
+	public static void error(String _msg) {
+		Clients.showNotification(_msg, Clients.NOTIFICATION_TYPE_ERROR, null, "middle_center", 1500);
+	}
+}

@@ -1,0 +1,10 @@
+syntax: glob
+.classpath
+.hgignore
+.project
+.settings/*
+WebContent/META-INF/MANIFEST.MF
+WebContent/WEB-INF/lib/*
+classes/hms/*
+classes/legion/util/DateFormatUtil.class
+classes/*

@@ -1,0 +1,34 @@
+<?page title="HMS" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<panel vflex="1" hflex="1" apply="hms.web.control.zk.MainComposer">
+		<panelchildren>
+			<menubar>
+				<!-- <menuitem id="miHome" iconSclass="fa fa-home"></menuitem> -->
+				<menu label="帳務資訊(電腦版)" >
+					<menupopup>
+						<menuitem id="miConsumption" label="消費管理" />
+						<menuitem id="miPayment" label="付款管理" disabled="true" />
+					</menupopup>
+				</menu>
+				<menuitem id="miAccountMobile" label="帳務資訊(行動版)"></menuitem>
+				<!-- <menu label="帳務資訊(手機版)" >
+					<menupopup>
+					<menu label="消費管理" >
+					<menupopup>
+					<menuitem id="miSearchConsumption" label="查詢消費" />
+					<menuitem label="新增消費" />
+					</menupopup>
+					</menu>
+					<menuitem id="miSearchRedEnvelope" label="查詢紅包"></menuitem>
+					</menupopup>
+					</menu> -->
+				<menu label="系統資訊"></menu>
+			</menubar>
+			<!-- <iframe id="iframeMain" vflex="1" width="100%"></iframe> -->
+			<include id="icdMain" vflex="1" width="100%"></include>
+		</panelchildren>
+	</panel>
+	<!-- <vbox vflex="1" hflex="1" apply="hms.web.control.zk.MainComposer">
+		
+		</vbox> -->
+</zk>

@@ -1,0 +1,16 @@
+<?page title="new page title" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<panel vflex="1" apply="hms.web.control.zk.mobile.account.AccountFunctionComposer">
+		<panelchildren>
+			<div align="center">
+				<vlayout vflex="1" hflex="1">
+					<button id="btnAddConsumption" label="新增消費" width="70%" height="60px" style="font-size:30px"></button>
+					<button id="btnShowTodayConsumptions" label="顯示當日消費" width="70%" height="60px"
+						style="font-size:30px;">
+					</button>
+					<!-- <button label="查詢消費" width="70%" height="60px" style="font-size:30px" disabled="true"></button> -->
+				</vlayout>
+			</div>
+		</panelchildren>
+	</panel>
+</zk>

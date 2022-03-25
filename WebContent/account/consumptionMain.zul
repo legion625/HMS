@@ -1,0 +1,203 @@
+<?page title="new page title" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<borderlayout hflex="1" vflex="1" apply="hms.web.control.zk.account.ConsumptionMainComposer">
+		<north height="55px" border="none" splittable="true">
+			<div align="center">
+				<separator spacing="5px" />
+				<hlayout>
+					<button id="btnAddConsumption" label="新增消費" />
+				</hlayout>
+				<include id="inclAddConsumptionWindow" />
+			</div>
+		</north>
+		<west width="25%" border="none" splittable="true" collapsible="true">
+			<vlayout>
+				<groupbox title="查詢消費" closable="false">
+					<!-- <div align="right"><label value="系統只會查出最新的500筆。"></label></div> -->
+					<grid>
+						<columns>
+							<column width="100px" />
+							<column hflex="3" />
+						</columns>
+						<rows>
+							<row>
+								<label value="類型目錄" />
+								<hlayout hflex="1">
+									<combobox id="cbbTypeCategory" hflex="1" readonly="true" />
+									<combobox id="cbbType" hflex="1" readonly="true" />
+								</hlayout>
+							</row>
+							<row>
+								<label value="流向" />
+								<combobox id="cbbDirection" hflex="1" readonly="true" />
+							</row>
+							<row>
+								<label value="付款方式" />
+								<combobox id="cbbPaymentType" hflex="1" readonly="true" />
+							</row>
+							<row>
+								<hlayout>
+									<label value="說明" />
+									<!-- <span id="spanDescription" sclass="far fa-question-circle fa-lg"
+										style="cursor:pointer" onClick="ppDescription.open(spanDescription)">
+										</span>
+										<popup id="ppDescription">
+										<label value="使用%可以進行模糊查詢。" />
+										</popup>-->
+								</hlayout>
+								<textbox id="txbDescription" hflex="1" />
+							</row>
+							<row>
+								<label value="消費日期(起始)" />
+								<datebox id="dtbConsumptionDateStart" hflex="1" format="yyyy-MM-dd" />
+							</row>
+							<row>
+								<label value="消費日期(結束)" />
+								<datebox id="dtbConsumptionDateEnd" hflex="1" format="yyyy-MM-dd" />
+							</row>
+							<row>
+								<label value="付款日期(起始)" />
+								<datebox id="dtbPayDateStart" hflex="1" format="yyyy-MM-dd" />
+							</row>
+							<row>
+								<label value="付款日期(結束)" />
+								<datebox id="dtbPayDateEnd" hflex="1" format="yyyy-MM-dd" />
+							</row>
+							<row>
+								<cell colspan="2" align="center">
+									<hlayout>
+										<button id="btnSearch" label="查詢" />
+										<button id="btnReset" label="重設" />
+									</hlayout>
+								</cell>
+							</row>
+						</rows>
+					</grid>
+				</groupbox>
+
+
+				<separator bar="true" />
+				<button id="btnGetPayableConsumptions" label="列出未付清消費" />
+			</vlayout>
+		</west>
+		<center vflex="1" hflex="" border="none">
+			<tabbox vflex="1">
+				<tabs>
+					<tab label="消費明細" />
+					<tab label="每日分類消費金額" />
+				</tabs>
+				<toolbar>
+					<toolbarbutton id="btnDeleteConsumption" label="刪除消費" />
+					<toolbarbutton id="btnPayAll" label="付清應付帳款" />
+				</toolbar>
+				<tabpanels>
+					<tabpanel>
+						<listbox id="lbxConsumption" vflex="1" checkmark="true" mold="paging" pageSize="20"
+							emptyMessage="無資料項">
+							<listhead sizable="true">
+								<listheader width="45px" />
+								<listheader label="消費日期" sort="auto('date')" width="110px"
+									iconSclass="fas fa-pen-square fa-fw" style=" direction: rtl; " />
+								<listheader label="類型目錄" sort="auto('type.category')" width="90px" />
+								<listheader label="類型" sort="auto('type')" width="90px" />
+								<listheader label="流向" sort="auto('direction')" hflex="min" />
+								<listheader label="消費金額" sort="auto('amount')" width="95px" style="direction: rtl;"
+									iconSclass="fas fa-pen-square fa-fw" />
+								<listheader label="付款金額" sort="auto('payedAmount')" width="95px" style="direction: rtl;"
+									iconSclass="fas fa-pen-square fa-fw" />
+								<listheader label="付款方式" sort="auto('paymentType')" width="90px" />
+								<listheader label="說明" width="200px" />
+							</listhead>
+							<listfoot>
+								<listfooter label="小計" span="5" align="right"></listfooter>
+								<listfooter id="lftrSumCnspAmt" align="right"></listfooter>
+								<listfooter id="lftrSumPayedAmt" align="right"></listfooter>
+								<listfooter></listfooter>
+								<listfooter></listfooter>
+
+							</listfoot>
+						</listbox>
+						<label value="在消費項目上點擊滑鼠右鍵進行相關操作。" />
+						<menupopup id="mpConsumption">
+							<menuitem id="miShowPaymentInfo" label="付款資訊" />
+							<menuitem id="miAddPayment" label="新增付款" />
+						</menupopup>
+						<window id="windowPaymentInfo" title="付款資訊" border="normal" width="30%" height="45%"
+							mode="highlighted" position="center" closable="true" visible="false">
+							<div align="center">
+								<hlayout>
+									<button id="btnAddPayment" label="新增付款" />
+									<button id="btnDeletePayment" label="刪除付款" />
+								</hlayout>
+							</div>
+							<hlayout>
+								<label value="消費金額共[" />
+								<label id="lbCnspAmount" style="font-size:16px;font-weight:bold" />
+								<label value="]元，已付款金額[" />
+								<label id="lbPayedAmount" style="font-size:16px;font-weight:bold" />
+								<label value="]元，待付帳款[" />
+								<label id="lbPayableAmount" style="font-size:16px;font-weight:bold" />
+								<label value="]元。" />
+							</hlayout>
+							<listbox id="lbxPayment" checkmark="true" emptyMessage="無資料項" vflex="1">
+								<listhead>
+									<listheader width="30px" />
+									<listheader label="付款日期" hflex="3" />
+									<listheader label="付款金額" hflex="2" style="text-align:left" align="right" />
+								</listhead>
+							</listbox>
+
+						</window>
+						<window id="windowAddPayment" title="新增付款" border="normal" mode="highlighted" sizable="true"
+							width="240px" position="center" closable="true" visible="false">
+							<grid>
+								<columns>
+									<column width="80px" />
+									<column />
+								</columns>
+								<rows>
+									<row>
+										<label value="付款日期" />
+										<datebox id="dtbPayDate" format="yyyy-MM-dd" />
+									</row>
+									<row>
+										<label value="付款金額" />
+										<intbox id="itbPayAmount" />
+									</row>
+								</rows>
+							</grid>
+							<div align="center">
+								<hlayout>
+									<button id="btnSubmit" label="送出新增" />
+									<button id="btnReset" label="重設" />
+								</hlayout>
+							</div>
+						</window>
+						<window id="windowPayAll" title="付清消費" border="normal" width="240px" mode="highlighted"
+							sizable="true" position="center" closable="true" visible="false">
+							<grid>
+								<columns>
+									<column width="80px" />
+									<column />
+								</columns>
+								<rows>
+									<row>
+										<label value="付款日期" />
+										<datebox id="dtbPayDate" format="yyyy-MM-dd" />
+									</row>
+								</rows>
+							</grid>
+							<div align="center">
+								<hlayout>
+									<button id="btnSubmit" label="送出新增" />
+									<button id="btnReset" label="重設" />
+								</hlayout>
+							</div>
+						</window>
+					</tabpanel>
+					<tabpanel>施工中...</tabpanel>
+				</tabpanels>
+			</tabbox>
+		</center>
+	</borderlayout>
+</zk>
