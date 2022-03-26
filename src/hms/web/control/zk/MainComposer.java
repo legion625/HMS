@@ -17,7 +17,7 @@ public class MainComposer extends SelectorComposer<Component> {
 	@Wire
 	private Menuitem miConsumption;
 	
-	// -------------------------------------------------------------
+	// -------------------------------------------------------------------------------
 	@Override
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
@@ -28,7 +28,7 @@ public class MainComposer extends SelectorComposer<Component> {
 		Events.postEvent(Events.ON_CLICK, miConsumption, null);
 	}
 
-	// -------------------------------------------------------------
+	// -------------------------------------------------------------------------------
 //	@Listen(Events.ON_CLICK+"=#miHome")
 //	public void miHome_clicked() {
 //		iframeMain.invalidate();
@@ -51,5 +51,12 @@ public class MainComposer extends SelectorComposer<Component> {
 //		iframeMain.setSrc("/mobile/account/accountFunction.zul");
 		icdMain.invalidate();
 		icdMain.setSrc("/mobile/account/accountFunction.zul");
+	}
+	
+	// -------------------------------------------------------------------------------
+	@Listen(Events.ON_CLICK + "=#miVersion")
+	public void miVersion_clicked() {
+		icdMain.invalidate();
+		icdMain.setSrc("/version.zul");
 	}
 }
