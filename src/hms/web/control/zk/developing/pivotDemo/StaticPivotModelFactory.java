@@ -1,4 +1,4 @@
-package hms.web.control.zk.dev.pivotDemo;
+package hms.web.control.zk.developing.pivotDemo;
 
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
@@ -12,8 +12,6 @@ import org.zkoss.pivot.Pivottable;
 import org.zkoss.pivot.impl.SimplePivotRenderer;
 import org.zkoss.pivot.impl.StandardCalculator;
 import org.zkoss.pivot.impl.TabularPivotModel;
-
-import hms.web.control.zk.account.CnspPivotPageComposer.PivotData;
 
 public class StaticPivotModelFactory {
 	 public static final StaticPivotModelFactory INSTANCE = new StaticPivotModelFactory();

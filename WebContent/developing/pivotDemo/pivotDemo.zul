@@ -1,10 +1,10 @@
 <?page title="ZK Pivottable: Airline Agency Sales" ?>
 <zk>
-    <window apply="hms.web.control.zk.dev.pivotDemo.PivotDemoComposer" hflex="max">
+    <window apply="hms.web.control.zk.developing.pivotDemo.PivotDemoComposer" hflex="max">
         <hlayout id="preDef" spacing="5px" sclass="z-valign-middle">Predefined scenario :</hlayout>
         <separator height="20px" />
         <pivottable id="pivot" hflex="max">
-            <div></div>
+            <div>Pivot Demo</div>
             <div>Columns</div>
             <div>Rows</div>
         </pivottable>

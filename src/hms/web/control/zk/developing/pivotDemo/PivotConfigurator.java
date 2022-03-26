@@ -1,4 +1,4 @@
-package hms.web.control.zk.dev.pivotDemo;
+package hms.web.control.zk.developing.pivotDemo;
 
 import org.zkoss.pivot.PivotRenderer;
 import org.zkoss.pivot.Pivottable;

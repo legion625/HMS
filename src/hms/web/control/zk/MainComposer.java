@@ -11,7 +11,8 @@ import org.zkoss.zul.Iframe;
 import org.zkoss.zul.Include;
 import org.zkoss.zul.Menuitem;
 
-import hms.web.control.zk.dev.pivotDemo.PivotDemoComposer;
+import hms.web.control.zk.account.cnspPivot.CnspPivotPageComposer;
+import hms.web.control.zk.developing.pivotDemo.PivotDemoComposer;
 
 public class MainComposer extends SelectorComposer<Component> {
 	private Logger log = LoggerFactory.getLogger(MainComposer.class);
@@ -70,9 +71,15 @@ public class MainComposer extends SelectorComposer<Component> {
 	}
 	
 	// -------------------------------------------------------------------------------
-	@Listen(Events.ON_CLICK+"=#miDevPivotDemo")
-	public void miDevPivotDemo_clicked() {
+	@Listen(Events.ON_CLICK+"=#miPivotDemo")
+	public void miPivotDemo_clicked() {
 		icdMain.invalidate();
 		icdMain.setSrc(PivotDemoComposer.SRC);
+	}
+	
+	@Listen(Events.ON_CLICK+"=#miCnspPivotPage")
+	public void miCnspPivotPage_clicked() {
+		icdMain.invalidate();
+		icdMain.setSrc(CnspPivotPageComposer.SRC);
 	}
 }

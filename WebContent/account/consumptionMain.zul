@@ -84,7 +84,7 @@
 			<tabbox vflex="1">
 				<tabs>
 					<tab label="消費明細" />
-					<tab label="每日分類消費金額" />
+					<tab label="樞杻分析表" />
 				</tabs>
 				<toolbar>
 					<toolbarbutton id="btnDeleteConsumption" label="刪除消費" />
@@ -196,8 +196,7 @@
 						</window>
 					</tabpanel>
 					<tabpanel>
-					開發中...
-					<!-- <include id="icdCnspPivot"></include> -->
+					<include id="icdCnspPivot"></include>
 					</tabpanel>
 				</tabpanels>
 			</tabbox>

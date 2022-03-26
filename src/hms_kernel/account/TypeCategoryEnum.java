@@ -56,5 +56,6 @@ public enum TypeCategoryEnum {
 	public static Comparator<String> getTitleComparator() {
 		return COMPARATOR_TITLE;
 	}
+	
 
 }

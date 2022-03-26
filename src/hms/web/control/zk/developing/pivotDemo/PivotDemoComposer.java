@@ -1,4 +1,4 @@
-package hms.web.control.zk.dev.pivotDemo;
+package hms.web.control.zk.developing.pivotDemo;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -20,7 +20,7 @@ import org.zkoss.zul.Radio;
 import org.zkoss.zul.Vlayout;
  
 public class PivotDemoComposer extends SelectorComposer<Component> {
-	public final static String SRC = "/dev/pivotDemo/pivotDemo.zul";
+	public final static String SRC = "/developing/pivotDemo/pivotDemo.zul";
  
     private static final long serialVersionUID = 1L;
     @Wire

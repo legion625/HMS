@@ -29,7 +29,8 @@
 				</menu>
 				<menu label="開發中..">
 					<menupopup>
-						<menuitem id="miDevPivotDemo" label="Pivot Demo" />
+						<menuitem id="miPivotDemo" label="Pivot Demo" />
+						<menuitem id="miCnspPivotPage" label="Cnsp Pivot Page" />
 					</menupopup>
 				</menu>
 			</menubar>
