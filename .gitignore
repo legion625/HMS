@@ -2,10 +2,7 @@ syntax: glob
 .classpath
 .project
 .settings/*
-WebContent/META-INF/MANIFEST.MF
-WebContent/WEB-INF/lib/*
-classes/hms/*
-classes/legion/util/DateFormatUtil.class
+WEB-INF/lib/*
 classes/*
 bin/*
 /bin/

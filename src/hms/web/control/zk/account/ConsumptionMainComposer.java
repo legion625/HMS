@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
@@ -41,6 +43,7 @@ import org.zkoss.zul.Window;
 
 import bsh.org.objectweb.asm.Type;
 import hms.util.ZKUtil;
+import hms.web.control.zk.account.cnspPivot.CnspPivotPageComposer;
 import hms.web.zk.HmsMessageBox;
 import hms.web.zk.HmsNotification;
 import hms_kernel.account.AccountService;
@@ -56,6 +59,8 @@ import legion.util.DateFormatUtil;
 import legion.util.NumberFormatUtil;
 
 public class ConsumptionMainComposer extends SelectorComposer<Component> {
+	private Logger log = LoggerFactory.getLogger(getClass());
+	
 	// -------------------------------------------------------------------------------
 	@Wire
 	private Include inclAddConsumptionWindow;
@@ -89,6 +94,12 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 	private Menupopup mpConsumption;
 	@Wire
 	private Menuitem miShowPaymentInfo;
+	
+	// -------------------------------------------------------------------------------
+	// pivot
+	@Wire
+	private Include icdCnspPivot;
+	private CnspPivotPageComposer cnspPivotPageComposer;
 
 	// -------------------------------------------------------------------------------
 	private AccountService accountService = AccountService.getInstance();
@@ -138,6 +149,13 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 
 		/* init windowPaymentInfo */
 		lbxPaymentInfoPayment.setItemRenderer(paymentListitemRenderer);
+		
+		/* init pivot */
+		icdCnspPivot.invalidate();
+		icdCnspPivot.setSrc(CnspPivotPageComposer.SRC);
+		log.debug("icdCnspPivot.getSrc(): {}", icdCnspPivot.getSrc());
+		cnspPivotPageComposer = CnspPivotPageComposer.of(icdCnspPivot);
+		log.debug("cnspPivotPageComposer: {}", cnspPivotPageComposer);
 	}
 
 	// -------------------------------------------------------------------------------
@@ -206,7 +224,10 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		param.setPayDateEnd(DateFormatUtil.parseLocalDate(dtbPayDateEnd.getValue()));
 
 		cnspList = accountService.searchConsumptions(param, true);
+		// result list page
 		refreshConsumptionContainer(cnspList);
+		// pivot
+		cnspPivotPageComposer.init(cnspList);
 	}
 
 	@Listen(Events.ON_CLICK + "=#btnReset")
