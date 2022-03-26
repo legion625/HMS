@@ -8,3 +8,4 @@ classes/hms/*
 classes/legion/util/DateFormatUtil.class
 classes/*
 bin/*
+/bin/
