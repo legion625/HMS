@@ -1,0 +1,6 @@
+<?page title="Auto Generated index.zul"?>
+<window title="版本" border="normal" width="200px">
+
+<label value="ZK version: ${desktop.webApp.version}"/>
+
+</window>
