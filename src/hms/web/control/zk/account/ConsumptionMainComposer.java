@@ -89,6 +89,11 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 	private Menupopup mpConsumption;
 	@Wire
 	private Menuitem miShowPaymentInfo;
+	
+	// -------------------------------------------------------------------------------
+	// pivot
+	@Wire
+	private Include icdCnspPivot;
 
 	// -------------------------------------------------------------------------------
 	private AccountService accountService = AccountService.getInstance();
@@ -138,6 +143,10 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 
 		/* init windowPaymentInfo */
 		lbxPaymentInfoPayment.setItemRenderer(paymentListitemRenderer);
+		
+		/* init pivot */
+		icdCnspPivot.invalidate();
+		icdCnspPivot.setSrc(CnspPivotPageComposer.SRC);
 	}
 
 	// -------------------------------------------------------------------------------

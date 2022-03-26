@@ -195,7 +195,9 @@
 							</div>
 						</window>
 					</tabpanel>
-					<tabpanel>施工中...</tabpanel>
+					<tabpanel>
+					<include id="icdCnspPivot"></include>
+					</tabpanel>
 				</tabpanels>
 			</tabbox>
 		</center>
