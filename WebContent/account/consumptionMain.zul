@@ -196,7 +196,8 @@
 						</window>
 					</tabpanel>
 					<tabpanel>
-					<include id="icdCnspPivot"></include>
+					開發中...
+					<!-- <include id="icdCnspPivot"></include> -->
 					</tabpanel>
 				</tabpanels>
 			</tabbox>

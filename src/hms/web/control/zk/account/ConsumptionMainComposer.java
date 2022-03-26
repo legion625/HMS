@@ -144,9 +144,9 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		/* init windowPaymentInfo */
 		lbxPaymentInfoPayment.setItemRenderer(paymentListitemRenderer);
 		
-		/* init pivot */
-		icdCnspPivot.invalidate();
-		icdCnspPivot.setSrc(CnspPivotPageComposer.SRC);
+//		/* init pivot */ // FIXME
+//		icdCnspPivot.invalidate();
+//		icdCnspPivot.setSrc(CnspPivotPageComposer.SRC);
 	}
 
 	// -------------------------------------------------------------------------------

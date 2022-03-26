@@ -11,6 +11,8 @@ import org.zkoss.zul.Iframe;
 import org.zkoss.zul.Include;
 import org.zkoss.zul.Menuitem;
 
+import hms.web.control.zk.dev.pivotDemo.PivotDemoComposer;
+
 public class MainComposer extends SelectorComposer<Component> {
 	private Logger log = LoggerFactory.getLogger(MainComposer.class);
 	
@@ -65,5 +67,12 @@ public class MainComposer extends SelectorComposer<Component> {
 	public void miVersion_clicked() {
 		icdMain.invalidate();
 		icdMain.setSrc("/version.zul");
+	}
+	
+	// -------------------------------------------------------------------------------
+	@Listen(Events.ON_CLICK+"=#miDevPivotDemo")
+	public void miDevPivotDemo_clicked() {
+		icdMain.invalidate();
+		icdMain.setSrc(PivotDemoComposer.SRC);
 	}
 }

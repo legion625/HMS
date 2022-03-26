@@ -23,8 +23,13 @@
 					</menupopup>
 					</menu> -->
 				<menu label="系統資訊">
-				<menupopup>
-					<menuitem id="miVersion" label="版本"></menuitem>
+					<menupopup>
+						<menuitem id="miVersion" label="版本"></menuitem>
+					</menupopup>
+				</menu>
+				<menu label="開發中..">
+					<menupopup>
+						<menuitem id="miDevPivotDemo" label="Pivot Demo" />
 					</menupopup>
 				</menu>
 			</menubar>
