@@ -22,7 +22,11 @@
 					<menuitem id="miSearchRedEnvelope" label="查詢紅包"></menuitem>
 					</menupopup>
 					</menu> -->
-				<menu label="系統資訊"></menu>
+				<menu label="系統資訊">
+				<menupopup>
+					<menuitem id="miVersion" label="版本"></menuitem>
+					</menupopup>
+				</menu>
 			</menubar>
 			<!-- <iframe id="iframeMain" vflex="1" width="100%"></iframe> -->
 			<include id="icdMain" vflex="1" width="100%"></include>

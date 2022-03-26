@@ -61,7 +61,7 @@ public class MainComposer extends SelectorComposer<Component> {
 	}
 	
 	// -------------------------------------------------------------------------------
-	@Listen(Events.ON_CLICK+"=#miVersion")
+	@Listen(Events.ON_CLICK + "=#miVersion")
 	public void miVersion_clicked() {
 		icdMain.invalidate();
 		icdMain.setSrc("/version.zul");
