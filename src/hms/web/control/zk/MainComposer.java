@@ -1,5 +1,7 @@
 package hms.web.control.zk;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.select.SelectorComposer;
@@ -9,7 +11,12 @@ import org.zkoss.zul.Iframe;
 import org.zkoss.zul.Include;
 import org.zkoss.zul.Menuitem;
 
+import hms.web.control.zk.account.cnspPivot.CnspPivotPageComposer;
+import hms.web.control.zk.developing.pivotDemo.PivotDemoComposer;
+
 public class MainComposer extends SelectorComposer<Component> {
+	private Logger log = LoggerFactory.getLogger(MainComposer.class);
+	
 	@Wire
 //	private Iframe iframeMain;
 	private Include icdMain;
@@ -17,18 +24,21 @@ public class MainComposer extends SelectorComposer<Component> {
 	@Wire
 	private Menuitem miConsumption;
 	
-	// -------------------------------------------------------------
+	// -------------------------------------------------------------------------------
 	@Override
-	public void doAfterCompose(Component comp) throws Exception {
-		super.doAfterCompose(comp);
-		System.out.println(this.getClass().getSimpleName() + ".doAfterCompose");
+	public void doAfterCompose(Component comp) {
+		try {
+			super.doAfterCompose(comp);
+			
+			Events.postEvent(Events.ON_CLICK, miConsumption, null);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e.getMessage());
+		}
 		
-//		miConsumption_clicked();
-		
-		Events.postEvent(Events.ON_CLICK, miConsumption, null);
 	}
 
-	// -------------------------------------------------------------
+	// -------------------------------------------------------------------------------
 //	@Listen(Events.ON_CLICK+"=#miHome")
 //	public void miHome_clicked() {
 //		iframeMain.invalidate();
@@ -51,5 +61,25 @@ public class MainComposer extends SelectorComposer<Component> {
 //		iframeMain.setSrc("/mobile/account/accountFunction.zul");
 		icdMain.invalidate();
 		icdMain.setSrc("/mobile/account/accountFunction.zul");
+	}
+	
+	// -------------------------------------------------------------------------------
+	@Listen(Events.ON_CLICK + "=#miVersion")
+	public void miVersion_clicked() {
+		icdMain.invalidate();
+		icdMain.setSrc("/version.zul");
+	}
+	
+	// -------------------------------------------------------------------------------
+	@Listen(Events.ON_CLICK+"=#miPivotDemo")
+	public void miPivotDemo_clicked() {
+		icdMain.invalidate();
+		icdMain.setSrc(PivotDemoComposer.SRC);
+	}
+	
+	@Listen(Events.ON_CLICK+"=#miCnspPivotPage")
+	public void miCnspPivotPage_clicked() {
+		icdMain.invalidate();
+		icdMain.setSrc(CnspPivotPageComposer.SRC);
 	}
 }
