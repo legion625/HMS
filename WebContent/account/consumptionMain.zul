@@ -123,6 +123,7 @@
 						<menupopup id="mpConsumption">
 							<menuitem id="miShowPaymentInfo" label="付款資訊" />
 							<menuitem id="miAddPayment" label="新增付款" />
+							<menuitem id="miCopyCnsp" label="複製消費" />
 						</menupopup>
 						<window id="windowPaymentInfo" title="付款資訊" border="normal" width="30%" height="45%"
 							mode="highlighted" position="center" closable="true" visible="false">
