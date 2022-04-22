@@ -7,8 +7,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import org.zkoss.lang.Threads;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Event;
+import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Listen;
@@ -16,6 +18,7 @@ import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
 import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Combobox;
+import org.zkoss.zul.Comboitem;
 import org.zkoss.zul.Datebox;
 import org.zkoss.zul.Intbox;
 import org.zkoss.zul.Radio;
@@ -30,6 +33,7 @@ import hms_kernel.account.AccountService;
 import hms_kernel.account.Consumption;
 import hms_kernel.account.DirectionEnum;
 import hms_kernel.account.PaymentTypeEnum;
+import hms_kernel.account.TypeCategoryEnum;
 import hms_kernel.account.TypeEnum;
 import legion.util.DataFO;
 import legion.util.DateFormatUtil;
@@ -94,7 +98,9 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 	// -------------------------------------------------------------------------------
 	private void init() {
 		/* init cbbTypeCategory items */
-		ZKUtil.configureConsumptionTypeCategory(cbbTypeCategory, cbbType);
+//		ZKUtil.configureConsumptionTypeCategory(cbbTypeCategory, cbbType);
+		ZKUtil.configureConsumptionTypeCategory(cbbTypeCategory);
+		cbbTypeCategory.addEventListener(Events.ON_SELECT, cnspCateSyncEl);
 		
 		/* init rgDirection radios */
 		rgDirection.getChildren().clear();
@@ -109,8 +115,34 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 
 		resetBlanks();
 	}
+	
+	private boolean defaultTypeFlag = true; // 當cbbType隨cbbTypeCate變動時，是否要帶入預設值
 
+	private EventListener<Event> cnspCateSyncEl =  evt -> {
+		cbbType.getChildren().clear();
+
+		TypeCategoryEnum _cate = cbbTypeCategory.getSelectedItem().getValue();
+		
+		for (TypeEnum type : AccountService.getInstance().getTypes(_cate, true)) { // 只載入enabled的類型
+			Comboitem cbi = new Comboitem(type.getTitle());
+			cbi.setValue(type);
+			cbbType.appendChild(cbi);
+		}
+
+		if(defaultTypeFlag) {
+			if (cbbType.getItemCount() > 0)
+				cbbType.setSelectedIndex(0);
+			else
+				cbbType.setValue(null);	
+		}
+		
+		
+		System.out.println("cbbType.getValue(): "+cbbType.getValue());
+	};
+	
 	private void resetBlanks() {
+		defaultTypeFlag = true;
+		
 		cbbBehavior.setSelectedIndex(0);
 		cbbTypeCategory.setSelectedIndex(0);
 		Events.postEvent(Events.ON_SELECT, cbbTypeCategory, null);
@@ -167,6 +199,36 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 	@Listen(Events.ON_CHECK + "=#chbInAdv")
 	public void chbInAdv_checked() {
 		itbInAdv.setDisabled(!chbInAdv.isChecked());
+	}
+	
+	
+	void copyCnsp(Consumption _cnsp) {
+		defaultTypeFlag = false;
+		
+		cbbBehavior.setSelectedIndex(0);
+//		cbbTypeCategory.removeEventListener(Events.ON_SELECT, cnspCateSyncEl);
+		cbbTypeCategory.setValue(_cnsp.getType().getCategory().getTitle());
+		
+//		Runnable runSetCnspType = () ->{
+//			cbbType.setValue(_cnsp.getType().getTitle());
+//			
+//		} ;
+		cbbType.setValue(_cnsp.getType().getTitle());
+		System.out.println("cbbType.getValue(): "+cbbType.getValue());	
+		
+//		Events.postEvent(Events.ON_SELECT, cbbTypeCategory, null);
+//		rgDirection.setSelectedIndex(0);
+		rgDirection.setSelectedIndex(_cnsp.getDirection().getDbIndex() - 1);
+		txbDescription.setValue(_cnsp.getDescription());
+		itbConsumptionAmount.setValue(_cnsp.getAmount());
+//		cbbPaymentType.setSelectedIndex(0);
+		cbbPaymentType.setValue(_cnsp.getPaymentType().getTitle());
+		chbInAdv.setChecked(false);
+		itbInAdv.setDisabled(true);
+		itbInAdv.setValue(null);
+		dtbConsumptionDate.setValue(new Date(System.currentTimeMillis()));
+		
+//		cbbBehavior_selected();
 	}
 	
 	@Listen(Events.ON_CLICK + "=#btnConfirmAdd")

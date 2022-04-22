@@ -33,32 +33,45 @@ public class ZKUtil {
 		}
 	}
 	
-	public static void configureConsumptionTypeCategory(Combobox _cbbCnspTypeCategory, Combobox _cbbCnspType) {
-		if (_cbbCnspTypeCategory == null || _cbbCnspType == null)
+//	public static void configureConsumptionTypeCategory(Combobox _cbbCnspTypeCategory, Combobox _cbbCnspType) {
+//		if (_cbbCnspTypeCategory == null || _cbbCnspType == null)
+//			return;
+//		configureConsumptionTypeCategory(_cbbCnspTypeCategory);
+////		while (_cbbCnspType.getItemCount() > 0)
+////			_cbbCnspType.removeItemAt(0);
+//		_cbbCnspType.getChildren().clear();
+//		
+//		_cbbCnspTypeCategory.addEventListener(Events.ON_SELECT, evt -> {
+////			while (_cbbCnspType.getItemCount() > 0)
+////				_cbbCnspType.removeItemAt(0);
+//			_cbbCnspType.getChildren().clear();
+//
+//			TypeCategoryEnum _cate = _cbbCnspTypeCategory.getSelectedItem().getValue();
+//			
+//			for (TypeEnum type : AccountService.getInstance().getTypes(_cate, true)) { // 只載入enabled的類型
+//				Comboitem cbi = new Comboitem(type.getTitle());
+//				cbi.setValue(type);
+//				_cbbCnspType.appendChild(cbi);
+//			}
+//
+//			if (_cbbCnspType.getItemCount() > 0)
+//				_cbbCnspType.setSelectedIndex(0);
+//			else
+//				_cbbCnspType.setValue(null);
+//			
+//			System.out.println("_cbbCnspType.getValue(): "+_cbbCnspType.getValue());
+//		});
+//	}
+	
+	public static void configureConsumptionType(Combobox _cbb, boolean _enabledOnly) {
+		if (_cbb == null)
 			return;
-		configureConsumptionTypeCategory(_cbbCnspTypeCategory);
-//		while (_cbbCnspType.getItemCount() > 0)
-//			_cbbCnspType.removeItemAt(0);
-		_cbbCnspType.getChildren().clear();
-		
-		_cbbCnspTypeCategory.addEventListener(Events.ON_SELECT, evt -> {
-//			while (_cbbCnspType.getItemCount() > 0)
-//				_cbbCnspType.removeItemAt(0);
-			_cbbCnspType.getChildren().clear();
-
-			TypeCategoryEnum _cate = _cbbCnspTypeCategory.getSelectedItem().getValue();
-			
-			for (TypeEnum type : AccountService.getInstance().getTypes(_cate, true)) { // 只載入enabled的類型
-				Comboitem cbi = new Comboitem(type.getTitle());
-				cbi.setValue(type);
-				_cbbCnspType.appendChild(cbi);
-			}
-
-			if (_cbbCnspType.getItemCount() > 0)
-				_cbbCnspType.setSelectedIndex(0);
-			else
-				_cbbCnspType.setValue(null);
-		});
+		_cbb.getChildren().clear();
+		for (TypeEnum e : TypeEnum.values(_enabledOnly)) {
+			Comboitem cbi = new Comboitem(e.getTitle());
+			cbi.setValue(e);
+			_cbb.appendChild(cbi);
+		}
 	}
 
 	public static void configureDirection(Combobox _cbbDirection) {
