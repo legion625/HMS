@@ -331,9 +331,38 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		};
 		dtbDate.addEventListener(Events.ON_CHANGE,updateDateEl);
 		// 類型目錄
-		listitem.appendChild(new Listcell(cnsp.getType().getCategory().getTitle()));
+		Listcell lcTypeCate = new Listcell(cnsp.getType().getCategory().getTitle());
+		listitem.appendChild(lcTypeCate);
 		// 類型
-		listitem.appendChild(new Listcell(cnsp.getType().getTitle()));
+		Combobox cbbType = new Combobox();
+		ZKUtil.configureConsumptionType(cbbType, true);
+		cbbType.setValue(cnsp.getType().getTitle());
+		cbbType.setHflex("1");
+		cbbType.setInplace(true);
+		lc = new Listcell();
+		lc.appendChild(cbbType);
+		listitem.appendChild(lc);
+		
+		EventListener<Event> updateTypeEl = evt -> {
+			if(cbbType.getSelectedItem()!=null && cbbType.getSelectedItem().getValue() !=null ) {
+//				cnsp.setPaymentType(cbbPmType.getSelectedItem().getValue());
+				cnsp.setType(cbbType.getSelectedItem().getValue());
+				boolean r = AccountService.getInstance().updateCnsp(cnsp);
+				if (r) {
+					HmsNotification.info("更新付款方式成功。");
+					lcTypeCate.setLabel(cnsp.getType().getCategory().getTitle());
+				} else {
+					HmsNotification.error("更新付款方式失敗。");
+					cbbType.setValue(cnsp.getType().getTitle());
+				}
+			}else {
+				HmsNotification.warning("請選取選單中的付款方式。");
+				cbbType.setValue(cnsp.getPaymentType().getTitle());
+			}
+		};
+		cbbType.addEventListener(Events.ON_CHANGE, updateTypeEl);
+		
+//		listitem.appendChild(new Listcell(cnsp.getType().getTitle()));
 		// 流向
 		listitem.appendChild(new Listcell(cnsp.getDirection().getTitle()));
 		// 消費金額
@@ -383,7 +412,23 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		// 付款方式
 		listitem.appendChild(new Listcell(cnsp.getPaymentType().getTitle()));
 		// 說明
-		listitem.appendChild(new Listcell(cnsp.getDescription()));
+		Textbox txbDesp = new Textbox(cnsp.getDescription());
+		txbDesp.setHflex("1");
+		txbDesp.setInplace(true);
+		lc = new Listcell();
+		lc.appendChild(txbDesp);
+		listitem.appendChild(lc);
+		EventListener<Event> updateDespEl =  evt -> {
+			cnsp.setDescription(txbDesp.getValue());
+			boolean r = AccountService.getInstance().updateCnsp(cnsp);
+			if (r)
+				HmsNotification.info("更新說明成功。");
+			else {
+				HmsNotification.error("更新說明失敗。");
+				txbDesp.setValue(cnsp.getDescription());
+			}
+		};
+		txbDesp.addEventListener(Events.ON_CHANGE, updateDespEl);
 
 		// 右鍵選單
 		listitem.setValue(cnsp);

@@ -60,6 +60,17 @@ public class ZKUtil {
 				_cbbCnspType.setValue(null);
 		});
 	}
+	
+	public static void configureConsumptionType(Combobox _cbb, boolean _enabledOnly) {
+		if (_cbb == null)
+			return;
+		_cbb.getChildren().clear();
+		for (TypeEnum e : TypeEnum.values(_enabledOnly)) {
+			Comboitem cbi = new Comboitem(e.getTitle());
+			cbi.setValue(e);
+			_cbb.appendChild(cbi);
+		}
+	}
 
 	public static void configureDirection(Combobox _cbbDirection) {
 		while (_cbbDirection.getItemCount() > 0)

@@ -85,6 +85,14 @@ public enum TypeEnum implements Field{
 		return TypeEnum.UNDEFINED;
 	}
 	
+	public static TypeEnum[] values(boolean _enabledOnly) {
+		List<TypeEnum> list = new ArrayList<>();
+		for (TypeEnum e : values())
+			if (!_enabledOnly || e.isEnabled())
+				list.add(e);
+		return list.toArray(new TypeEnum[0]);
+	}
+	
 	static TypeEnum[] values(TypeCategoryEnum _category, boolean _enabledOnly) {
 		List<TypeEnum> list = new ArrayList<>();
 		for (TypeEnum e : values())
