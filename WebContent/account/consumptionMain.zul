@@ -99,14 +99,16 @@
 								<listheader label="消費日期" sort="auto('date')" width="110px"
 									iconSclass="fas fa-pen-square fa-fw" style=" direction: rtl; " />
 								<listheader label="類型目錄" sort="auto('type.category')" width="90px" />
-								<listheader label="類型" sort="auto('type')" width="90px" />
+								<listheader label="類型" sort="auto('type')" width="90px" style="direction: rtl;"
+									iconSclass="fas fa-pen-square fa-fw"/>
 								<listheader label="流向" sort="auto('direction')" hflex="min" />
 								<listheader label="消費金額" sort="auto('amount')" width="95px" style="direction: rtl;"
 									iconSclass="fas fa-pen-square fa-fw" />
 								<listheader label="付款金額" sort="auto('payedAmount')" width="95px" style="direction: rtl;"
 									iconSclass="fas fa-pen-square fa-fw" />
 								<listheader label="付款方式" sort="auto('paymentType')" width="90px" />
-								<listheader label="說明" width="200px" />
+								<listheader label="說明" width="200px" style="direction: rtl;"
+									iconSclass="fas fa-pen-square fa-fw"/>
 							</listhead>
 							<listfoot>
 								<listfooter label="小計" span="5" align="right"></listfooter>
