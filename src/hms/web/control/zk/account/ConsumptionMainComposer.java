@@ -408,7 +408,8 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 
 	@Listen(Events.ON_CLICK + "=#miShowPaymentInfo")
 	public void miShowPaymentInfo_clicked(Event _evt) {
-		Consumption cnsp = (Consumption) miShowPaymentInfo.getAttribute("selectedCnsp");
+//		Consumption cnsp = (Consumption) miShowPaymentInfo.getAttribute("selectedCnsp");
+		Consumption cnsp = getTargetConsumption();
 		refreshPaymentInfo(cnsp);
 		windowPaymentInfo.setVisible(true);
 	}
@@ -419,6 +420,14 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		windowAddPayment.setVisible(true);
 	}
 
+	@Listen(Events.ON_CLICK + "=#miCopyCnsp")
+	public void miCopyCnsp_clicked() {
+		Consumption cnsp = getTargetConsumption();
+		btnAddConsumption_clicked();
+		windowAddConsumptionComposer.copyCnsp(cnsp);
+	}
+	
+	
 	private Consumption getTargetConsumption() {
 		return (Consumption) miShowPaymentInfo.getAttribute("selectedCnsp");
 	}
@@ -520,7 +529,8 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 
 	@Listen(Events.ON_CLICK + "=#windowAddPayment #btnReset")
 	public void windowAddPayment_btnReset_clicked() {
-		Consumption cnsp = (Consumption) miShowPaymentInfo.getAttribute("selectedCnsp");
+//		Consumption cnsp = (Consumption) miShowPaymentInfo.getAttribute("selectedCnsp");
+		Consumption cnsp = getTargetConsumption();
 
 		dtbAddPaymentPayDate.setValue(new Date(System.currentTimeMillis()));
 		itbAddPaymentPayAmount.setValue(cnsp.getPayableAmount());
