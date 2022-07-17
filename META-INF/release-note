@@ -1,3 +1,11 @@
+Legion, 2022.07.17
+[change]
+1. 「生活費」新增「住-樹林」類型。
+
+[deployment]
+1. 人工判斷資料轉移。
+ - update consumption set type_index = 46 where description like '%米蘭%' or description like '%山佳%';
+
 ------------------------------------------------------------------------------
 v0.5.2 released by Legion, 2022.04.23
 [change]
