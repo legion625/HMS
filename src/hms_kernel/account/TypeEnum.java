@@ -15,7 +15,7 @@ public enum TypeEnum implements Field{
 	TRAFFIC_GOGORO3P(25,"GOGORO", TypeCategoryEnum.TRAFFIC),
 	TRAFFIC_OTHER(29, "其他", TypeCategoryEnum.TRAFFIC), 
 	CLOTHES(30, "衣物", TypeCategoryEnum.CLOTHES), CLOTHES_BEAUTY(31, "美妝", TypeCategoryEnum.CLOTHES), // 
-	LIFE_LIVE(41, "住",TypeCategoryEnum.LIFE), 
+	LIFE_LIVE(41, "住",TypeCategoryEnum.LIFE), LIFE_LIVE_SHULIN(46,"住-樹林",TypeCategoryEnum.LIFE),
 	LIFE_COMMODITY(42, "日用品",TypeCategoryEnum.LIFE), LIFE_HEALTH(43,"醫療保健",TypeCategoryEnum.LIFE),LIFE_INSURANCE(44,"保險", TypeCategoryEnum.LIFE), LIFE_EDU(45,"教養", TypeCategoryEnum.LIFE), LIFE_OTHER(49, "其他",TypeCategoryEnum.LIFE), 
 	ADDITIONAL_TICKET(51,"票券",TypeCategoryEnum.ADDITIONAL), ADDITIONAL_STATIONERY(52, "文具",TypeCategoryEnum.ADDITIONAL), ADDITIONAL_OTHER(59, "其他",TypeCategoryEnum.ADDITIONAL), 
 	DUTY(60, "孝親費", TypeCategoryEnum.DUTY);

@@ -7,6 +7,11 @@
 		<display-name>ZK Session cleaner</display-name>
 		<listener-class>org.zkoss.zk.ui.http.HttpSessionListener</listener-class>
 	</listener>
+	<!-- init web apps listener -->
+	<listener>
+		<listener-class>hms.web.InitLegionWebAppsListenerDefault</listener-class>	
+	</listener>
+	
 	<servlet>
 		<description>
 		The ZK loader for ZUML pages</description>
@@ -36,6 +41,29 @@
 		<servlet-name>auEngine</servlet-name>
 		<url-pattern>/zkau/*</url-pattern>
 	</servlet-mapping>
+	
+	<!-- InitWebAppsListener -->
+	<context-param>
+		<param-name>logback-init-file</param-name>
+		<param-value>WEB-INF/logback-conf.xml</param-value>
+	</context-param>
+	<context-param>
+		<param-name>system-config-file</param-name>
+		<param-value>WEB-INF/system-conf.properties</param-value>
+	</context-param>
+	<context-param>
+		<param-name>datasource-file</param-name>
+		<param-value>WEB-INF/datasource.xml</param-value>
+	</context-param>
+	<context-param>
+		<param-name>service-module-file</param-name>
+		<param-value>WEB-INF/ServiceModule.xml</param-value>
+	</context-param>
+	<context-param>
+		<param-name>menu-file</param-name>
+		<param-value>WEB-INF/menu-conf.xml</param-value>
+	</context-param>
+	
 	<welcome-file-list>
 		<!-- <welcome-file>index.html</welcome-file>
 		<welcome-file>index.htm</welcome-file>
@@ -43,7 +71,8 @@
 		<welcome-file>default.html</welcome-file>
 		<welcome-file>default.htm</welcome-file>
 		<welcome-file>default.jsp</welcome-file>
-		<welcome-file>index.zul</welcome-file> -->
-		<welcome-file>main.zul</welcome-file>
+		<welcome-file>index.zul</welcome-file>
+		<welcome-file>main.zul</welcome-file> -->
+		<welcome-file>legionmodule/main.zul</welcome-file>
 	</welcome-file-list>
 </web-app>
