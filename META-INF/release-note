@@ -1,3 +1,20 @@
+Min-Hua, 2024.08.14
+[deployment]
+1. 調整web.xml設定並新增相關設定檔。
+  -1. logback-conf.xml
+  -2. system-conf.properties
+  -3. datasource.xml
+  -4. ServiceModule.xml
+  -5. menu-conf.xml
+2. 新增deployment資料夾，把WEB-INF的內容放一份在該資料夾中，並在.gitignore中過濾掉WEB-INF。
+3. 新增資料表system_seq和sys_attr。
+
+[lib]
+1. 升級Legionmodule: 0.7.1 -> 0.14.0
+  -1. 新增commons_configuration_1.10。
+  -2. 新增commons_lang_2.6。
+  -3. 新增slf4j-1.7.36、logback-core-1.2.11、logback-classic-1.2.11
+
 ------------------------------------------------------------------------------
 v0.5.3 released by Legion, 2022.07.17
 [change]

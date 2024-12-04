@@ -134,6 +134,7 @@ public class AccountDao extends MySqlDao implements AccountDataService {
 
 	private Consumption parseConsumption(ResultSet _rs) {
 		Consumption cnsp = null;
+		String testStr = null;
 		try {
 			String uid = _rs.getString(COL_UID);
 			LocalDateTime oCreateTime = LocalDateTime.parse(_rs.getString(COL_OBJECT_CREATE_TIME));
@@ -145,8 +146,10 @@ public class AccountDao extends MySqlDao implements AccountDataService {
 			cnsp.setAmount(_rs.getInt(COL_CONSUMPTION_AMOUNT));
 			cnsp.setDescription(_rs.getString(COL_CONSUMPTION_DESCRIPTION));
 			cnsp.setPaymentType(PaymentTypeEnum.getInstance(_rs.getInt(COL_CONSUMPTION_PAYMENT_TYPE_INDEX)));
+			testStr = _rs.getString(COL_CONSUMPTION_DATE);
 			cnsp.setDate(LocalDate.parse(_rs.getString(COL_CONSUMPTION_DATE)));
 		} catch (Throwable e) {
+			System.out.println("_rs.getString(COL_CONSUMPTION_DATE): " +testStr);
 			e.printStackTrace();
 			return null;
 		}
