@@ -9,7 +9,7 @@
 	</listener>
 	<!-- init web apps listener -->
 	<listener>
-		<listener-class>legionLab.web.InitLegionWebAppsListenerDefault</listener-class>	
+		<listener-class>hms.web.InitLegionWebAppsListenerDefault</listener-class>	
 	</listener>
 	
 	<servlet>

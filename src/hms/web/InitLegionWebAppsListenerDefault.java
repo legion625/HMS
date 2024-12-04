@@ -10,7 +10,10 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import hms_kernel.DebugLogMark;
 import legion.ISystemWebInfo;
 import legion.LegionContext;
 import legion.SystemInfoDefault;
@@ -18,6 +21,8 @@ import legion.web.InitLegionWebAppsListener;
 
 public class InitLegionWebAppsListenerDefault extends InitLegionWebAppsListener implements ServletContextListener {
 
+//	private Logger log = LoggerFactory.getLogger(DebugLogMark.class);
+	
 	// -------------------------------------------------------------------------------
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
@@ -38,6 +43,8 @@ public class InitLegionWebAppsListenerDefault extends InitLegionWebAppsListener 
 				LegionContext.getInstance().registerSystemInfo(SystemInfoDefault.getInstance());
 
 			log.info("init SystemInfo...");
+			
+			
 			ServletContext context = sce.getServletContext();
 
 			ISystemWebInfo systemInfo = (ISystemWebInfo) LegionContext.getInstance().getSystemInfo();
@@ -53,6 +60,7 @@ public class InitLegionWebAppsListenerDefault extends InitLegionWebAppsListener 
 				for (Iterator<String> it = cfg.getKeys(); it.hasNext();) {
 					String key = it.next();
 					systemInfo.putAttribute(key, cfg.getString(key));
+					log.debug("{}\t{}", key, cfg.getString(key));
 				}
 				String[] paths = cfg.getStringArray("CLASS_ANALYSE_CLASSPATH"); // TODO 待確認
 
@@ -97,7 +105,7 @@ public class InitLegionWebAppsListenerDefault extends InitLegionWebAppsListener 
 				log.debug("{}\t{}", key,systemInfo.getAttributes().get(key) );
 			}
 			
-			
+			log.debug("SystemInfoDefault.getInstance().getVersion(): {}", SystemInfoDefault.getInstance().getVersion());
 		} catch (Exception e) {
 			log.error("init systemInfo Fail... {}", e.getMessage());
 		}

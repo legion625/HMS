@@ -16,11 +16,11 @@
 	<IntegrationService>
 		<!-- legionmodule -->
 		<Service name="ObjectSeqDataService" interface="legion.data.ObjectSeqDataService" imp="legion.data.service.ObjectSeqDataServiceImp">
-			<Parameter name="source" value="ekp_web" />
-			<Parameter name="serverId" value="7" />
+			<Parameter name="source" value="hms" />
+			<Parameter name="serverId" value="0" />
 		</Service>
 		<Service name="SystemDataService" interface="legion.data.SystemDataService" imp="legion.data.service.system.SystemDataServiceImp">
-			<Parameter name="source" value="ekp_web" />
+			<Parameter name="source" value="hms" />
 		</Service>
 		<!-- hms -->
 		<!-- 

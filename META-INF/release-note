@@ -1,4 +1,4 @@
-Min-Hua, 2024.08.14
+Min-Hua, 2024.12.04
 [deployment]
 1. 調整web.xml設定並新增相關設定檔。
   -1. logback-conf.xml
@@ -10,10 +10,19 @@ Min-Hua, 2024.08.14
 3. 新增資料表system_seq和sys_attr。
 
 [lib]
-1. 升級Legionmodule: 0.7.1 -> 0.14.0
-  -1. 新增commons_configuration_1.10。
-  -2. 新增commons_lang_2.6。
-  -3. 新增slf4j-1.7.36、logback-core-1.2.11、logback-classic-1.2.11
+1. 升級Legionmodule: 0.7.1 -> 0.14.0。
+  -1. 新增commons_beanutils_1.9.3。
+  -2. 新增commons_configuration_1.10。
+  -3. 新增commons_lang_2.6。
+  -4. 新增commons_logging_1.2。
+  -5. 新增jdom_2.0.6.1。
+  -6. 新增slf4j-1.7.36、logback-core-1.2.11、logback-classic-1.2.11。
+  -7. 升級mysql_connector_java: 5.1.44 -> 8.0.27
+  -8. 升級ZK9
+    - zk: 8.6.0.1 -> 9.6.0.1
+    - zk_ext: 8.6.0.1 -> 9.6.0.1
+    - zk_theme: 8.6.0.1 -> 9.6.0.1
+    - zk_zkforge: 8.6.0.1 -> 9.6.0.1
 
 ------------------------------------------------------------------------------
 v0.5.3 released by Legion, 2022.07.17
