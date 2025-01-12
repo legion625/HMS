@@ -345,24 +345,21 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		
 		EventListener<Event> updateTypeEl = evt -> {
 			if(cbbType.getSelectedItem()!=null && cbbType.getSelectedItem().getValue() !=null ) {
-//				cnsp.setPaymentType(cbbPmType.getSelectedItem().getValue());
 				cnsp.setType(cbbType.getSelectedItem().getValue());
 				boolean r = AccountService.getInstance().updateCnsp(cnsp);
 				if (r) {
-					HmsNotification.info("更新付款方式成功。");
+					HmsNotification.info("更新類型成功。");
 					lcTypeCate.setLabel(cnsp.getType().getCategory().getTitle());
 				} else {
-					HmsNotification.error("更新付款方式失敗。");
+					HmsNotification.error("更新類型失敗。");
 					cbbType.setValue(cnsp.getType().getTitle());
 				}
 			}else {
-				HmsNotification.warning("請選取選單中的付款方式。");
+				HmsNotification.warning("請選取選單中的類型。");
 				cbbType.setValue(cnsp.getPaymentType().getTitle());
 			}
 		};
 		cbbType.addEventListener(Events.ON_CHANGE, updateTypeEl);
-		
-//		listitem.appendChild(new Listcell(cnsp.getType().getTitle()));
 		// 流向
 		listitem.appendChild(new Listcell(cnsp.getDirection().getTitle()));
 		// 消費金額
@@ -453,7 +450,6 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 
 	@Listen(Events.ON_CLICK + "=#miShowPaymentInfo")
 	public void miShowPaymentInfo_clicked(Event _evt) {
-//		Consumption cnsp = (Consumption) miShowPaymentInfo.getAttribute("selectedCnsp");
 		Consumption cnsp = getTargetConsumption();
 		refreshPaymentInfo(cnsp);
 		windowPaymentInfo.setVisible(true);
@@ -471,8 +467,7 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		btnAddConsumption_clicked();
 		windowAddConsumptionComposer.copyCnsp(cnsp);
 	}
-	
-	
+
 	private Consumption getTargetConsumption() {
 		return (Consumption) miShowPaymentInfo.getAttribute("selectedCnsp");
 	}
@@ -578,7 +573,10 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		Consumption cnsp = getTargetConsumption();
 
 		dtbAddPaymentPayDate.setValue(new Date(System.currentTimeMillis()));
-		itbAddPaymentPayAmount.setValue(cnsp.getPayableAmount());
+		Payment lastPayment = cnsp. getLastPayment();
+		int defaultPayAmount =lastPayment!=null?lastPayment.getAmount(): cnsp.getPayableAmount();
+		
+		itbAddPaymentPayAmount.setValue(defaultPayAmount);
 	}
 
 	@Listen(Events.ON_CLOSE + "=#windowAddPayment")

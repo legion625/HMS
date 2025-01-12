@@ -8,7 +8,7 @@ import legion.kernel.Field;
 
 public enum TypeEnum implements Field{
 	UNDEFINED(0,"未定義",TypeCategoryEnum.UNDEFINED),
-	FOOD(10, "餐飲費", TypeCategoryEnum.FOOD), 
+	FOOD(10, "餐飲費", TypeCategoryEnum.FOOD),
 	
 	TRAFFIC_EASY(21, "小明",TypeCategoryEnum.TRAFFIC), TRAFFIC_CITY(22, "小蝸", TypeCategoryEnum.TRAFFIC), //
 	TRAFFIC_EXSIOR(23,"老牛",TypeCategoryEnum.TRAFFIC),TRAFFIC_YARIS(24,"小鴨",TypeCategoryEnum.TRAFFIC), 
@@ -17,8 +17,14 @@ public enum TypeEnum implements Field{
 	CLOTHES(30, "衣物", TypeCategoryEnum.CLOTHES), CLOTHES_BEAUTY(31, "美妝", TypeCategoryEnum.CLOTHES), // 
 	LIFE_LIVE(41, "住",TypeCategoryEnum.LIFE), LIFE_LIVE_SHULIN(46,"住-樹林",TypeCategoryEnum.LIFE),
 	LIFE_COMMODITY(42, "日用品",TypeCategoryEnum.LIFE), LIFE_HEALTH(43,"醫療保健",TypeCategoryEnum.LIFE),LIFE_INSURANCE(44,"保險", TypeCategoryEnum.LIFE), LIFE_EDU(45,"教養", TypeCategoryEnum.LIFE), LIFE_OTHER(49, "其他",TypeCategoryEnum.LIFE), 
-	ADDITIONAL_TICKET(51,"票券",TypeCategoryEnum.ADDITIONAL), ADDITIONAL_STATIONERY(52, "文具",TypeCategoryEnum.ADDITIONAL), ADDITIONAL_OTHER(59, "其他",TypeCategoryEnum.ADDITIONAL), 
-	DUTY(60, "孝親費", TypeCategoryEnum.DUTY);
+	ADDITIONAL_TICKET(51,"票券",TypeCategoryEnum.ADDITIONAL),
+	ADDITIONAL_STATIONERY(52, "文具",TypeCategoryEnum.ADDITIONAL),
+	ADDITIONAL_YARN(53, "毛線",TypeCategoryEnum.ADDITIONAL),
+	ADDITIONAL_OTHER(59, "其他",TypeCategoryEnum.ADDITIONAL), 
+	DUTY(60, "孝親費", TypeCategoryEnum.DUTY), // 
+	DUTY_POCKET_HANA(61,"零用金-HANA",TypeCategoryEnum.DUTY ), //
+	DUTY_POCKET_KUNI(62,"零用金-KUNI",TypeCategoryEnum.DUTY ), //
+	;
 	
 	// -----------------------------------------------------------
 	private int dbIndex;
