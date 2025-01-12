@@ -1,4 +1,4 @@
--- 0.5.3 -> unstaging
+-- 0.5.3 -> 0.6.0
 CREATE TABLE `sys_attr` (
   `uid` varchar(45) NOT NULL,
   `type_idx` tinyint DEFAULT NULL,
