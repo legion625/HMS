@@ -27,7 +27,7 @@ public class User extends HmsObjectModel {
 			return null;
 	}
 
-	public static User getInstance(String uid, String name, LocalDateTime oCreateDate, LocalDateTime oUpdateDate) {
+	public static User getInstance(String uid, String name, long oCreateDate, long oUpdateDate) {
 		User user = new User();
 		user.configGetInstance(uid, oCreateDate, oUpdateDate);
 		user.setName(name);

@@ -1,3 +1,15 @@
+[infra]
+1. AccountDataService改用Legionmodule的IntegrationService架構。
+2. 物件改用ObjectModel架構。
+
+[deployment]
+1.
+  -1. ServiceModule.xml新增AccountService和AccountDataService的宣告。
+2. 物件改用ObjectModel架構。
+  -1. 資料表consumption原本的object_create_time和object_update_time先重新命名為object_create_time_ld_str和object_update_time_ld_str，待刪除。
+  -2. 承-1，產出BIGINT的object_create_time和object_update_time欄位和資料。
+  
+
 ------------------------------------------------------------------------------
 v0.6.1 released by Legion, 2025.01.12
 [change]
@@ -158,7 +170,7 @@ v0.0.0 released by Legion, 2018.02.27
 
 // -----------------------------------------------------------------------------------
 [change]
-[kernel]
+[infra]
 [bug]
 [lib]
 [deployment]

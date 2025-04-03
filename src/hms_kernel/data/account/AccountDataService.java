@@ -6,22 +6,20 @@ import hms_kernel.account.Consumption;
 import hms_kernel.account.ConsumptionSearchParam;
 import hms_kernel.account.CreditCard;
 import hms_kernel.account.Payment;
+import legion.IntegrationService;
 
-public interface AccountDataService {
-	public static AccountDataService getInstance() {
-		return AccountDao.getInstance();
-	}
+public interface AccountDataService extends IntegrationService{
 
-	// -----------------------------------------------------------
-	// ------------------------Consumption------------------------
+	// -------------------------------------------------------------------------------
+	// ----------------------------------Consumption----------------------------------
 	public boolean saveConsumption(Consumption _cnsp);
 
 	public boolean deleteConsumption(String _uid);
 
 	public List<Consumption> searchConsumptions(ConsumptionSearchParam _searchParam);
 
-	// -----------------------------------------------------------
-	// --------------------------Payment--------------------------
+	// -------------------------------------------------------------------------------
+	// ------------------------------------Payment------------------------------------
 	public boolean savePayment(Payment _payment);
 
 	public boolean deletePayment(String _uid);

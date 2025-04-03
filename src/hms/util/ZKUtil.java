@@ -6,7 +6,7 @@ import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Comboitem;
 import org.zkoss.zul.Include;
 
-import hms_kernel.account.AccountService;
+import hms_kernel.account.AccountServiceImp;
 import hms_kernel.account.DirectionEnum;
 import hms_kernel.account.PaymentTypeEnum;
 import hms_kernel.account.TypeCategoryEnum;
