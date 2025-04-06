@@ -84,6 +84,10 @@ public class AccountDao extends AbstractMySqlDao  {
 		return cnsp;
 	}
 
+	Consumption loadConsumption(String _uid) {
+		return loadObject(TABLE_CONSUMPTION, _uid, this::parseConsumption);
+	}
+	
 	public List<Consumption> searchConsumptions(ConsumptionSearchParam _searchParam) {
 		List<Consumption> resultList = new ArrayList<>();
 

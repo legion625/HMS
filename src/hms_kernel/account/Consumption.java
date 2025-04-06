@@ -27,14 +27,15 @@ public class Consumption extends HmsObjectModel {
 	private Consumption() {
 	}
 
-	private static Consumption newInstance() {
+	static Consumption newInstance() {
 		Consumption cnsp = new Consumption();
 		cnsp.configNewInstance(); // TODO
 		cnsp.paymentList = new ArrayList<>();
-		if (cnsp.save())
-			return cnsp;
-		else
-			return null;
+//		if (cnsp.save())
+//			return cnsp;
+//		else
+//			return null;
+		return cnsp;
 	}
 
 	public static Consumption getInstance(String _uid, long _oCreateDate, long _oUpdateDate) {
@@ -161,9 +162,12 @@ public class Consumption extends HmsObjectModel {
 		// TODO Transaction
 		/* Payment */
 		System.out.println("paymentList: " + paymentList);
-		for (Payment payment : paymentList)
-			if (!payment.save())
-				return false;
+		if(paymentList!=null) {
+			for (Payment payment : paymentList)
+				if (!payment.save())
+					return false;	
+		}
+		
 		/* self */
 //		return AccountDataService.getInstance().saveConsumption(this);
 		return DataServiceFactory.getInstance().getService(AccountDataService.class).saveConsumption(this);

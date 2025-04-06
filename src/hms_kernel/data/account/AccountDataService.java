@@ -15,6 +15,8 @@ public interface AccountDataService extends IntegrationService{
 	public boolean saveConsumption(Consumption _cnsp);
 
 	public boolean deleteConsumption(String _uid);
+	
+	public Consumption loadConsumption(String _uid);
 
 	public List<Consumption> searchConsumptions(ConsumptionSearchParam _searchParam);
 

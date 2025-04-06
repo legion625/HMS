@@ -43,7 +43,12 @@ public class AccountDataServiceImp implements AccountDataService {
 	public boolean deleteConsumption(String _uid) {
 		return acntDao.deleteConsumption(_uid);
 	}
-
+	
+	@Override
+	public Consumption loadConsumption(String _uid) {
+		return acntDao.loadConsumption(_uid);
+	}
+	
 	@Override
 	public List<Consumption> searchConsumptions(ConsumptionSearchParam _searchParam) {
 		return acntDao.searchConsumptions(_searchParam);
