@@ -6,6 +6,7 @@ import java.util.Date;
 
 import hms_kernel.HmsObjectModel;
 import hms_kernel.data.account.AccountDataService;
+import legion.DataServiceFactory;
 import legion.kernel.LegionObject;
 import legion.util.DataFO;
 import legion.util.DateFormatUtil;
@@ -21,16 +22,17 @@ public class Payment extends HmsObjectModel {
 	private Payment(String _consumptionUid) {
 		this.setConsumptionUid(_consumptionUid);
 	}
-	// TODO
 
-	protected static Payment newInstance(String _consumptionUid) {
+	static Payment newInstance(String _consumptionUid) {
 		Payment payment = new Payment(_consumptionUid);
 		payment.configNewInstance();
 		return payment;
 	}
 
-	public static Payment getInstance(String _uid, String _consumptionUid, LocalDateTime _oCreateDate,
-			LocalDateTime _oUpdateDate) {
+//	public static Payment getInstance(String _uid, String _consumptionUid, LocalDateTime _oCreateDate,
+//			LocalDateTime _oUpdateDate) {
+	public static Payment getInstance(String _uid, String _consumptionUid, long _oCreateDate,
+			long _oUpdateDate) {
 		Payment payment = new Payment(_consumptionUid);
 		payment.configGetInstance(_uid, _oCreateDate, _oUpdateDate);
 		return payment;
@@ -42,7 +44,7 @@ public class Payment extends HmsObjectModel {
 		return consumptionUid;
 	}
 
-	private void setConsumptionUid(String consumptionUid) {
+	public void setConsumptionUid(String consumptionUid) {
 		this.consumptionUid = consumptionUid;
 	}
 
@@ -66,12 +68,14 @@ public class Payment extends HmsObjectModel {
 	// ----------------------override_method----------------------
 	@Override
 	public boolean save() {
-		return AccountDataService.getInstance().savePayment(this);
+//		return AccountDataService.getInstance().savePayment(this);
+		return DataServiceFactory.getInstance().getService(AccountDataService.class).savePayment(this);
 	}
 
 	@Override
 	public boolean delete() {
-		return AccountDataService.getInstance().deletePayment(this.getUid());
+//		return AccountDataService.getInstance().deletePayment(this.getUid());
+		return DataServiceFactory.getInstance().getService(AccountDataService.class).deletePayment(this.getUid());
 	}
 
 	// -----------------------------------------------------------

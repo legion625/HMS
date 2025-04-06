@@ -39,7 +39,7 @@ public class CreditCard extends HmsObjectModel {
 	}
 	
 	public static CreditCard getInstance(String uid, String[] cardNo, String cardHolderUid, String cardHolderName,
-			Bank bank, CardIssuer cardIssuer, LocalDateTime oCreateDate, LocalDateTime oUpdateDate) {
+			Bank bank, CardIssuer cardIssuer, long oCreateDate, long oUpdateDate) {
 		CreditCard cc = new CreditCard();
 		cc.configGetInstance(uid, oCreateDate, oUpdateDate);
 		cc.setCardNo(cardNo);

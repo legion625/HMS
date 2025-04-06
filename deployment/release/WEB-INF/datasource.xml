@@ -21,7 +21,7 @@
 		<parameter>
 			<name>url</name>
 			<!--<value>jdbc:mysql://localhost:3306/ekp_web?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC</value>  --><!-- jdbc8 -->
-			<value>jdbc:mysql://localhost:3306/hms_dev</value> <!-- MySql5 -->
+			<value>jdbc:mysql://localhost:3306/hms</value> <!-- MySql5 -->
 		</parameter>
 		<parameter>
 			<name>username</name>

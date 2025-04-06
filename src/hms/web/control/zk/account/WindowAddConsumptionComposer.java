@@ -30,11 +30,13 @@ import org.zkoss.zul.Window;
 import hms.util.ZKUtil;
 import hms.web.zk.HmsMessageBox;
 import hms_kernel.account.AccountService;
+import hms_kernel.account.AccountServiceImp;
 import hms_kernel.account.Consumption;
 import hms_kernel.account.DirectionEnum;
 import hms_kernel.account.PaymentTypeEnum;
 import hms_kernel.account.TypeCategoryEnum;
 import hms_kernel.account.TypeEnum;
+import legion.BusinessServiceFactory;
 import legion.util.DataFO;
 import legion.util.DateFormatUtil;
 import legion.util.NumberFormatUtil;
@@ -123,7 +125,8 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 
 		TypeCategoryEnum _cate = cbbTypeCategory.getSelectedItem().getValue();
 		
-		for (TypeEnum type : AccountService.getInstance().getTypes(_cate, true)) { // 只載入enabled的類型
+//		for (TypeEnum type : AccountServiceImp.getInstance().getTypes(_cate, true)) { // 只載入enabled的類型
+		for (TypeEnum type : BusinessServiceFactory.getInstance().getService(AccountService.class).getTypes(_cate, true)) { // 只載入enabled的類型
 			Comboitem cbi = new Comboitem(type.getTitle());
 			cbi.setValue(type);
 			cbbType.appendChild(cbi);
@@ -287,7 +290,7 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 		boolean inAdv = chbInAdv.isChecked();
 		Integer inAdvAmt = itbInAdv.getValue();
 		if (inAdv && inAdvAmt!=null && inAdvAmt > 0) {
-			Consumption cnspInAdv = AccountService.getInstance().createNewConsumption(type, DirectionEnum.IN_ADV, inAdvAmt, "代付-"+description,
+			Consumption cnspInAdv = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(type, DirectionEnum.IN_ADV, inAdvAmt, "代付-"+description,
 					PaymentTypeEnum.CASH, cnspDate);
 			String msgInAdv = "新增代付流入[" + type.getCategory().getTitle() + "][" + type.getTitle() + "][" + DirectionEnum.IN_ADV.getTitle()
 			+ "][" + "代付-"+description + "][" + NumberFormatUtil.getIntegerString(inAdvAmt) + "]["
@@ -324,7 +327,7 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 		
 
 		/* createNewConsumption */
-		Consumption cnsp = AccountService.getInstance().createNewConsumption(type, direction, cnspAmount, description,
+		Consumption cnsp = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(type, direction, cnspAmount, description,
 				paymentType, cnspDate);
 		String msg = "新增一般消費[" + type.getCategory().getTitle() + "][" + type.getTitle() + "][" + direction.getTitle()
 				+ "][" + description + "][" + NumberFormatUtil.getIntegerString(cnspAmount) + "]["
@@ -352,10 +355,10 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 		LocalDate cnspDate = DateFormatUtil.parseLocalDate(dtbConsumptionDate.getValue());
 
 		/* 消費 */
-		Consumption cnsp = AccountService.getInstance().createNewConsumption(type, DirectionEnum.OUT, cnspAmount,
+		Consumption cnsp = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(type, DirectionEnum.OUT, cnspAmount,
 				description, PaymentTypeEnum.CASH, cnspDate);
 		/* 折抵 */
-		Consumption discount = AccountService.getInstance().createNewConsumption(TypeEnum.LIFE_OTHER, DirectionEnum.IN,
+		Consumption discount = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(TypeEnum.LIFE_OTHER, DirectionEnum.IN,
 				cnspAmount, "LINE POINTS消費", PaymentTypeEnum.CASH, cnspDate);
 
 		String msg = "新增LINE POINTS折抵[" + type.getCategory().getTitle() + "][" + type.getTitle() + "][" + description
@@ -382,10 +385,10 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 		LocalDate cnspDate = DateFormatUtil.parseLocalDate(dtbConsumptionDate.getValue());
 
 		/* 消費 */
-		Consumption cnsp = AccountService.getInstance().createNewConsumption(type, DirectionEnum.OUT, cnspAmount,
+		Consumption cnsp = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(type, DirectionEnum.OUT, cnspAmount,
 				description, PaymentTypeEnum.CASH, cnspDate);
 		/* 折抵 */
-		Consumption discount = AccountService.getInstance().createNewConsumption(TypeEnum.TRAFFIC_OTHER,
+		Consumption discount = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(TypeEnum.TRAFFIC_OTHER,
 				DirectionEnum.IN, cnspAmount, "悠遊卡消費", PaymentTypeEnum.CASH, cnspDate);
 
 		String msg = "新增悠遊卡折抵[" + type.getCategory().getTitle() + "][" + type.getTitle() + "][" + description + "]["
@@ -412,10 +415,10 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 		LocalDate cnspDate = DateFormatUtil.parseLocalDate(dtbConsumptionDate.getValue());
 
 		/* 消費 */
-		Consumption cnsp = AccountService.getInstance().createNewConsumption(type, DirectionEnum.OUT, cnspAmount,
+		Consumption cnsp = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(type, DirectionEnum.OUT, cnspAmount,
 				description, PaymentTypeEnum.CASH, cnspDate);
 		/* 折抵 */
-		Consumption discount = AccountService.getInstance().createNewConsumption(TypeEnum.TRAFFIC_OTHER,
+		Consumption discount = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(TypeEnum.TRAFFIC_OTHER,
 				DirectionEnum.IN, cnspAmount, "一卡通消費", PaymentTypeEnum.CASH, cnspDate);
 
 		String msg = "新增一卡通折抵[" + type.getCategory().getTitle() + "][" + type.getTitle() + "][" + description + "]["
@@ -441,10 +444,10 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 		LocalDate cnspDate = DateFormatUtil.parseLocalDate(dtbConsumptionDate.getValue());
 
 		/* 消費 */
-		Consumption cnsp = AccountService.getInstance().createNewConsumption(type, DirectionEnum.OUT, cnspAmount,
+		Consumption cnsp = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(type, DirectionEnum.OUT, cnspAmount,
 				description, PaymentTypeEnum.CASH, cnspDate);
 		/* 折抵 */
-		Consumption discount = AccountService.getInstance().createNewConsumption(TypeEnum.LIFE_OTHER, DirectionEnum.IN,
+		Consumption discount = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(TypeEnum.LIFE_OTHER, DirectionEnum.IN,
 				cnspAmount, "P幣消費", PaymentTypeEnum.CASH, cnspDate);
 
 		String msg = "新增P幣折抵[" + type.getCategory().getTitle() + "][" + type.getTitle() + "][" + description + "]["
@@ -470,10 +473,10 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 		LocalDate cnspDate = DateFormatUtil.parseLocalDate(dtbConsumptionDate.getValue());
 
 		/* 消費 */
-		Consumption cnsp = AccountService.getInstance().createNewConsumption(type, DirectionEnum.OUT, cnspAmount,
+		Consumption cnsp = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(type, DirectionEnum.OUT, cnspAmount,
 				description, PaymentTypeEnum.CASH, cnspDate);
 		/* 折抵 */
-		Consumption discount = AccountService.getInstance().createNewConsumption(TypeEnum.LIFE_OTHER, DirectionEnum.IN,
+		Consumption discount = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(TypeEnum.LIFE_OTHER, DirectionEnum.IN,
 				cnspAmount, "全聯儲值金折抵", PaymentTypeEnum.CASH, cnspDate);
 
 		String msg = "新增全聯儲值金折抵[" + type.getCategory().getTitle() + "][" + type.getTitle() + "][" + description + "]["
@@ -499,10 +502,10 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 		LocalDate cnspDate = DateFormatUtil.parseLocalDate(dtbConsumptionDate.getValue());
 
 		/* 消費 */
-		Consumption cnsp = AccountService.getInstance().createNewConsumption(type, DirectionEnum.OUT, cnspAmount,
+		Consumption cnsp = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(type, DirectionEnum.OUT, cnspAmount,
 				description, PaymentTypeEnum.CASH, cnspDate);
 		/* 折抵 */
-		Consumption discount = AccountService.getInstance().createNewConsumption(TypeEnum.FOOD, DirectionEnum.IN,
+		Consumption discount = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(TypeEnum.FOOD, DirectionEnum.IN,
 				cnspAmount, "麥當勞儲值金折抵", PaymentTypeEnum.CASH, cnspDate);
 
 		String msg = "新增麥當勞儲值金折抵[" + type.getCategory().getTitle() + "][" + type.getTitle() + "][" + description + "]["

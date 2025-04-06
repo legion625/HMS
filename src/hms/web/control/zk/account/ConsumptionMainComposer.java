@@ -47,6 +47,7 @@ import hms.web.control.zk.account.cnspPivot.CnspPivotPageComposer;
 import hms.web.zk.HmsMessageBox;
 import hms.web.zk.HmsNotification;
 import hms_kernel.account.AccountService;
+import hms_kernel.account.AccountServiceImp;
 import hms_kernel.account.Consumption;
 import hms_kernel.account.ConsumptionSearchParam;
 import hms_kernel.account.DirectionEnum;
@@ -54,6 +55,7 @@ import hms_kernel.account.Payment;
 import hms_kernel.account.PaymentTypeEnum;
 import hms_kernel.account.TypeCategoryEnum;
 import hms_kernel.account.TypeEnum;
+import legion.BusinessServiceFactory;
 import legion.util.DataFO;
 import legion.util.DateFormatUtil;
 import legion.util.NumberFormatUtil;
@@ -102,7 +104,8 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 	private CnspPivotPageComposer cnspPivotPageComposer;
 
 	// -------------------------------------------------------------------------------
-	private AccountService accountService = AccountService.getInstance();
+//	private AccountServiceImp accountService = AccountServiceImp.getInstance();
+	private AccountService accountService = BusinessServiceFactory.getInstance().getService(AccountService.class);
 
 	private List<Consumption> cnspList;
 
@@ -321,7 +324,8 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 				return;
 			}
 			cnsp.setDate(DateFormatUtil.parseLocalDate(date));
-			boolean r = AccountService.getInstance().updateCnsp(cnsp);
+//			boolean r = AccountServiceImp.getInstance().updateCnsp(cnsp);
+			boolean r = accountService.updateCnsp(cnsp);
 			if (r)
 				HmsNotification.info("更新消費日期成功。");
 			else {
@@ -346,7 +350,9 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		EventListener<Event> updateTypeEl = evt -> {
 			if(cbbType.getSelectedItem()!=null && cbbType.getSelectedItem().getValue() !=null ) {
 				cnsp.setType(cbbType.getSelectedItem().getValue());
-				boolean r = AccountService.getInstance().updateCnsp(cnsp);
+//				boolean r = AccountServiceImp.getInstance().updateCnsp(cnsp);
+				boolean r = accountService.updateCnsp(cnsp);
+				
 				if (r) {
 					HmsNotification.info("更新類型成功。");
 					lcTypeCate.setLabel(cnsp.getType().getCategory().getTitle());
@@ -373,7 +379,9 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		listitem.appendChild(lc);
 		itbAmount.addEventListener(Events.ON_CHANGE,evt->{
 			cnsp.setAmount(itbAmount.getValue());
-			boolean r = AccountService.getInstance().updateCnsp(cnsp);
+			boolean r = accountService.updateCnsp(cnsp);
+			
+			
 			if (r)
 				HmsNotification.info("更新消費金額成功。");
 			else {
@@ -398,7 +406,7 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 				return;
 			}
 			Payment pm = pmList.get(0);
-			boolean r = AccountService.getInstance().updatePayment(pm);
+			boolean r = accountService.updatePayment(pm);
 			if (r)
 				HmsNotification.info("更新付款金額成功。");
 			else {
@@ -417,7 +425,7 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		listitem.appendChild(lc);
 		EventListener<Event> updateDespEl =  evt -> {
 			cnsp.setDescription(txbDesp.getValue());
-			boolean r = AccountService.getInstance().updateCnsp(cnsp);
+			boolean r = accountService.updateCnsp(cnsp);
 			if (r)
 				HmsNotification.info("更新說明成功。");
 			else {
@@ -436,6 +444,7 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 	};
 
 	private void refreshConsumptionContainer(List<Consumption> _cnspList) {
+		
 		ListModelList<Consumption> model = new ListModelList<>(_cnspList);
 		model.setMultiple(true);
 		lbxConsumption.setModel(model);
@@ -443,7 +452,9 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		lftrSumCnspAmt.setLabel(NumberFormatUtil.getIntegerString(_cnspList.parallelStream()
 				.mapToInt(cnsp -> DirectionEnum.OUT == cnsp.getDirection() ? cnsp.getAmount() : -cnsp.getAmount())
 				.sum()));
-		lftrSumPayedAmt.setLabel(NumberFormatUtil.getIntegerString(_cnspList.parallelStream().mapToInt(
+		
+//		lftrSumPayedAmt.setLabel(NumberFormatUtil.getIntegerString(_cnspList.parallelStream().mapToInt( // XXX 用parallelStream可能引發connection的問題。
+		lftrSumPayedAmt.setLabel(NumberFormatUtil.getIntegerString(_cnspList.stream().mapToInt(
 				cnsp -> DirectionEnum.OUT == cnsp.getDirection() ? cnsp.getPayedAmount() : -cnsp.getPayedAmount())
 				.sum()));
 	}

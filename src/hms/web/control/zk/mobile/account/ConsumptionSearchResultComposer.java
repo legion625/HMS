@@ -19,8 +19,11 @@ import org.zkoss.zul.ListitemRenderer;
 
 import hms.web.zk.HmsMessageBox;
 import hms_kernel.account.AccountService;
+import hms_kernel.account.AccountServiceImp;
 import hms_kernel.account.Consumption;
 import hms_kernel.account.ConsumptionSearchParam;
+import legion.BusinessService;
+import legion.BusinessServiceFactory;
 import legion.util.DataFO;
 import legion.util.NumberFormatUtil;
 
@@ -39,7 +42,8 @@ public class ConsumptionSearchResultComposer extends SelectorComposer<Component>
 		ConsumptionSearchParam param = new ConsumptionSearchParam();
 		param.setConsumptionDateStart(LocalDate.now());
 		param.setConsumptionDateEnd(LocalDate.now());
-		List<Consumption> cnspList = AccountService.getInstance().searchConsumptions(param, true);
+//		List<Consumption> cnspList = AccountServiceImp.getInstance().searchConsumptions(param, true);
+		List<Consumption> cnspList = BusinessServiceFactory.getInstance().getService(AccountService.class).searchConsumptions(param, true);
 		refreshConsumptionContainer(cnspList);
 	}
 
@@ -71,7 +75,8 @@ public class ConsumptionSearchResultComposer extends SelectorComposer<Component>
 						+ NumberFormatUtil.getIntegerString(cnsp.getAmount()) + "][" + cnsp.getDescription() + "]["
 						+ cnsp.getPaymentType().getTitle() + "]";
 
-				if (AccountService.getInstance().deleteConsumption(cnsp)) {
+//				if (AccountServiceImp.getInstance().deleteConsumption(cnsp)) {
+				if (BusinessServiceFactory.getInstance().getService(AccountService.class).deleteConsumption(cnsp)) {
 					msg += "成功。";
 					tempSet.add(cnsp);
 				} else {
