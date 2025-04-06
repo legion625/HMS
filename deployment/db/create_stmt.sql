@@ -6,8 +6,10 @@ CREATE TABLE `consumption` (
   `description` varchar(45) DEFAULT NULL,
   `payment_type_index` int(11) DEFAULT NULL,
   `date` varchar(45) DEFAULT NULL,
-  `object_create_time` varchar(45) NOT NULL,
-  `object_update_time` varchar(45) NOT NULL,
+  `object_create_time_ld_str` varchar(45) DEFAULT NULL,
+  `object_update_time_ld_str` varchar(45) DEFAULT NULL,
+  `object_create_time` bigint(20) unsigned DEFAULT NULL,
+  `object_update_time` bigint(20) unsigned DEFAULT NULL,
   PRIMARY KEY (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -22,8 +24,10 @@ CREATE TABLE `payment` (
   `consumption_uid` varchar(45) NOT NULL,
   `date` varchar(45) DEFAULT NULL,
   `amount` int(11) DEFAULT NULL,
-  `object_create_time` varchar(45) NOT NULL,
-  `object_update_time` varchar(45) NOT NULL,
+  `object_create_time_ld_str` varchar(45) DEFAULT NULL,
+  `object_update_time_ld_str` varchar(45) DEFAULT NULL,
+  `object_create_time` bigint(20) unsigned DEFAULT NULL,
+  `object_update_time` bigint(20) unsigned DEFAULT NULL,
   PRIMARY KEY (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

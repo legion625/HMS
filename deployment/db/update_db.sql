@@ -17,7 +17,7 @@ CREATE TABLE `system_seq` (
   PRIMARY KEY (`item_id`)
 ) ;
 
--- 0.6.1 -> unstaging
+-- 0.6.1 -> 0.7.0
 ALTER TABLE `consumption` 
 CHANGE COLUMN `object_create_time` `object_create_time_ld_str` VARCHAR(45) NOT NULL ,
 CHANGE COLUMN `object_update_time` `object_update_time_ld_str` VARCHAR(45) NOT NULL ;
@@ -71,7 +71,7 @@ DROP COLUMN `object_create_time_ld_str`;
 -- hms_dev
 -- hms
 
--- 0.6.1 -> unstaging
+-- 0.6.1 -> 0.7.0
 ALTER TABLE `consumption` 
 DROP COLUMN `object_update_time_ld_str`,
 DROP COLUMN `object_create_time_ld_str`;
