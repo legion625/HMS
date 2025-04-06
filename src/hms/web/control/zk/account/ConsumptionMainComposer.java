@@ -444,6 +444,7 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 	};
 
 	private void refreshConsumptionContainer(List<Consumption> _cnspList) {
+		
 		ListModelList<Consumption> model = new ListModelList<>(_cnspList);
 		model.setMultiple(true);
 		lbxConsumption.setModel(model);
@@ -451,7 +452,9 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		lftrSumCnspAmt.setLabel(NumberFormatUtil.getIntegerString(_cnspList.parallelStream()
 				.mapToInt(cnsp -> DirectionEnum.OUT == cnsp.getDirection() ? cnsp.getAmount() : -cnsp.getAmount())
 				.sum()));
-		lftrSumPayedAmt.setLabel(NumberFormatUtil.getIntegerString(_cnspList.parallelStream().mapToInt(
+		
+//		lftrSumPayedAmt.setLabel(NumberFormatUtil.getIntegerString(_cnspList.parallelStream().mapToInt( // XXX 用parallelStream可能引發connection的問題。
+		lftrSumPayedAmt.setLabel(NumberFormatUtil.getIntegerString(_cnspList.stream().mapToInt(
 				cnsp -> DirectionEnum.OUT == cnsp.getDirection() ? cnsp.getPayedAmount() : -cnsp.getPayedAmount())
 				.sum()));
 	}

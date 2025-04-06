@@ -205,32 +205,37 @@ public class AccountDao extends AbstractMySqlDao  {
 		return pm;
 	}
 
+	Payment loadPayment(String _uid) {
+		return loadObject(TABLE_PAYMENT, _uid, this::parsePayment);
+	}
+	
 	List<Payment> loadPayments(String _consumptionUid) {
-		List<Payment> resultList = new ArrayList<>();
-		if (DataFO.isEmptyString(_consumptionUid))
-			return resultList;
-
-		Connection conn = getConn();
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
-			// statement
-			String qstr = "select * from " + TABLE_PAYMENT + " where " + COL_PAYMENT_CONSUMPTION_UID + " = '"
-					+ _consumptionUid + "'";
-			pstmt = conn.prepareStatement(qstr);
-			rs = pstmt.executeQuery();
-			while (rs.next()) {
-				Payment payment = parsePayment(rs);
-				resultList.add(payment);
-			}
-			return resultList;
-		} catch (SQLException e) {
-			System.out.println("DB linking failed!");
-			e.printStackTrace();
-			return new ArrayList<>();
-		} finally {
-			close(conn, pstmt, rs);
-		}
+		return loadObjectList(TABLE_PAYMENT, COL_PAYMENT_CONSUMPTION_UID, _consumptionUid, this::parsePayment);
+//		List<Payment> resultList = new ArrayList<>();
+//		if (DataFO.isEmptyString(_consumptionUid))
+//			return resultList;
+//
+//		Connection conn = getConn();
+//		PreparedStatement pstmt = null;
+//		ResultSet rs = null;
+//		try {
+//			// statement
+//			String qstr = "select * from " + TABLE_PAYMENT + " where " + COL_PAYMENT_CONSUMPTION_UID + " = '"
+//					+ _consumptionUid + "'";
+//			pstmt = conn.prepareStatement(qstr);
+//			rs = pstmt.executeQuery();
+//			while (rs.next()) {
+//				Payment payment = parsePayment(rs);
+//				resultList.add(payment);
+//			}
+//			return resultList;
+//		} catch (SQLException e) {
+//			System.out.println("DB linking failed!");
+//			e.printStackTrace();
+//			return new ArrayList<>();
+//		} finally {
+//			close(conn, pstmt, rs);
+//		}
 	}
 
 	List<Payment> searchPayments(ConsumptionSearchParam _searchParam) {

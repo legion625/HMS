@@ -6,7 +6,6 @@
 [deployment]
 1. 改用Legionmodule的IntegrationService架構。
   -1. ServiceModule.xml新增AccountService和AccountDataService的宣告。
-  
 
 2. 物件改用ObjectModel架構。
   -1. 資料表consumption原本的object_create_time和object_update_time先重新命名為object_create_time_ld_str和object_update_time_ld_str，待刪除。

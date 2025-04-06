@@ -22,9 +22,8 @@ public class Payment extends HmsObjectModel {
 	private Payment(String _consumptionUid) {
 		this.setConsumptionUid(_consumptionUid);
 	}
-	// TODO
 
-	protected static Payment newInstance(String _consumptionUid) {
+	static Payment newInstance(String _consumptionUid) {
 		Payment payment = new Payment(_consumptionUid);
 		payment.configNewInstance();
 		return payment;
@@ -45,7 +44,7 @@ public class Payment extends HmsObjectModel {
 		return consumptionUid;
 	}
 
-	private void setConsumptionUid(String consumptionUid) {
+	public void setConsumptionUid(String consumptionUid) {
 		this.consumptionUid = consumptionUid;
 	}
 

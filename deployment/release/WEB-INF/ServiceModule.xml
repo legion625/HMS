@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<!-- BusinessService -->
+	<BusinessService>
+		<!-- legionmodule -->
+		<Service name="SystemService" interface="legion.system.SystemService" imp="legion.system.SystemServiceImp" />
+		<!-- hms -->
+		<Service name="AccountService" interface="hms_kernel.account.AccountService" imp="hms_kernel.account.AccountServiceImp" />
+		<!--
+		<Service name="InvtService" interface="ekp.invt.InvtService" imp="ekp.invt.InvtServiceImp" />
+		<Service name="MbomService" interface="ekp.mbom.MbomService" imp="ekp.mbom.MbomServiceImp" />
+		<Service name="MfService" interface="ekp.mf.MfService" imp="ekp.mf.MfServiceImp" />
+		<Service name="PuService" interface="ekp.pu.PuService" imp="ekp.pu.PuServiceImp" />
+		<Service name="SdService" interface="ekp.sd.SdService" imp="ekp.sd.SdServiceImp" /> -->
+	</BusinessService>
+	<!-- IntegrationService -->
+	<IntegrationService>
+		<!-- legionmodule -->
+		<Service name="ObjectSeqDataService" interface="legion.data.ObjectSeqDataService" imp="legion.data.service.ObjectSeqDataServiceImp">
+			<Parameter name="source" value="hms" />
+			<Parameter name="serverId" value="7" />
+		</Service>
+		<Service name="SystemDataService" interface="legion.data.SystemDataService" imp="legion.data.service.system.SystemDataServiceImp">
+			<Parameter name="source" value="hms" />
+		</Service>
+		<!-- hms -->
+		<Service name="AccountDataService" interface="hms_kernel.data.account.AccountDataService" imp="hms_kernel.data.account.AccountDataServiceImp">
+			<Parameter name="source" value="hms" />
+		</Service>
+		
+		<!-- 
+		<Service name="InvtDataService" interface="ekp.data.InvtDataService" imp="ekp.data.service.invt.InvtDataServiceImp">
+			<Parameter name="srcEkpKernelRmi" value="ekp_kernel_rmi" />
+		</Service>
+		<Service name="MbomDataService" interface="ekp.data.MbomDataService" imp="ekp.data.service.mbom.MbomDataServiceImp">
+			<Parameter name="srcEkpKernelRmi" value="ekp_kernel_rmi" />
+		</Service>
+		<Service name="MfDataService" interface="ekp.data.MfDataService" imp="ekp.data.service.mf.MfDataServiceImp">
+			<Parameter name="srcEkpKernelRmi" value="ekp_kernel_rmi" />
+		</Service>
+		<Service name="PuDataService" interface="ekp.data.PuDataService" imp="ekp.data.service.pu.PuDataServiceImp">
+			<Parameter name="srcEkpKernelRmi" value="ekp_kernel_rmi" />
+		</Service>
+		<Service name="SdDataService" interface="ekp.data.SdDataService" imp="ekp.data.service.sd.SdDataServiceImp">
+			<Parameter name="srcEkpKernelRmi" value="ekp_kernel_rmi" />
+		</Service>-->
+	</IntegrationService>
+</root>

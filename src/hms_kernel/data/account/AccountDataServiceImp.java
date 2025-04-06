@@ -65,7 +65,12 @@ public class AccountDataServiceImp implements AccountDataService {
 	public boolean deletePayment(String _uid) {
 		return acntDao.deletePayment(_uid);
 	}
-
+	
+	@Override
+	public Payment loadPayment(String _uid) {
+		return acntDao.loadPayment(_uid);
+	}
+	
 	@Override
 	public List<Payment> loadPayments(String _consumptionUid) {
 		return acntDao.loadPayments(_consumptionUid);

@@ -25,12 +25,13 @@ public class Consumption extends HmsObjectModel {
 	// ------------------------constructor------------------------
 	// TODO
 	private Consumption() {
+		paymentList = new ArrayList<>();
 	}
 
 	static Consumption newInstance() {
 		Consumption cnsp = new Consumption();
 		cnsp.configNewInstance(); // TODO
-		cnsp.paymentList = new ArrayList<>();
+//		cnsp.paymentList = new ArrayList<>();
 //		if (cnsp.save())
 //			return cnsp;
 //		else

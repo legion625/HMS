@@ -13,7 +13,6 @@ import hms_kernel.data.account.AccountDataService;
 import legion.DataServiceFactory;
 
 public class BizObjConsumptionTest extends AbstractHmsKernelInitTest {
-//	private static SystemDataService dataService = DataServiceFactory.getInstance().getService(SystemDataService.class);
 	private static AccountDataService dataService = DataServiceFactory.getInstance()
 			.getService(AccountDataService.class);
 
@@ -25,9 +24,10 @@ public class BizObjConsumptionTest extends AbstractHmsKernelInitTest {
 	public void initMethod() {
 		LocalDate ld1 = LocalDate.now();
 		LocalDate ld2 = LocalDate.now().plusDays(1);
-		
+
 		target1 = new Target(TypeEnum.FOOD, DirectionEnum.OUT, 12345678, "description1", PaymentTypeEnum.CASH, ld1);
-		target2 = new Target(TypeEnum.TRAFFIC_CITY, DirectionEnum.IN, 12345678, "description2", PaymentTypeEnum.CARD, ld2);
+		target2 = new Target(TypeEnum.TRAFFIC_CITY, DirectionEnum.IN, 12345678, "description2", PaymentTypeEnum.CARD,
+				ld2);
 	}
 
 	@Test
@@ -64,13 +64,11 @@ public class BizObjConsumptionTest extends AbstractHmsKernelInitTest {
 	@Test
 	@Ignore
 	public void testDeleteConsumption() {
-//		targetUid = "2022!13!0!1";
 		assert dataService.loadConsumption(targetUid).delete();
 	}
 
 	// -------------------------------------------------------------------------------
 	public class Target {
-
 		private TypeEnum type = TypeEnum.UNDEFINED; // 消費類型
 		private DirectionEnum direction = DirectionEnum.UNDEFINED; // 流向
 		private int amount; // 消費金額

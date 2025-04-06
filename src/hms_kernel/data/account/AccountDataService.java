@@ -26,6 +26,8 @@ public interface AccountDataService extends IntegrationService{
 
 	public boolean deletePayment(String _uid);
 
+	public Payment loadPayment(String _uid);
+	
 	public List<Payment> loadPayments(String _consumptionUid);
 
 	public List<Payment> searchPayments(ConsumptionSearchParam _searchParam);
