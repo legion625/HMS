@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import hms_kernel.HmsObjectModel;
+import hms_kernel.account.dto.ConsumptionCreateObj;
 import hms_kernel.data.account.AccountDataService;
 import legion.DataServiceFactory;
 import legion.data.MySqlDataSource;
@@ -45,37 +46,37 @@ public class Consumption extends HmsObjectModel {
 		return cnsp;
 	}
 
-	// -----------------------------------------------------------
-	// -----------------------static_method-----------------------
-	protected static Consumption create(TypeEnum _type, DirectionEnum _direction, int _consumptionAmount,
-			String _description, PaymentTypeEnum _consumptionType, LocalDate _consumptionDate) {
+	// -------------------------------------------------------------------------------
+	// ----------------------------------Consumption----------------------------------
+//	protected static Consumption create(TypeEnum _type, DirectionEnum _direction, int _consumptionAmount,
+//			String _description, PaymentTypeEnum _consumptionType, LocalDate _consumptionDate) {
+	public static Consumption create(ConsumptionCreateObj _dto) {
 		/* consumption */
 		Consumption cnsp = Consumption.newInstance();
-		cnsp.setType(_type);
-		cnsp.setDirection(_direction);
-		cnsp.setAmount(_consumptionAmount);
-		cnsp.setDescription(_description);
-		cnsp.setPaymentType(_consumptionType);
-		cnsp.setDate(_consumptionDate);
+		cnsp.setType(_dto.getType());
+		cnsp.setDirection(_dto.getDirection());
+		cnsp.setAmount(_dto.getAmount());
+		cnsp.setDescription(_dto.getDescription());
+		cnsp.setPaymentType(_dto.getPaymentType());
+		cnsp.setDate(_dto.getDate());
 
-		/* payment */
-		Payment payment;
-		switch (_consumptionType) {
-		case CASH:
-			payment = Payment.newInstance(cnsp.getUid());
-			payment.setDate(cnsp.getDate());
-			payment.setAmount(cnsp.getAmount());
-			cnsp.paymentList.add(payment);
-			break;
-		case CARD:
-		case CARD_INSTALLMENT:
-		case LOAN:
-			break;
-		default:
-			break;
-		}
-		cnsp.hasLoadedPaymentList = true;
+//		/* payment */
+//		Payment payment;
+//		switch (_consumptionType) {
+//		case CASH:
+//			payment = Payment.create(cnsp.getUid(), cnsp.getDate(), cnsp.getAmount());
+//			cnsp.paymentList.add(payment);
+//			break;
+//		case CARD:
+//		case CARD_INSTALLMENT:
+//		case LOAN:
+//			break;
+//		default:
+//			break;
+//		}
+//		cnsp.hasLoadedPaymentList = true;
 
+		//
 		if (cnsp.save())
 			return cnsp;
 		else
@@ -175,7 +176,7 @@ public class Consumption extends HmsObjectModel {
 	}
 
 	@Override
-	protected boolean delete() {
+	public boolean delete() {
 		// TODO Transaction
 		/* Payment */
 		for (Payment payment : getPaymentList())
@@ -205,9 +206,10 @@ public class Consumption extends HmsObjectModel {
 	}
 
 	protected boolean addPayment(LocalDate _payDate, int _payAmount) {
-		Payment payment = Payment.newInstance(getUid());
-		payment.setDate(_payDate);
-		payment.setAmount(_payAmount);
+//		Payment payment = Payment.newInstance(getUid());
+//		payment.setDate(_payDate);
+//		payment.setAmount(_payAmount);
+		Payment payment = Payment.create(getUid(), _payDate, _payAmount);
 		if (payment.save()) {
 			if (hasLoadedPaymentList)
 				paymentList.add(payment);

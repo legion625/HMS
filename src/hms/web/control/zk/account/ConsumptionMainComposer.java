@@ -104,7 +104,6 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 	private CnspPivotPageComposer cnspPivotPageComposer;
 
 	// -------------------------------------------------------------------------------
-//	private AccountServiceImp accountService = AccountServiceImp.getInstance();
 	private AccountService accountService = BusinessServiceFactory.getInstance().getService(AccountService.class);
 
 	private List<Consumption> cnspList;

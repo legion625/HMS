@@ -37,11 +37,11 @@ public class AccountServiceImp implements AccountService {
 
 	// -------------------------------------------------------------------------------
 	// ----------------------------------Consumption----------------------------------
-	@Override
-	public Consumption createNewConsumption(TypeEnum _type, DirectionEnum _direction, int _consumptionAmount,
-			String _description, PaymentTypeEnum _paymentType, LocalDate _consumptionDate) {
-		return Consumption.create(_type, _direction, _consumptionAmount, _description, _paymentType, _consumptionDate);
-	}
+//	@Override
+//	public Consumption createNewConsumption(TypeEnum _type, DirectionEnum _direction, int _consumptionAmount,
+//			String _description, PaymentTypeEnum _paymentType, LocalDate _consumptionDate) {
+//		return Consumption.create(_type, _direction, _consumptionAmount, _description, _paymentType, _consumptionDate);
+//	}
 	@Override
 	public boolean updateCnsp(Consumption _cnsp) {
 		return _cnsp.save();

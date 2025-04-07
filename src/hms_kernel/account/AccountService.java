@@ -12,8 +12,8 @@ public interface AccountService extends BusinessService {
 
 	// -------------------------------------------------------------------------------
 	// ----------------------------------Consumption----------------------------------
-	public Consumption createNewConsumption(TypeEnum _type, DirectionEnum _direction, int _consumptionAmount,
-			String _description, PaymentTypeEnum _paymentType, LocalDate _consumptionDate);
+//	public Consumption createNewConsumption(TypeEnum _type, DirectionEnum _direction, int _consumptionAmount,
+//			String _description, PaymentTypeEnum _paymentType, LocalDate _consumptionDate);
 
 	public boolean updateCnsp(Consumption _cnsp);
 
