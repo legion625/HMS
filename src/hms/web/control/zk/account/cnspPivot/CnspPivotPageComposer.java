@@ -25,14 +25,17 @@ import org.zkoss.zul.Vlayout;
 import hms.util.ZKUtil;
 import hms.web.zk.HmsNotification;
 import hms_kernel.account.Consumption;
+import legion.web.zk.ZkUtil;
 
 public class CnspPivotPageComposer extends SelectorComposer<Component>{
 	private Logger log = LoggerFactory.getLogger(getClass());
 
-	public final static String SRC = "/account/cnspPivot/cnspPivotPage.zul";
+	private final static String SRC = "/account/cnspPivot/cnspPivotPage.zul";
 
 	public static CnspPivotPageComposer of(Include _icd) {
-		return ZKUtil.of(_icd, "wdCnspPivotPageMain");
+		return ZkUtil.of(_icd, SRC, "wdCnspPivotPageMain");
+		
+//		return ZKUtil.of(_icd, "wdCnspPivotPageMain");
 	}
 
 	// -------------------------------------------------------------------------------

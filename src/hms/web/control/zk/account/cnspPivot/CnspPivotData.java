@@ -37,7 +37,7 @@ public class CnspPivotData {
 	}
 
 	public String getTypeTitle() {
-		return getType().getTitle();
+		return getType().getName();
 	}
 	
 	public TypeCategoryEnum getTypeCategory() {
@@ -53,7 +53,7 @@ public class CnspPivotData {
 	}
 	
 	public String getDirectionTitle() {
-		return getDirection().getTitle();
+		return getDirection().getName();
 	}
 	
 	public int getAmount() {
@@ -79,7 +79,7 @@ public class CnspPivotData {
 	}
 	
 	public String getPaymentTypeTitle() {
-		return getPaymentType().getTitle();
+		return getPaymentType().getName();
 	}
 	
 	public LocalDate getCnspDate() {

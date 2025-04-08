@@ -5,8 +5,9 @@ import java.util.Comparator;
 import java.util.List;
 
 import legion.kernel.Field;
+import legion.type.IdxEnum;
 
-public enum DirectionEnum implements Field {
+public enum DirectionEnum implements IdxEnum {
 	UNDEFINED(-1, "未定義"), OUT(1, "出帳"), IN(2, "入帳"), IN_ADV(3,"入帳-代墊款");
 	
 	// -----------------------------------------------------------
@@ -31,12 +32,12 @@ public enum DirectionEnum implements Field {
 	// -----------------------------------------------------------
 	// -----------------------getter&setter-----------------------
 	@Override
-	public int getDbIndex() {
+	public int getIdx() {
 		return dbIndex;
 	}
 
 	@Override
-	public String getTitle() {
+	public String getName() {
 		return title;
 	}
 

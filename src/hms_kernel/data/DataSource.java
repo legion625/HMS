@@ -2,6 +2,7 @@ package hms_kernel.data;
 
 import legion.data.MySqlDataSource;
 
+@Deprecated
 public class DataSource {
 	private final static String ACCESS_DATA_SOURCE = "jdbc:ucanaccess://d:/MyModule/database/HMS.accdb"; // 正式資料庫
 	private final static String ACCESS_DATA_SOURCE_TEST = "jdbc:ucanaccess://d:/MyModule/database/DatabaseAccountTest.accdb"; // 測試資料庫

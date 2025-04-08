@@ -1,6 +1,6 @@
 <?page title="new page title" contentType="text/html;charset=UTF-8"?>
 <zk>
-	<window id="main" title="新增消費" width="500px" vflex="1" mode="highlighted" closable="true" visible="false" sizable="true"
+	<window id="wdAddCnsp" title="新增消費" width="500px" vflex="1" mode="highlighted" closable="true" visible="false" sizable="true"
 		apply="hms.web.control.zk.account.WindowAddConsumptionComposer">
 		<grid vflex="1">
 			<columns>

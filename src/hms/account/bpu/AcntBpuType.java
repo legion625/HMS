@@ -1,11 +1,13 @@
 package hms.account.bpu;
 
+import hms_kernel.account.Consumption;
 import legion.biz.BpuType;
 
 public enum AcntBpuType implements BpuType {
 	/* Consumption */
 	CNSP_1(CnspBuilder1.class), //
 	CNSP_CASH_DISCOUNT(CnspBpuCashDiscount.class), //
+	CNSP$DEL(CnspBpuDel.class,Consumption.class ), //
 	;
 
 	// -------------------------------------------------------------------------------
@@ -34,6 +36,7 @@ public enum AcntBpuType implements BpuType {
 		switch (this) {
 		case CNSP_1:
 		case CNSP_CASH_DISCOUNT:
+		case CNSP$DEL:
 			return true;
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + this);

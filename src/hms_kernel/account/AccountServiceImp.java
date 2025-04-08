@@ -12,15 +12,6 @@ import hms_kernel.data.account.AccountDataService;
 import legion.DataServiceFactory;
 
 public class AccountServiceImp implements AccountService {
-//	// -----------------------------------------------------------
-//	private final static AccountServiceImp INSTANCE = new AccountServiceImp();
-//	// -----------------------------------------------------------
-//	private AccountServiceImp() {
-//	}
-//
-//	public static AccountServiceImp getInstance() {
-//		return INSTANCE;
-//	}
 	
 	private static AccountDataService dataService;
 	
@@ -37,18 +28,9 @@ public class AccountServiceImp implements AccountService {
 
 	// -------------------------------------------------------------------------------
 	// ----------------------------------Consumption----------------------------------
-//	@Override
-//	public Consumption createNewConsumption(TypeEnum _type, DirectionEnum _direction, int _consumptionAmount,
-//			String _description, PaymentTypeEnum _paymentType, LocalDate _consumptionDate) {
-//		return Consumption.create(_type, _direction, _consumptionAmount, _description, _paymentType, _consumptionDate);
-//	}
 	@Override
 	public boolean updateCnsp(Consumption _cnsp) {
 		return _cnsp.save();
-	}
-	@Override
-	public boolean deleteConsumption(Consumption _cnsp) {
-		return _cnsp.delete();
 	}
 	
 	
@@ -108,20 +90,25 @@ public class AccountServiceImp implements AccountService {
 	
 	// -------------------------------------------------------------------------------
 	// ------------------------------------Payment------------------------------------
-	@Override
-	public boolean addPayment(Consumption _cnsp, LocalDate _payDate, int _payAmount) {
-		return _cnsp.addPayment(_payDate, _payAmount);
-	}
+//	@Override
+//	public boolean addPayment(Consumption _cnsp, LocalDate _payDate, int _payAmount) {
+//		return _cnsp.addPayment(_payDate, _payAmount);
+//	}
 	
+	@Override
+	public Payment createPayment(Consumption _cnsp, LocalDate _payDate, int _payAmount) {
+		return _cnsp == null ? null : Payment.create(_cnsp.getUid(), _payDate, _payAmount);
+	}
+
 	@Override
 	public boolean updatePayment(Payment _pm) {
 		return _pm.save();
 	}
 
-	@Override
-	public boolean deletePayment(Consumption _cnsp, Payment _payment) {
-		return _cnsp.deletePayment(_payment);
-	}
+//	@Override
+//	public boolean deletePayment(Consumption _cnsp, Payment _payment) {
+//		return _cnsp.deletePayment(_payment);
+//	}
 	
 	@Override
 	public List<PaymentInfoDto> queryPaymentInfos(ConsumptionSearchParam _queryParam) {

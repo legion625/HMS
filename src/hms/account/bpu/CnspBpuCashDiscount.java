@@ -17,14 +17,6 @@ public class CnspBpuCashDiscount extends Bpu<Boolean> {
 	/* data */
 	private CnspBuilder1 cnspBuilder, discountBuilder;
 	
-	
-//	private TypeEnum type = TypeEnum.UNDEFINED; // 消費類型
-//	private int amount; // 消費金額
-//	private String description; // 說明
-//	private LocalDate date; // 消費日期
-//	
-//	private String discountMediaName; // 折抵媒介名稱
-
 	// -------------------------------------------------------------------------------
 	@Override
 	protected CnspBpuCashDiscount appendBase() {
@@ -37,8 +29,6 @@ public class CnspBpuCashDiscount extends Bpu<Boolean> {
 		
 		discountBuilder = new CnspBuilder1();
 		discountBuilder.appendDirection(DirectionEnum.IN).appendPaymentType(PaymentTypeEnum.CASH);
-		
-//		appendPaymentType(PaymentTypeEnum.CARD);
 
 		return this;
 	}
@@ -54,11 +44,6 @@ public class CnspBpuCashDiscount extends Bpu<Boolean> {
 		return this;
 	}
 
-//	@Override
-//	public CnspBuilderCashDiscount appendDirection(DirectionEnum direction) {
-//		return (CnspBuilderCashDiscount) super.appendDirection(direction);
-//	}
-
 	public CnspBpuCashDiscount appendAmount(int amount) {
 		cnspBuilder.appendAmount(amount);
 		discountBuilder.appendAmount(amount);
@@ -71,15 +56,9 @@ public class CnspBpuCashDiscount extends Bpu<Boolean> {
 	}
 	
 	public CnspBpuCashDiscount appendDiscountMediaName(String discountMediaName) {
-//		this.description = description;
 		discountBuilder.appendDescription(discountMediaName+"折抵");
 		return this;
 	}
-
-//	@Override
-//	public CnspBuilderCashDiscount appendPaymentType(PaymentTypeEnum paymentType) {
-//		return (CnspBuilderCashDiscount) super.appendPaymentType(paymentType);
-//	}
 
 	public CnspBpuCashDiscount appendDate(LocalDate date) {
 		cnspBuilder.appendDate(date);

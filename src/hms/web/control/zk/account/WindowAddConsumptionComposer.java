@@ -9,8 +9,7 @@ import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zkoss.lang.Threads;
-import org.zkoss.util.logging.Log;
+import org.slf4j.event.Level;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
@@ -21,8 +20,8 @@ import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
 import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Combobox;
-import org.zkoss.zul.Comboitem;
 import org.zkoss.zul.Datebox;
+import org.zkoss.zul.Include;
 import org.zkoss.zul.Intbox;
 import org.zkoss.zul.Radio;
 import org.zkoss.zul.Radiogroup;
@@ -37,7 +36,6 @@ import hms.util.ZKUtil;
 import hms.web.zk.HmsMessageBox;
 import hms.web.zk.HmsNotification;
 import hms_kernel.account.AccountService;
-import hms_kernel.account.AccountServiceImp;
 import hms_kernel.account.Consumption;
 import hms_kernel.account.DirectionEnum;
 import hms_kernel.account.PaymentTypeEnum;
@@ -45,25 +43,31 @@ import hms_kernel.account.TypeCategoryEnum;
 import hms_kernel.account.TypeEnum;
 import legion.BusinessServiceFactory;
 import legion.biz.BpuFacade;
-import legion.util.DataFO;
 import legion.util.DateFormatUtil;
+import legion.util.LogUtil;
 import legion.util.NumberFormatUtil;
 import legion.util.TimeTraveler;
+import legion.web.zk.ZkUtil;
 
 public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 	// -------------------------------------------------------------------------------
-	public final static String SRC = "/account/windowAddConsumption.zul";
+	private final static String SRC = "/account/windowAddConsumption.zul";
 
-	final static String DYNAMIC_PROPERTY_CSM_AFTER_ADDING_CNSP = "DYNAMIC_PROPERTY_CSM_AFTER_ADDING_CNSP";
+//	final static String DYNAMIC_PROPERTY_CSM_AFTER_ADDING_CNSP = "DYNAMIC_PROPERTY_CSM_AFTER_ADDING_CNSP";
 	// -------------------------------------------------------------------------------
-	
+
 	private Logger log = LoggerFactory.getLogger(WindowAddConsumptionComposer.class);
-	
+
+	public static WindowAddConsumptionComposer of(Include _icd) {
+		return ZkUtil.of(_icd, SRC, "wdAddCnsp");
+	}
+
+	// -------------------------------------------------------------------------------
 	@WireVariable("requestScope")
 	private Map<String, Object> requestScope;
 
 	@Wire
-	private Window main;
+	private Window wdAddCnsp;
 	@Wire
 	private Combobox cbbBehavior;
 	@Wire
@@ -82,7 +86,7 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 	private Row rowPaymentType;
 	@Wire
 	private Combobox cbbPaymentType;
-	
+
 	/* 代墊款(付款方式為信用卡時才會出現此列) */
 //	@Wire
 //	private Row rowInAdv;
@@ -90,36 +94,40 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 	private Checkbox chbInAdv;
 	@Wire
 	private Intbox itbInAdv;
-	
+
 	@Wire
 	private Datebox dtbConsumptionDate;
 
 	// -------------------------------------------------------------------------------
-	private Consumer<Set<Consumption>> csmAfterAddingCnsp;
+	private Consumer<Set<Consumption>> csmAfterAddingCnsp = set->{}; // default do nothing
 
 	// -------------------------------------------------------------------------------
 	@Override
-	public void doAfterCompose(Component comp) throws Exception {
-		super.doAfterCompose(comp);
-		csmAfterAddingCnsp = (Consumer<Set<Consumption>>) requestScope.get(DYNAMIC_PROPERTY_CSM_AFTER_ADDING_CNSP);
-		if (csmAfterAddingCnsp == null)
-			csmAfterAddingCnsp = set -> {
-			};
+	public void doAfterCompose(Component comp) {
+		try {
+			super.doAfterCompose(comp);
+//			csmAfterAddingCnsp = (Consumer<Set<Consumption>>) requestScope.get(DYNAMIC_PROPERTY_CSM_AFTER_ADDING_CNSP);
+//			if (csmAfterAddingCnsp == null)
+//				csmAfterAddingCnsp = set -> {
+//				};
 
-		init();
+//			init();
+		} catch (Throwable e) {
+			LogUtil.log(e, Level.ERROR);
+		}
 	}
 
 	// -------------------------------------------------------------------------------
-	private void init() {
+//	private void init() {
+	 void init(Consumer<Set<Consumption>> csmAfterAddingCnsp) {
 		/* init cbbTypeCategory items */
-//		ZKUtil.configureConsumptionTypeCategory(cbbTypeCategory, cbbType);
 		ZKUtil.configureConsumptionTypeCategory(cbbTypeCategory);
 		cbbTypeCategory.addEventListener(Events.ON_SELECT, cnspCateSyncEl);
-		
+
 		/* init rgDirection radios */
 		rgDirection.getChildren().clear();
 		for (DirectionEnum d : DirectionEnum.values(false)) {
-			Radio rd = new Radio(d.getTitle());
+			Radio rd = new Radio(d.getName());
 			rd.setValue(d);
 			rgDirection.appendChild(rd);
 		}
@@ -127,37 +135,42 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 		/* init cbbPaymentType items */
 		ZKUtil.configurePaymentType(cbbPaymentType);
 
+		//
 		resetBlanks();
+
+		//
+		if (csmAfterAddingCnsp != null)
+			this.csmAfterAddingCnsp = csmAfterAddingCnsp;
 	}
-	
+
 	private boolean defaultTypeFlag = true; // 當cbbType隨cbbTypeCate變動時，是否要帶入預設值
 
 	private EventListener<Event> cnspCateSyncEl =  evt -> {
 		cbbType.getChildren().clear();
 
 		TypeCategoryEnum _cate = cbbTypeCategory.getSelectedItem().getValue();
-		
-//		for (TypeEnum type : AccountServiceImp.getInstance().getTypes(_cate, true)) { // 只載入enabled的類型
-		for (TypeEnum type : BusinessServiceFactory.getInstance().getService(AccountService.class).getTypes(_cate, true)) { // 只載入enabled的類型
-			Comboitem cbi = new Comboitem(type.getTitle());
-			cbi.setValue(type);
-			cbbType.appendChild(cbi);
-		}
+
+//		for (TypeEnum type : BusinessServiceFactory.getInstance().getService(AccountService.class).getTypes(_cate, true)) { // 只載入enabled的類型
+//			Comboitem cbi = new Comboitem(type.getName());
+//			cbi.setValue(type);
+//			cbbType.appendChild(cbi);
+//		}
+		ZkUtil.initCbb(cbbType, BusinessServiceFactory.getInstance().getService(AccountService.class).getTypes(_cate, true), false);
 
 		if(defaultTypeFlag) {
 			if (cbbType.getItemCount() > 0)
 				cbbType.setSelectedIndex(0);
 			else
-				cbbType.setValue(null);	
+				cbbType.setValue(null);
 		}
-		
-		
+
+
 		System.out.println("cbbType.getValue(): "+cbbType.getValue());
 	};
-	
+
 	private void resetBlanks() {
 		defaultTypeFlag = true;
-		
+
 		cbbBehavior.setSelectedIndex(0);
 		cbbTypeCategory.setSelectedIndex(0);
 		Events.postEvent(Events.ON_SELECT, cbbTypeCategory, null);
@@ -176,7 +189,7 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 	// -------------------------------------------------------------------------------
 	public void showWindow() {
 		resetBlanks();
-		main.setVisible(true);
+		wdAddCnsp.setVisible(true);
 	}
 
 	// -------------------------------------------------------------------------------
@@ -184,7 +197,7 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 	public void cbbBehavior_selected() {
 //		rowInAdv.setVisible(false);
 //		chbInAdv.setDisabled(true);
-		
+
 		switch (cbbBehavior.getSelectedIndex()) {
 		case 0:
 			rowDirection.setVisible(true);
@@ -210,53 +223,35 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 ////		rowInAdv.setVisible(PaymentTypeEnum.CARD == pmType);
 //		chbInAdv.setDisabled(PaymentTypeEnum.CARD != pmType);
 //	}
-	
+
 	@Listen(Events.ON_CHECK + "=#chbInAdv")
 	public void chbInAdv_checked() {
 		itbInAdv.setDisabled(!chbInAdv.isChecked());
 	}
-	
-	
+
+
 	void copyCnsp(Consumption _cnsp) {
 		defaultTypeFlag = false;
-		
+
 		cbbBehavior.setSelectedIndex(0);
-//		cbbTypeCategory.removeEventListener(Events.ON_SELECT, cnspCateSyncEl);
 		cbbTypeCategory.setValue(_cnsp.getType().getCategory().getTitle());
-		
-//		Runnable runSetCnspType = () ->{
-//			cbbType.setValue(_cnsp.getType().getTitle());
-//			
-//		} ;
-		cbbType.setValue(_cnsp.getType().getTitle());
-		System.out.println("cbbType.getValue(): "+cbbType.getValue());	
-		
-//		Events.postEvent(Events.ON_SELECT, cbbTypeCategory, null);
-//		rgDirection.setSelectedIndex(0);
-		rgDirection.setSelectedIndex(_cnsp.getDirection().getDbIndex() - 1);
+
+		cbbType.setValue(_cnsp.getType().getName());
+
+		rgDirection.setSelectedIndex(_cnsp.getDirection().getIdx() - 1);
 		txbDescription.setValue(_cnsp.getDescription());
 		itbConsumptionAmount.setValue(_cnsp.getAmount());
-//		cbbPaymentType.setSelectedIndex(0);
-		cbbPaymentType.setValue(_cnsp.getPaymentType().getTitle());
+		cbbPaymentType.setValue(_cnsp.getPaymentType().getName());
 		chbInAdv.setChecked(false);
 		itbInAdv.setDisabled(true);
 		itbInAdv.setValue(null);
 		dtbConsumptionDate.setValue(new Date(System.currentTimeMillis()));
-		
-//		cbbBehavior_selected();
 	}
-	
+
 	@Listen(Events.ON_CLICK + "=#btnConfirmAdd")
 	public void wdAddConsumption_btnConfirmAdd_clicked() {
-//		/* verification */
-//		if (DataFO.isEmptyString(txbDescription.getValue()) || itbConsumptionAmount.getValue() == null) {
-//			HmsMessageBox.exclamation("資料不全。");
-//			return;
-//		}
-		
-		
 		TimeTraveler tt = new TimeTraveler();
-		
+
 		Set<Consumption> set = new HashSet<>();
 		boolean b1 = false;
 		StringBuilder msg = new StringBuilder();
@@ -265,49 +260,40 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 			b1 = behavior0(set, msg, tt);
 			break;
 		case 1: // LINE POINTS折抵
-//			b1 = behavior1(set, msg);
 			b1 = behaviorDiscount(set, msg, tt, TypeEnum.LIFE_OTHER, "LINE POINTS");
 			break;
 		case 2: // 悠遊卡折抵
-//			b1 = behavior2(set, msg);
 			b1 = behaviorDiscount(set, msg, tt, TypeEnum.TRAFFIC_OTHER, "悠遊卡");
 			break;
 		case 3: // 一卡通折抵
-//			b1 = behavior3(set, msg);
 			b1 = behaviorDiscount(set, msg, tt, TypeEnum.TRAFFIC_OTHER, "一卡通");
 			break;
 		case 4: // P幣折抵
-//			b1 = behavior4(set, msg);
 			b1 = behaviorDiscount(set, msg, tt, TypeEnum.LIFE_OTHER, "P幣");
 			break;
 		case 5: // 全聯儲值金折抵
-//			b1 = behavior5(set, msg);
 			b1 = behaviorDiscount(set, msg, tt, TypeEnum.LIFE_OTHER, "全聯儲值金");
 			break;
 		case 6: // 麥當勞儲值金折抵
-//			b1 = behavior6(set, msg);
 			b1 = behaviorDiscount(set, msg, tt, TypeEnum.FOOD, "麥當勞點點卡");
 			break;
 		}
 		if (b1) {
-//			HmsMessageBox.info(msg.toString());
-			;
+
 		} else {
 			HmsMessageBox.error(msg.toString());
 			return;
 		}
-		
-		
+
+
 		/* InAdv */
 		TypeEnum type = cbbType.getSelectedItem().getValue();
 		String description = txbDescription.getValue();
-//		int cnspAmount = itbConsumptionAmount.getValue();
 		LocalDate cnspDate = DateFormatUtil.parseLocalDate(dtbConsumptionDate.getValue());
-//		if (PaymentTypeEnum.CARD == paymentType) {
 		boolean inAdv = chbInAdv.isChecked();
 		Integer inAdvAmt = itbInAdv.getValue();
 		if (inAdv && inAdvAmt!=null && inAdvAmt > 0) {
-			
+
 			CnspBuilder1 inAdvCnspBuilder = BpuFacade.getInstance().getBuilder(AcntBpuType.CNSP_1);
 			if (inAdvCnspBuilder == null) {
 				tt.travel();
@@ -316,47 +302,41 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 			}
 			inAdvCnspBuilder.appendType(type).appendDirection(DirectionEnum.IN_ADV).appendAmount(inAdvAmt)
 			.appendDescription("代付-"+description).appendPaymentType(PaymentTypeEnum.CASH).appendDate(cnspDate);
-			
+
 			StringBuilder inAdvMsg = new StringBuilder();
-			Consumption cnspInAdv = inAdvCnspBuilder.build(inAdvMsg, tt); 
-			
-			
-//			Consumption cnspInAdv = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(type, DirectionEnum.IN_ADV, inAdvAmt, "代付-"+description,
-//					PaymentTypeEnum.CASH, cnspDate);
-			String msgInAdv = "新增代付流入[" + type.getCategory().getTitle() + "][" + type.getTitle() + "][" + DirectionEnum.IN_ADV.getTitle()
+			Consumption cnspInAdv = inAdvCnspBuilder.build(inAdvMsg, tt);
+
+
+			String msgInAdv = "新增代付流入[" + type.getCategory().getTitle() + "][" + type.getName() + "][" + DirectionEnum.IN_ADV.getName()
 			+ "][" + "代付-"+description + "][" + NumberFormatUtil.getIntegerString(inAdvAmt) + "]["
-			+ PaymentTypeEnum.CASH.getTitle() + "][" + cnspDate.toString() + "]";
+			+ PaymentTypeEnum.CASH.getName() + "][" + cnspDate.toString() + "]";
 			if(cnspInAdv!=null) {
 				msgInAdv+="成功。";
 				HmsMessageBox.info(msg.toString() + System.lineSeparator() + msgInAdv);
 				set.add(cnspInAdv);
 			}else {
 				msgInAdv+="失敗。";
-//				HmsMessageBox.error(msg.toString() + System.lineSeparator() + msgInAdv);
 				HmsMessageBox.error(msg.toString() + System.lineSeparator() + msgInAdv+ System.lineSeparator() +inAdvMsg.toString());
 			}
 		}
-		// 
+		//
 		else {
 			HmsMessageBox.info(msg.toString());
 		}
-//		}
-		
-		
+
+
 		csmAfterAddingCnsp.accept(set);
 	}
 
 	/** 行為0：一般消費 */
 	private boolean behavior0(Set<Consumption> _set, StringBuilder _msg, TimeTraveler _tt) {
 		TypeEnum type = cbbType.getSelectedItem().getValue();
-//		DirectionEnum direction = rgDirection.getSelectedIndex() == 1 ? DirectionEnum.IN : DirectionEnum.OUT;
 		DirectionEnum direction = rgDirection.getSelectedItem().getValue();
-		
+
 		String description = txbDescription.getValue();
 		int cnspAmount = itbConsumptionAmount.getValue();
 		PaymentTypeEnum paymentType = cbbPaymentType.getSelectedItem().getValue();
 		LocalDate cnspDate = DateFormatUtil.parseLocalDate(dtbConsumptionDate.getValue());
-		
 
 		/* createNewConsumption */
 		CnspBuilder1 bpu = BpuFacade.getInstance().getBuilder(AcntBpuType.CNSP_1);
@@ -369,21 +349,19 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 		//
 		bpu.appendType(type).appendDirection(direction).appendDescription(description).appendAmount(cnspAmount)
 				.appendPaymentType(paymentType).appendDate(cnspDate);
-		
+
 		//
 		if (!bpu.verify(_msg))
 			return false;
-		
+
 		//
 		TimeTraveler tt = new TimeTraveler();
 		Consumption cnsp = bpu.build(_msg, tt);
-		
-//		Consumption cnsp = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(type, direction, cnspAmount, description,
-//				paymentType, cnspDate);
-		String msg = "新增一般消費[" + type.getCategory().getTitle() + "][" + type.getTitle() + "][" + direction.getTitle()
+
+		String msg = "新增一般消費[" + type.getCategory().getTitle() + "][" + type.getName() + "][" + direction.getName()
 				+ "][" + description + "][" + NumberFormatUtil.getIntegerString(cnspAmount) + "]["
-				+ paymentType.getTitle() + "][" + cnspDate.toString() + "]";
-		
+				+ paymentType.getName() + "][" + cnspDate.toString() + "]";
+
 		//
 		if (_tt != null)
 			_tt.copySitesFrom(tt);
@@ -400,227 +378,46 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 		}
 	}
 
-	private boolean behaviorDiscount(Set<Consumption> _set, StringBuilder _msg, TimeTraveler _tt,TypeEnum _discountType, String _discountMediaName ) {
+	private boolean behaviorDiscount(Set<Consumption> _set, StringBuilder _msg, TimeTraveler _tt,
+			TypeEnum _discountType, String _discountMediaName) {
 		CnspBpuCashDiscount bpu = BpuFacade.getInstance().getBuilder(AcntBpuType.CNSP_CASH_DISCOUNT);
 		if (bpu == null) {
 			HmsNotification.error();
 			log.error("bpu null.");
 			return false;
 		}
-		
+
 		bpu.appendDiscountType(_discountType).appendDiscountMediaName(_discountMediaName);
-		
-		
+
 		TypeEnum type = cbbType.getSelectedItem().getValue();
 		String description = txbDescription.getValue();
 		int cnspAmount = itbConsumptionAmount.getValue();
 		LocalDate cnspDate = DateFormatUtil.parseLocalDate(dtbConsumptionDate.getValue());
-		
+
 		bpu.appendCnspType(type).appendDescription(description).appendAmount(cnspAmount).appendDate(cnspDate);
-		
-		
-		String msg = "新增LINE POINTS折抵[" + type.getCategory().getTitle() + "][" + type.getTitle() + "][" + description
+
+		String msg = "新增"+_discountMediaName+"折抵[" + type.getCategory().getTitle() + "][" + type.getName() + "][" + description
 				+ "][" + NumberFormatUtil.getIntegerString(cnspAmount) + "][" + cnspDate.toString() + "]";
-		
+
 		if (bpu.build(_msg, _tt)) {
-//			HmsMessageBox.info(msg + "成功。");
 			_msg.append(msg + "成功。");
 			_set.add(bpu.getCnsp());
 			_set.add(bpu.getDiscount());
 			return true;
 		} else {
-//			HmsMessageBox.error(msg + "失敗!");
 			_msg.append(msg + "失敗!");
 			return false;
 		}
-		
-		
 	}
-	
-//	/** 行為1:LINE POINTS折抵 */
-//	private boolean behavior1(Set<Consumption> _set, StringBuilder _msg) {
-//		TypeEnum type = cbbType.getSelectedItem().getValue();
-//		String description = txbDescription.getValue();
-//		int cnspAmount = itbConsumptionAmount.getValue();
-//		LocalDate cnspDate = DateFormatUtil.parseLocalDate(dtbConsumptionDate.getValue());
-//
-//		/* 消費 */
-//		Consumption cnsp = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(type, DirectionEnum.OUT, cnspAmount,
-//				description, PaymentTypeEnum.CASH, cnspDate);
-//		/* 折抵 */
-//		Consumption discount = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(TypeEnum.LIFE_OTHER, DirectionEnum.IN,
-//				cnspAmount, "LINE POINTS消費", PaymentTypeEnum.CASH, cnspDate);
-//
-//		String msg = "新增LINE POINTS折抵[" + type.getCategory().getTitle() + "][" + type.getTitle() + "][" + description
-//				+ "][" + NumberFormatUtil.getIntegerString(cnspAmount) + "][" + cnspDate.toString() + "]";
-//		if (cnsp != null && discount != null) {
-////			HmsMessageBox.info(msg + "成功。");
-//			_msg.append(msg + "成功。");
-//			_set.add(cnsp);
-//			_set.add(discount);
-//			return true;
-//		} else {
-////			HmsMessageBox.error(msg + "失敗!");
-//			_msg.append(msg + "失敗!");
-//			return false;
-//		}
-//			
-//	}
-
-//	/** 行為2:悠遊卡折抵 */
-//	private boolean behavior2(Set<Consumption> _set, StringBuilder _msg) {
-//		TypeEnum type = cbbType.getSelectedItem().getValue();
-//		String description = txbDescription.getValue();
-//		int cnspAmount = itbConsumptionAmount.getValue();
-//		LocalDate cnspDate = DateFormatUtil.parseLocalDate(dtbConsumptionDate.getValue());
-//
-//		/* 消費 */
-//		Consumption cnsp = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(type, DirectionEnum.OUT, cnspAmount,
-//				description, PaymentTypeEnum.CASH, cnspDate);
-//		/* 折抵 */
-//		Consumption discount = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(TypeEnum.TRAFFIC_OTHER,
-//				DirectionEnum.IN, cnspAmount, "悠遊卡消費", PaymentTypeEnum.CASH, cnspDate);
-//
-//		String msg = "新增悠遊卡折抵[" + type.getCategory().getTitle() + "][" + type.getTitle() + "][" + description + "]["
-//				+ NumberFormatUtil.getIntegerString(cnspAmount) + "][" + cnspDate.toString() + "]";
-//		if (cnsp != null && discount != null) {
-////			HmsMessageBox.info(msg + "成功。");
-//			_msg.append(msg + "成功。");
-//			_set.add(cnsp);
-//			_set.add(discount);
-//			return true;
-//		} else {
-////			HmsMessageBox.error(msg + "失敗!");
-//			_msg.append(msg + "失敗!");
-//			return false;
-//		}
-//			
-//	}
-
-//	/** 行為3:一卡通折抵 */
-//	private boolean behavior3(Set<Consumption> _set, StringBuilder _msg) {
-//		TypeEnum type = cbbType.getSelectedItem().getValue();
-//		String description = txbDescription.getValue();
-//		int cnspAmount = itbConsumptionAmount.getValue();
-//		LocalDate cnspDate = DateFormatUtil.parseLocalDate(dtbConsumptionDate.getValue());
-//
-//		/* 消費 */
-//		Consumption cnsp = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(type, DirectionEnum.OUT, cnspAmount,
-//				description, PaymentTypeEnum.CASH, cnspDate);
-//		/* 折抵 */
-//		Consumption discount = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(TypeEnum.TRAFFIC_OTHER,
-//				DirectionEnum.IN, cnspAmount, "一卡通消費", PaymentTypeEnum.CASH, cnspDate);
-//
-//		String msg = "新增一卡通折抵[" + type.getCategory().getTitle() + "][" + type.getTitle() + "][" + description + "]["
-//				+ NumberFormatUtil.getIntegerString(cnspAmount) + "][" + cnspDate.toString() + "]";
-//		if (cnsp != null && discount != null) {
-////			HmsMessageBox.info(msg + "成功。");
-//			_msg.append(msg + "成功。");
-//			_set.add(cnsp);
-//			_set.add(discount);
-//			return true;
-//		} else {
-////			HmsMessageBox.error(msg + "失敗!");
-//			_msg.append(msg + "失敗!");
-//			return false;
-//		}
-//	}
-
-//	/** 行為4:P幣折抵 */
-//	private boolean behavior4(Set<Consumption> _set, StringBuilder _msg) {
-//		TypeEnum type = cbbType.getSelectedItem().getValue();
-//		String description = txbDescription.getValue();
-//		int cnspAmount = itbConsumptionAmount.getValue();
-//		LocalDate cnspDate = DateFormatUtil.parseLocalDate(dtbConsumptionDate.getValue());
-//
-//		/* 消費 */
-//		Consumption cnsp = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(type, DirectionEnum.OUT, cnspAmount,
-//				description, PaymentTypeEnum.CASH, cnspDate);
-//		/* 折抵 */
-//		Consumption discount = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(TypeEnum.LIFE_OTHER, DirectionEnum.IN,
-//				cnspAmount, "P幣消費", PaymentTypeEnum.CASH, cnspDate);
-//
-//		String msg = "新增P幣折抵[" + type.getCategory().getTitle() + "][" + type.getTitle() + "][" + description + "]["
-//				+ NumberFormatUtil.getIntegerString(cnspAmount) + "][" + cnspDate.toString() + "]";
-//		if (cnsp != null && discount != null) {
-////			HmsMessageBox.info(msg + "成功。");
-//			_msg.append(msg + "成功。");
-//			_set.add(cnsp);
-//			_set.add(discount);
-//			return true;
-//		} else {
-////			HmsMessageBox.error(msg + "失敗!");
-//			_msg.append(msg + "失敗!");
-//			return false;
-//		}
-//	}
-	
-//	/** 行為5:全聯儲值金折抵 */
-//	private boolean behavior5(Set<Consumption> _set, StringBuilder _msg) {
-//		TypeEnum type = cbbType.getSelectedItem().getValue();
-//		String description = txbDescription.getValue();
-//		int cnspAmount = itbConsumptionAmount.getValue();
-//		LocalDate cnspDate = DateFormatUtil.parseLocalDate(dtbConsumptionDate.getValue());
-//
-//		/* 消費 */
-//		Consumption cnsp = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(type, DirectionEnum.OUT, cnspAmount,
-//				description, PaymentTypeEnum.CASH, cnspDate);
-//		/* 折抵 */
-//		Consumption discount = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(TypeEnum.LIFE_OTHER, DirectionEnum.IN,
-//				cnspAmount, "全聯儲值金折抵", PaymentTypeEnum.CASH, cnspDate);
-//
-//		String msg = "新增全聯儲值金折抵[" + type.getCategory().getTitle() + "][" + type.getTitle() + "][" + description + "]["
-//				+ NumberFormatUtil.getIntegerString(cnspAmount) + "][" + cnspDate.toString() + "]";
-//		if (cnsp != null && discount != null) {
-////			HmsMessageBox.info(msg + "成功。");
-//			_msg.append(msg + "成功。");
-//			_set.add(cnsp);
-//			_set.add(discount);
-//			return true;
-//		} else {
-////			HmsMessageBox.error(msg + "失敗!");
-//			_msg.append(msg + "失敗!");
-//			return false;
-//		}
-//	}
-
-//	/** 行為6:麥當勞儲值金折抵 */
-//	private boolean behavior6(Set<Consumption> _set, StringBuilder _msg) {
-//		TypeEnum type = cbbType.getSelectedItem().getValue();
-//		String description = txbDescription.getValue();
-//		int cnspAmount = itbConsumptionAmount.getValue();
-//		LocalDate cnspDate = DateFormatUtil.parseLocalDate(dtbConsumptionDate.getValue());
-//
-//		/* 消費 */
-//		Consumption cnsp = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(type, DirectionEnum.OUT, cnspAmount,
-//				description, PaymentTypeEnum.CASH, cnspDate);
-//		/* 折抵 */
-//		Consumption discount = BusinessServiceFactory.getInstance().getService(AccountService.class).createNewConsumption(TypeEnum.FOOD, DirectionEnum.IN,
-//				cnspAmount, "麥當勞儲值金折抵", PaymentTypeEnum.CASH, cnspDate);
-//
-//		String msg = "新增麥當勞儲值金折抵[" + type.getCategory().getTitle() + "][" + type.getTitle() + "][" + description + "]["
-//				+ NumberFormatUtil.getIntegerString(cnspAmount) + "][" + cnspDate.toString() + "]";
-//		if (cnsp != null && discount != null) {
-////			HmsMessageBox.info(msg + "成功。");
-//			_msg.append(msg + "成功。");
-//			_set.add(cnsp);
-//			_set.add(discount);
-//			return true;
-//		} else {
-////			HmsMessageBox.error(msg + "失敗!");
-//			_msg.append(msg + "失敗!");
-//			return false;
-//		}
-//	}
 
 	@Listen(Events.ON_CLICK + "=#btnResetBlanks")
 	public void btnResetBlanks_clicked() {
 		resetBlanks();
 	}
 
-	@Listen(Events.ON_CLOSE + "=#main")
+	@Listen(Events.ON_CLOSE + "=#wdAddCnsp")
 	public void wdAddConsumption_closed(Event _evt) {
 		_evt.stopPropagation();
-		main.setVisible(false);
+		wdAddCnsp.setVisible(false);
 	}
 }

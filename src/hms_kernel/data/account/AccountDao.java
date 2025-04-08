@@ -104,19 +104,19 @@ public class AccountDao extends AbstractMySqlDao  {
 			for (TypeEnum type : _searchParam.getTypeList()) {
 				if (!DataFO.isEmptyString(wstr))
 					wstr += " or ";
-				wstr += COL_CONSUMPTION_TYPE_INDEX + " = " + type.getDbIndex();
+				wstr += COL_CONSUMPTION_TYPE_INDEX + " = " + type.getIdx();
 			}
 			if (!DataFO.isEmptyString(wstr))
 				qstr += " and (" + wstr + ")";
 			/* direction */
 			if (_searchParam.getDirection() != null)
-				qstr += " and " + COL_CONSUMPTION_DIRECTION_INDEX + " = " + _searchParam.getDirection().getDbIndex();
+				qstr += " and " + COL_CONSUMPTION_DIRECTION_INDEX + " = " + _searchParam.getDirection().getIdx();
 			/* paymentType */
 			wstr = "";
 			for (PaymentTypeEnum paymentType : _searchParam.getPaymentTypeList()) {
 				if (!DataFO.isEmptyString(wstr))
 					wstr += " or ";
-				wstr += COL_CONSUMPTION_PAYMENT_TYPE_INDEX + " = " + paymentType.getDbIndex();
+				wstr += COL_CONSUMPTION_PAYMENT_TYPE_INDEX + " = " + paymentType.getIdx();
 			}
 			if (!DataFO.isEmptyString(wstr))
 				qstr += " and (" + wstr + ")";
@@ -133,11 +133,11 @@ public class AccountDao extends AbstractMySqlDao  {
 						+ "'";
 			/* payDateStart */
 			if (_searchParam.getPayDateStart() != null)
-				qstr += " and " + COL_UID + " in (select consumptionUid from " + TABLE_PAYMENT + " where "
+				qstr += " and " + COL_UID + " in (select "+COL_PAYMENT_CONSUMPTION_UID+" from " + TABLE_PAYMENT + " where "
 						+ COL_PAYMENT_DATE + " >= '" + _searchParam.getPayDateStart().toString() + "'" + ")";
 			/* payDateEnd */
 			if (_searchParam.getPayDateEnd() != null)
-				qstr += " and " + COL_UID + " in (select consumptionUid from " + TABLE_PAYMENT + " where "
+				qstr += " and " + COL_UID + " in (select "+COL_PAYMENT_CONSUMPTION_UID+" from " + TABLE_PAYMENT + " where "
 						+ COL_PAYMENT_DATE + " <= '" + _searchParam.getPayDateEnd().toString() + "'" + ")";
 
 //			qstr += " order by " + COL_CONSUMPTION_DATE + " desc";
@@ -257,21 +257,21 @@ public class AccountDao extends AbstractMySqlDao  {
 			for (TypeEnum type : _searchParam.getTypeList()) {
 				if (!DataFO.isEmptyString(wstr))
 					wstr += " or ";
-				wstr += COL_CONSUMPTION_TYPE_INDEX + " = " + type.getDbIndex();
+				wstr += COL_CONSUMPTION_TYPE_INDEX + " = " + type.getIdx();
 			}
 			if (!DataFO.isEmptyString(wstr))
 				qstr += " and (" + wstr + ")";
 			
 			/* direction */
 			if (_searchParam.getDirection() != null)
-				qstr += " and " + COL_CONSUMPTION_DIRECTION_INDEX + " = " + _searchParam.getDirection().getDbIndex();
+				qstr += " and " + COL_CONSUMPTION_DIRECTION_INDEX + " = " + _searchParam.getDirection().getIdx();
 
 			/* paymentType */
 			wstr = "";
 			for (PaymentTypeEnum paymentType : _searchParam.getPaymentTypeList()) {
 				if (!DataFO.isEmptyString(wstr))
 					wstr += " or ";
-				wstr += COL_CONSUMPTION_PAYMENT_TYPE_INDEX + " = " + paymentType.getDbIndex();
+				wstr += COL_CONSUMPTION_PAYMENT_TYPE_INDEX + " = " + paymentType.getIdx();
 			}
 			if (!DataFO.isEmptyString(wstr))
 				qstr += " and (" + wstr + ")";
@@ -299,7 +299,7 @@ public class AccountDao extends AbstractMySqlDao  {
 //			qstr += " order by " + COL_PAYMENT_DATE + " desc";
 			qstr += " order by " + COL_PAYMENT_DATE + " asc";
 
-			/* 預設取出最新的500筆。 */
+			/* limit */
 			if (_searchParam.getLimit() > 0) {
 				qstr += " limit " + _searchParam.getLimit();
 			}
