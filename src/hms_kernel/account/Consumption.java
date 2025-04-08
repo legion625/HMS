@@ -1,16 +1,13 @@
 package hms_kernel.account;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import hms_kernel.HmsObjectModel;
+import hms_kernel.account.dto.ConsumptionCreateObj;
+import hms_kernel.data.BizObjLoader;
 import hms_kernel.data.account.AccountDataService;
 import legion.DataServiceFactory;
-import legion.data.MySqlDataSource;
-import legion.util.DateFormatUtil;
 import legion.util.NumberFormatUtil;
 
 public class Consumption extends HmsObjectModel {
@@ -23,19 +20,12 @@ public class Consumption extends HmsObjectModel {
 
 	// -----------------------------------------------------------
 	// ------------------------constructor------------------------
-	// TODO
 	private Consumption() {
-		paymentList = new ArrayList<>();
 	}
 
 	static Consumption newInstance() {
 		Consumption cnsp = new Consumption();
-		cnsp.configNewInstance(); // TODO
-//		cnsp.paymentList = new ArrayList<>();
-//		if (cnsp.save())
-//			return cnsp;
-//		else
-//			return null;
+		cnsp.configNewInstance();
 		return cnsp;
 	}
 
@@ -45,45 +35,21 @@ public class Consumption extends HmsObjectModel {
 		return cnsp;
 	}
 
-	// -----------------------------------------------------------
-	// -----------------------static_method-----------------------
-	protected static Consumption create(TypeEnum _type, DirectionEnum _direction, int _consumptionAmount,
-			String _description, PaymentTypeEnum _consumptionType, LocalDate _consumptionDate) {
-		/* consumption */
+	// -------------------------------------------------------------------------------
+	// ----------------------------------Consumption----------------------------------
+	public static Consumption create(ConsumptionCreateObj _dto) {
 		Consumption cnsp = Consumption.newInstance();
-		cnsp.setType(_type);
-		cnsp.setDirection(_direction);
-		cnsp.setAmount(_consumptionAmount);
-		cnsp.setDescription(_description);
-		cnsp.setPaymentType(_consumptionType);
-		cnsp.setDate(_consumptionDate);
-
-		/* payment */
-		Payment payment;
-		switch (_consumptionType) {
-		case CASH:
-			payment = Payment.newInstance(cnsp.getUid());
-			payment.setDate(cnsp.getDate());
-			payment.setAmount(cnsp.getAmount());
-			cnsp.paymentList.add(payment);
-			break;
-		case CARD:
-		case CARD_INSTALLMENT:
-		case LOAN:
-			break;
-		default:
-			break;
-		}
-		cnsp.hasLoadedPaymentList = true;
-
-		if (cnsp.save())
-			return cnsp;
-		else
-			return null;
+		cnsp.setType(_dto.getType());
+		cnsp.setDirection(_dto.getDirection());
+		cnsp.setAmount(_dto.getAmount());
+		cnsp.setDescription(_dto.getDescription());
+		cnsp.setPaymentType(_dto.getPaymentType());
+		cnsp.setDate(_dto.getDate());
+		return cnsp.save() ? cnsp : null;
 	}
 
-	// -----------------------------------------------------------
-	// -----------------------getter&setter-----------------------
+	// -------------------------------------------------------------------------------
+	// ---------------------------------getter&setter---------------------------------
 	public TypeEnum getType() {
 		return type;
 	}
@@ -132,56 +98,28 @@ public class Consumption extends HmsObjectModel {
 		this.date = date;
 	}
 
-	public List<Payment> getPaymentList() {
-		if (!hasLoadedPaymentList)
-			loadPaymentList();
-		return paymentList;
-	}
-
-	protected void setPaymentList(List<Payment> paymentList) {
-		this.paymentList = paymentList;
-		hasLoadedPaymentList = true;
-	}
-	
 	// -------------------------------------------------------------------------------
 	public int getTypeIndex() {
-		return (getType() == null ? TypeEnum.UNDEFINED : getType()).getDbIndex();
+		return (getType() == null ? TypeEnum.UNDEFINED : getType()).getIdx();
 	}
 
 	public int getDirectionIndex() {
-		return (getDirection() == null ? DirectionEnum.UNDEFINED : getDirection()).getDbIndex();
+		return (getDirection() == null ? DirectionEnum.UNDEFINED : getDirection()).getIdx();
 	}
-	
+
 	public int getPaymentTypeIndex() {
-		return (getPaymentType() == null ? PaymentTypeEnum.UNDEFINED : getPaymentType()).getDbIndex();
+		return (getPaymentType() == null ? PaymentTypeEnum.UNDEFINED : getPaymentType()).getIdx();
 	}
 
 	// -------------------------------------------------------------------------------
 	// ----------------------override_method----------------------
 	@Override
 	protected boolean save() {
-		// TODO Transaction
-		/* Payment */
-		System.out.println("paymentList: " + paymentList);
-		if(paymentList!=null) {
-			for (Payment payment : paymentList)
-				if (!payment.save())
-					return false;	
-		}
-		
-		/* self */
-//		return AccountDataService.getInstance().saveConsumption(this);
 		return DataServiceFactory.getInstance().getService(AccountDataService.class).saveConsumption(this);
 	}
 
 	@Override
-	protected boolean delete() {
-		// TODO Transaction
-		/* Payment */
-		for (Payment payment : getPaymentList())
-			if (!payment.delete())
-				return false;
-//		return AccountDataService.getInstance().deleteConsumption(this.getUid());
+	public boolean delete() {
 		return DataServiceFactory.getInstance().getService(AccountDataService.class).deleteConsumption(this.getUid());
 	}
 
@@ -189,40 +127,30 @@ public class Consumption extends HmsObjectModel {
 	// ------------------------consumption------------------------
 	/** 各欄位摘要資訊 */
 	public String getInfo() {
-		return "[" + date.toString() + "][" + type.getCategory().getTitle() + "][" + type.getTitle() + "]["
-				+ direction.getTitle() + "][" + NumberFormatUtil.getIntegerString(amount) + "][" + description + "]["
-				+ paymentType.getTitle() + "]";
+		return "[" + date.toString() + "][" + type.getCategory().getTitle() + "][" + type.getName() + "]["
+				+ direction.getName() + "][" + NumberFormatUtil.getIntegerString(amount) + "][" + description + "]["
+				+ paymentType.getName() + "]";
 	}
 
 	// -----------------------------------------------------------
 	// --------------------------payment--------------------------
-	private boolean hasLoadedPaymentList = false;
-	private List<Payment> paymentList; // 付款資訊
-	
-	private void loadPaymentList() {
-//		setPaymentList(AccountDataService.getInstance().loadPayments(this.getUid()));
-		setPaymentList(DataServiceFactory.getInstance().getService(AccountDataService.class).loadPayments(this.getUid()));
+	private BizObjLoader<List<Payment>> paymentListLoader = BizObjLoader
+			.of(DataServiceFactory.getInstance().getService(AccountDataService.class)::loadPayments);
+
+	public void clearPaymentList() {
+		paymentListLoader.clear();
 	}
 
-	protected boolean addPayment(LocalDate _payDate, int _payAmount) {
-		Payment payment = Payment.newInstance(getUid());
-		payment.setDate(_payDate);
-		payment.setAmount(_payAmount);
-		if (payment.save()) {
-			if (hasLoadedPaymentList)
-				paymentList.add(payment);
-			return true;
-		} else
-			return false;
+	protected void setPaymentList(List<Payment> paymentList) {
+		paymentListLoader.setObj(this.getUid(), paymentList);
 	}
 
-	protected boolean deletePayment(Payment _payment) {
-		if (_payment.delete()) {
-			if (hasLoadedPaymentList)
-				paymentList.remove(_payment);
-			return true;
-		} else
-			return false;
+	public List<Payment> getPaymentList(boolean _reload) {
+		return paymentListLoader.getObj(this.getUid(), _reload);
+	}
+
+	public List<Payment> getPaymentList() {
+		return getPaymentList(false);
 	}
 
 	/** 已付帳款 */
@@ -248,7 +176,5 @@ public class Consumption extends HmsObjectModel {
 				result = p;
 		return result;
 	}
-
-
 
 }

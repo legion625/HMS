@@ -17,13 +17,14 @@ import org.zkoss.zul.Listcell;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.ListitemRenderer;
 
+import hms.account.bpu.AcntBpuType;
+import hms.account.bpu.CnspBpuDel;
 import hms.web.zk.HmsMessageBox;
 import hms_kernel.account.AccountService;
-import hms_kernel.account.AccountServiceImp;
 import hms_kernel.account.Consumption;
 import hms_kernel.account.ConsumptionSearchParam;
-import legion.BusinessService;
 import legion.BusinessServiceFactory;
+import legion.biz.BpuFacade;
 import legion.util.DataFO;
 import legion.util.NumberFormatUtil;
 
@@ -37,12 +38,11 @@ public class ConsumptionSearchResultComposer extends SelectorComposer<Component>
 		super.doAfterCompose(comp);
 
 		init();
-		
+
 		// data
 		ConsumptionSearchParam param = new ConsumptionSearchParam();
 		param.setConsumptionDateStart(LocalDate.now());
 		param.setConsumptionDateEnd(LocalDate.now());
-//		List<Consumption> cnspList = AccountServiceImp.getInstance().searchConsumptions(param, true);
 		List<Consumption> cnspList = BusinessServiceFactory.getInstance().getService(AccountService.class).searchConsumptions(param, true);
 		refreshConsumptionContainer(cnspList);
 	}
@@ -71,12 +71,13 @@ public class ConsumptionSearchResultComposer extends SelectorComposer<Component>
 				if (!DataFO.isEmptyString(msg))
 					msg += "\n";
 				msg += "刪除消費[" + cnsp.getDate().toString() + "][" + cnsp.getType().getCategory().getTitle() + "]["
-						+ cnsp.getType().getTitle() + "][" + cnsp.getDirection().getTitle() + "]["
+						+ cnsp.getType().getName() + "][" + cnsp.getDirection().getName() + "]["
 						+ NumberFormatUtil.getIntegerString(cnsp.getAmount()) + "][" + cnsp.getDescription() + "]["
-						+ cnsp.getPaymentType().getTitle() + "]";
+						+ cnsp.getPaymentType().getName() + "]";
 
-//				if (AccountServiceImp.getInstance().deleteConsumption(cnsp)) {
-				if (BusinessServiceFactory.getInstance().getService(AccountService.class).deleteConsumption(cnsp)) {
+				CnspBpuDel bpu = BpuFacade.getInstance().getBuilder(AcntBpuType.CNSP$DEL, cnsp);
+
+				if (bpu.build(new StringBuilder(), null)) {
 					msg += "成功。";
 					tempSet.add(cnsp);
 				} else {
@@ -87,12 +88,11 @@ public class ConsumptionSearchResultComposer extends SelectorComposer<Component>
 			for (Consumption cnsp : tempSet)
 				model.remove(cnsp);
 			HmsMessageBox.info(msg);
-
 		};
 
 		HmsMessageBox.confirm("確定刪除所有選取的消費?", csmDelete);
 	}
-	
+
 	// -------------------------------------------------------------------------------
 	private ListitemRenderer<Consumption> consumptionListitemRenderer = (Listitem listitem, Consumption cnsp,
 			int index) -> {
@@ -103,24 +103,18 @@ public class ConsumptionSearchResultComposer extends SelectorComposer<Component>
 		// 類型目錄
 		listitem.appendChild(new Listcell(cnsp.getType().getCategory().getTitle()));
 		// 類型
-		listitem.appendChild(new Listcell(cnsp.getType().getTitle()));
+		listitem.appendChild(new Listcell(cnsp.getType().getName()));
 		// 流向
-		listitem.appendChild(new Listcell(cnsp.getDirection().getTitle()));
+		listitem.appendChild(new Listcell(cnsp.getDirection().getName()));
 		// 消費金額
 		listitem.appendChild(new Listcell(NumberFormatUtil.getIntegerString(cnsp.getAmount())));
 		// 付款金額
 		listitem.appendChild(new Listcell(NumberFormatUtil.getIntegerString(cnsp.getPayedAmount())));
 		// 付款方式
-		listitem.appendChild(new Listcell(cnsp.getPaymentType().getTitle()));
+		listitem.appendChild(new Listcell(cnsp.getPaymentType().getName()));
 		// 說明
 		listitem.appendChild(new Listcell(cnsp.getDescription()));
 
-		// // 右鍵選單
-		// listitem.setValue(cnsp);
-		// listitem.addEventListener(Events.ON_RIGHT_CLICK, e -> {
-		// miShowPaymentInfo.setAttribute("selectedCnsp", cnsp);
-		// mpConsumption.open(listitem);
-		// });
 	};
 
 	private void refreshConsumptionContainer(List<Consumption> _cnspList) {

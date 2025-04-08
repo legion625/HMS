@@ -1,8 +1,9 @@
 package hms_kernel.account;
 
 import legion.kernel.Field;
+import legion.type.IdxEnum;
 
-public enum CardIssuer implements Field{
+public enum CardIssuer implements IdxEnum{
 	UNDEFINED(-1, "未定義"), VISA(1, "VISA"), MASTER(2, "MASTER"), JCB(3, "JCB");
 	
 	// -------------------------------------------------------------------------------
@@ -19,12 +20,12 @@ public enum CardIssuer implements Field{
 	// -------------------------------------------------------------------------------
 	// ---------------------------------getter&setter---------------------------------
 	@Override
-	public int getDbIndex() {
+	public int getIdx() {
 		return dbIndex;
 	}
 
 	@Override
-	public String getTitle() {
+	public String getName() {
 		return title;
 	}
 	
@@ -36,5 +37,6 @@ public enum CardIssuer implements Field{
 				return e;
 		return CardIssuer.UNDEFINED;
 	}
+
 
 }

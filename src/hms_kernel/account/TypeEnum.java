@@ -5,8 +5,9 @@ import java.util.Comparator;
 import java.util.List;
 
 import legion.kernel.Field;
+import legion.type.IdxEnum;
 
-public enum TypeEnum implements Field{
+public enum TypeEnum implements IdxEnum{
 	UNDEFINED(0,"未定義",TypeCategoryEnum.UNDEFINED),
 	FOOD(10, "餐飲費", TypeCategoryEnum.FOOD),
 	
@@ -50,14 +51,19 @@ public enum TypeEnum implements Field{
 	// -----------------------------------------------------------
 	// -----------------------getter&setter-----------------------
 	@Override
-	public int getDbIndex() {
+	public int getIdx() {
 		return dbIndex;
 	}
 
 	@Override
-	public String getTitle() {
+	public String getName() {
 		return title;
 	}
+	
+//	@Override
+//	public String getTitle() {
+//		return title;
+//	}
 	
 	public TypeCategoryEnum getCategory() {
 		return category;
@@ -120,6 +126,8 @@ public enum TypeEnum implements Field{
 	public static Comparator<String> getTitleComparator() {
 		return COMPARATOR_TITLE;
 	}
+
+	
 	
 	
 

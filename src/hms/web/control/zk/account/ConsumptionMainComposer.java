@@ -13,21 +13,15 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.event.InputEvent;
-import org.zkoss.zk.ui.event.KeyEvent;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Listen;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Comboitem;
-import org.zkoss.zul.ComboitemRenderer;
 import org.zkoss.zul.Datebox;
-import org.zkoss.zul.Div;
-import org.zkoss.zul.Grid;
 import org.zkoss.zul.Include;
 import org.zkoss.zul.Intbox;
 import org.zkoss.zul.Label;
-import org.zkoss.zul.ListModel;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Listcell;
@@ -36,18 +30,16 @@ import org.zkoss.zul.Listitem;
 import org.zkoss.zul.ListitemRenderer;
 import org.zkoss.zul.Menuitem;
 import org.zkoss.zul.Menupopup;
-import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Textbox;
-import org.zkoss.zul.Toolbarbutton;
 import org.zkoss.zul.Window;
 
-import bsh.org.objectweb.asm.Type;
+import hms.account.bpu.AcntBpuType;
+import hms.account.bpu.CnspBpuDel;
 import hms.util.ZKUtil;
 import hms.web.control.zk.account.cnspPivot.CnspPivotPageComposer;
 import hms.web.zk.HmsMessageBox;
 import hms.web.zk.HmsNotification;
 import hms_kernel.account.AccountService;
-import hms_kernel.account.AccountServiceImp;
 import hms_kernel.account.Consumption;
 import hms_kernel.account.ConsumptionSearchParam;
 import hms_kernel.account.DirectionEnum;
@@ -56,13 +48,15 @@ import hms_kernel.account.PaymentTypeEnum;
 import hms_kernel.account.TypeCategoryEnum;
 import hms_kernel.account.TypeEnum;
 import legion.BusinessServiceFactory;
+import legion.biz.BpuFacade;
 import legion.util.DataFO;
 import legion.util.DateFormatUtil;
 import legion.util.NumberFormatUtil;
+import legion.web.zk.ZkUtil;
 
 public class ConsumptionMainComposer extends SelectorComposer<Component> {
 	private Logger log = LoggerFactory.getLogger(getClass());
-	
+
 	// -------------------------------------------------------------------------------
 	@Wire
 	private Include inclAddConsumptionWindow;
@@ -96,7 +90,7 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 	private Menupopup mpConsumption;
 	@Wire
 	private Menuitem miShowPaymentInfo;
-	
+
 	// -------------------------------------------------------------------------------
 	// pivot
 	@Wire
@@ -104,7 +98,6 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 	private CnspPivotPageComposer cnspPivotPageComposer;
 
 	// -------------------------------------------------------------------------------
-//	private AccountServiceImp accountService = AccountServiceImp.getInstance();
 	private AccountService accountService = BusinessServiceFactory.getInstance().getService(AccountService.class);
 
 	private List<Consumption> cnspList;
@@ -113,7 +106,7 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 	@Override
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
-		System.out.println(this.getClass().getSimpleName() + ".doAfterCompose");
+//		System.out.println(this.getClass().getSimpleName() + ".doAfterCompose");
 		// ---------------------------------------------------
 		init();
 	}
@@ -126,39 +119,33 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 			cnspList.addAll(set);
 			refreshConsumptionContainer(cnspList);
 		};
-		inclAddConsumptionWindow.setDynamicProperty(WindowAddConsumptionComposer.DYNAMIC_PROPERTY_CSM_AFTER_ADDING_CNSP,
-				csmAfterAddingCnsp);
-		inclAddConsumptionWindow.setSrc(WindowAddConsumptionComposer.SRC);
-		windowAddConsumptionComposer = (WindowAddConsumptionComposer) inclAddConsumptionWindow.getFellow("main")
-				.getAttribute("$composer");
+		windowAddConsumptionComposer = WindowAddConsumptionComposer.of(inclAddConsumptionWindow);
+		windowAddConsumptionComposer.init(csmAfterAddingCnsp);
 
 		/* init cbbTypeCategory items */
 		ZKUtil.configureConsumptionTypeCategory(cbbTypeCategory);
 
-		/* init cbbType */
-		cbbType.setItemRenderer((Comboitem cbi, TypeEnum type, int index) -> {
-			cbi.setLabel(type.getTitle());
-			cbi.setValue(type);
-		});
-
 		/* init cbbDirection */
-		ZKUtil.configureDirection(cbbDirection);
+		ZkUtil.initCbb(cbbDirection, DirectionEnum.values(false), true);
 
 		/* init cbbPaymentType items */
-		ZKUtil.configurePaymentType(cbbPaymentType);
+		ZkUtil.initCbb(cbbPaymentType, PaymentTypeEnum.values(false), true);
 
 		/* init lbxConsumption */
 		lbxConsumption.setItemRenderer(consumptionListitemRenderer);
 
 		/* init windowPaymentInfo */
+		ListitemRenderer<Payment> paymentListitemRenderer = (li, pm, i) -> {
+			// checkbox
+			li.appendChild(new Listcell());
+			li.appendChild(new Listcell(pm.getDate().toString()));
+			li.appendChild(new Listcell(NumberFormatUtil.getIntegerString(pm.getAmount())));
+		};
 		lbxPaymentInfoPayment.setItemRenderer(paymentListitemRenderer);
-		
+
 		/* init pivot */
 		icdCnspPivot.invalidate();
-		icdCnspPivot.setSrc(CnspPivotPageComposer.SRC);
-		log.debug("icdCnspPivot.getSrc(): {}", icdCnspPivot.getSrc());
 		cnspPivotPageComposer = CnspPivotPageComposer.of(icdCnspPivot);
-		log.debug("cnspPivotPageComposer: {}", cnspPivotPageComposer);
 	}
 
 	// -------------------------------------------------------------------------------
@@ -174,13 +161,10 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 	public void cbbTypeCategory_selected() {
 		cbbType.setValue("");
 
-		ListModelList<TypeEnum> model = new ListModelList<>();
 		if (cbbTypeCategory.getSelectedItem() != null) {
 			TypeCategoryEnum typeCate = cbbTypeCategory.getSelectedItem().getValue();
-			for (TypeEnum type : accountService.getTypes(typeCate, false))
-				model.add(type);
+			ZkUtil.initCbb(cbbType, accountService.getTypes(typeCate, false), true);
 		}
-		cbbType.setModel(model);
 	}
 
 	@Listen(Events.ON_CLICK + "=#btnSearch")
@@ -189,10 +173,9 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 
 		// type
 		if (cbbTypeCategory.getSelectedItem() != null) {
-
 			TypeCategoryEnum typeCate = cbbTypeCategory.getSelectedItem().getValue();
 			List<TypeEnum> typeList = new ArrayList<>();
-			if (cbbType.getSelectedItem() != null)
+			if (cbbType.getSelectedItem() != null && cbbType.getSelectedItem().getValue() != null)
 				typeList.add(cbbType.getSelectedItem().getValue());
 			else
 				for (TypeEnum type : accountService.getTypes(typeCate, false))
@@ -201,12 +184,12 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		}
 
 		// Direction
-		if (cbbDirection.getSelectedItem() != null) {
+		if (cbbDirection.getSelectedItem() != null && cbbDirection.getSelectedItem().getValue() != null) {
 			param.setDirection(cbbDirection.getSelectedItem().getValue());
 		}
 
 		// PaymentType
-		if (cbbPaymentType.getSelectedItem() != null) {
+		if (cbbPaymentType.getSelectedItem() != null && cbbPaymentType.getSelectedItem().getValue() != null) {
 			List<PaymentTypeEnum> paymentTypeList = new ArrayList<>();
 			paymentTypeList.add(cbbPaymentType.getSelectedItem().getValue());
 			param.setPaymentTypeList(paymentTypeList);
@@ -272,11 +255,14 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 				if (!DataFO.isEmptyString(msg))
 					msg += "\n";
 				msg += "刪除消費[" + cnsp.getDate().toString() + "][" + cnsp.getType().getCategory().getTitle() + "]["
-						+ cnsp.getType().getTitle() + "][" + cnsp.getDirection().getTitle() + "]["
+						+ cnsp.getType().getName() + "][" + cnsp.getDirection().getName() + "]["
 						+ NumberFormatUtil.getIntegerString(cnsp.getAmount()) + "][" + cnsp.getDescription() + "]["
-						+ cnsp.getPaymentType().getTitle() + "]";
+						+ cnsp.getPaymentType().getName() + "]";
 
-				if (accountService.deleteConsumption(cnsp)) {
+				CnspBpuDel bpu = BpuFacade.getInstance().getBuilder(AcntBpuType.CNSP$DEL, cnsp);
+
+//				if (accountService.deleteConsumption(cnsp)) {
+				if (bpu.build(new StringBuilder(), null)) {
 					msg += "成功。";
 					tempSet.add(cnsp);
 				} else {
@@ -316,7 +302,7 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		lc = new Listcell();
 		lc.appendChild(dtbDate);
 		listitem.appendChild(lc);
-		EventListener<Event> updateDateEl =  evt -> {
+		EventListener<Event> updateDateEl = evt -> {
 			Date date = dtbDate.getValue();
 			if (date == null) {
 				HmsNotification.error("日期錯誤。");
@@ -324,7 +310,6 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 				return;
 			}
 			cnsp.setDate(DateFormatUtil.parseLocalDate(date));
-//			boolean r = AccountServiceImp.getInstance().updateCnsp(cnsp);
 			boolean r = accountService.updateCnsp(cnsp);
 			if (r)
 				HmsNotification.info("更新消費日期成功。");
@@ -333,41 +318,40 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 				dtbDate.setValue(DateFormatUtil.parse(cnsp.getDate().toString()));
 			}
 		};
-		dtbDate.addEventListener(Events.ON_CHANGE,updateDateEl);
+		dtbDate.addEventListener(Events.ON_CHANGE, updateDateEl);
 		// 類型目錄
 		Listcell lcTypeCate = new Listcell(cnsp.getType().getCategory().getTitle());
 		listitem.appendChild(lcTypeCate);
 		// 類型
 		Combobox cbbType = new Combobox();
 		ZKUtil.configureConsumptionType(cbbType, true);
-		cbbType.setValue(cnsp.getType().getTitle());
+		cbbType.setValue(cnsp.getType().getName());
 		cbbType.setHflex("1");
 		cbbType.setInplace(true);
 		lc = new Listcell();
 		lc.appendChild(cbbType);
 		listitem.appendChild(lc);
-		
+
 		EventListener<Event> updateTypeEl = evt -> {
-			if(cbbType.getSelectedItem()!=null && cbbType.getSelectedItem().getValue() !=null ) {
+			if (cbbType.getSelectedItem() != null && cbbType.getSelectedItem().getValue() != null) {
 				cnsp.setType(cbbType.getSelectedItem().getValue());
-//				boolean r = AccountServiceImp.getInstance().updateCnsp(cnsp);
 				boolean r = accountService.updateCnsp(cnsp);
-				
+
 				if (r) {
 					HmsNotification.info("更新類型成功。");
 					lcTypeCate.setLabel(cnsp.getType().getCategory().getTitle());
 				} else {
 					HmsNotification.error("更新類型失敗。");
-					cbbType.setValue(cnsp.getType().getTitle());
+					cbbType.setValue(cnsp.getType().getName());
 				}
-			}else {
+			} else {
 				HmsNotification.warning("請選取選單中的類型。");
-				cbbType.setValue(cnsp.getPaymentType().getTitle());
+				cbbType.setValue(cnsp.getPaymentType().getName());
 			}
 		};
 		cbbType.addEventListener(Events.ON_CHANGE, updateTypeEl);
 		// 流向
-		listitem.appendChild(new Listcell(cnsp.getDirection().getTitle()));
+		listitem.appendChild(new Listcell(cnsp.getDirection().getName()));
 		// 消費金額
 		Intbox itbAmount = new Intbox(cnsp.getAmount());
 		itbAmount.setHflex("1");
@@ -377,11 +361,9 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		lc = new Listcell();
 		lc.appendChild(itbAmount);
 		listitem.appendChild(lc);
-		itbAmount.addEventListener(Events.ON_CHANGE,evt->{
+		itbAmount.addEventListener(Events.ON_CHANGE, evt -> {
 			cnsp.setAmount(itbAmount.getValue());
 			boolean r = accountService.updateCnsp(cnsp);
-			
-			
 			if (r)
 				HmsNotification.info("更新消費金額成功。");
 			else {
@@ -398,9 +380,9 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		lc = new Listcell();
 		lc.appendChild(itbPayedAmount);
 		listitem.appendChild(lc);
-		itbPayedAmount.addEventListener(Events.ON_CHANGE,evt->{
+		itbPayedAmount.addEventListener(Events.ON_CHANGE, evt -> {
 			List<Payment> pmList = cnsp.getPaymentList();
-			if (pmList == null || pmList.size()!=1) {
+			if (pmList == null || pmList.size() != 1) {
 				HmsNotification.error("更新付款金額失敗。");
 				itbPayedAmount.setValue(cnsp.getPayedAmount());
 				return;
@@ -415,7 +397,7 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 			}
 		});
 		// 付款方式
-		listitem.appendChild(new Listcell(cnsp.getPaymentType().getTitle()));
+		listitem.appendChild(new Listcell(cnsp.getPaymentType().getName()));
 		// 說明
 		Textbox txbDesp = new Textbox(cnsp.getDescription());
 		txbDesp.setHflex("1");
@@ -423,7 +405,7 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		lc = new Listcell();
 		lc.appendChild(txbDesp);
 		listitem.appendChild(lc);
-		EventListener<Event> updateDespEl =  evt -> {
+		EventListener<Event> updateDespEl = evt -> {
 			cnsp.setDescription(txbDesp.getValue());
 			boolean r = accountService.updateCnsp(cnsp);
 			if (r)
@@ -444,7 +426,7 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 	};
 
 	private void refreshConsumptionContainer(List<Consumption> _cnspList) {
-		
+
 		ListModelList<Consumption> model = new ListModelList<>(_cnspList);
 		model.setMultiple(true);
 		lbxConsumption.setModel(model);
@@ -452,7 +434,7 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		lftrSumCnspAmt.setLabel(NumberFormatUtil.getIntegerString(_cnspList.parallelStream()
 				.mapToInt(cnsp -> DirectionEnum.OUT == cnsp.getDirection() ? cnsp.getAmount() : -cnsp.getAmount())
 				.sum()));
-		
+
 //		lftrSumPayedAmt.setLabel(NumberFormatUtil.getIntegerString(_cnspList.parallelStream().mapToInt( // XXX 用parallelStream可能引發connection的問題。
 		lftrSumPayedAmt.setLabel(NumberFormatUtil.getIntegerString(_cnspList.stream().mapToInt(
 				cnsp -> DirectionEnum.OUT == cnsp.getDirection() ? cnsp.getPayedAmount() : -cnsp.getPayedAmount())
@@ -516,7 +498,9 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 			for (Payment p : selectedPaymentSet) {
 				String str = "刪除付款[" + p.getDate().toString() + "][" + NumberFormatUtil.getIntegerString(p.getAmount())
 						+ "]";
-				boolean temp = accountService.deletePayment(getTargetConsumption(), p);
+//				boolean temp = accountService.deletePayment(getTargetConsumption(), p);
+				boolean temp = p.delete();
+				getTargetConsumption().clearPaymentList();
 				str += temp ? "成功" : "失敗";
 				if (!temp)
 					result = false;
@@ -544,13 +528,6 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		model.setMultiple(true);
 	}
 
-	private ListitemRenderer<Payment> paymentListitemRenderer = (Listitem listitem, Payment payment, int index) -> {
-		// checkbox
-		listitem.appendChild(new Listcell());
-		listitem.appendChild(new Listcell(payment.getDate().toString()));
-		listitem.appendChild(new Listcell(NumberFormatUtil.getIntegerString(payment.getAmount())));
-	};
-
 	@Listen(Events.ON_CLOSE + "=#windowPaymentInfo")
 	public void windowPaymentInfo_closed(Event _evt) {
 		_evt.stopPropagation();
@@ -568,10 +545,11 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 	@Listen(Events.ON_CLICK + "=#windowAddPayment #btnSubmit")
 	public void windowAddPayment_btnSubmit_clicked() {
 		Consumption cnsp = (Consumption) miShowPaymentInfo.getAttribute("selectedCnsp");
-		boolean result = accountService.addPayment(cnsp, DateFormatUtil.parseLocalDate(dtbAddPaymentPayDate.getValue()),
+		Payment pm = accountService.createPayment(cnsp, DateFormatUtil.parseLocalDate(dtbAddPaymentPayDate.getValue()),
 				itbAddPaymentPayAmount.getValue());
-		if (result) {
+		if (pm != null) {
 			HmsMessageBox.info("新增付款成功。");
+			cnsp.clearPaymentList();
 			refreshPaymentInfo(cnsp);
 			windowAddPayment_closed(new Event("evt"));
 		} else
@@ -580,13 +558,12 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 
 	@Listen(Events.ON_CLICK + "=#windowAddPayment #btnReset")
 	public void windowAddPayment_btnReset_clicked() {
-//		Consumption cnsp = (Consumption) miShowPaymentInfo.getAttribute("selectedCnsp");
 		Consumption cnsp = getTargetConsumption();
 
 		dtbAddPaymentPayDate.setValue(new Date(System.currentTimeMillis()));
-		Payment lastPayment = cnsp. getLastPayment();
-		int defaultPayAmount =lastPayment!=null?lastPayment.getAmount(): cnsp.getPayableAmount();
-		
+		Payment lastPayment = cnsp.getLastPayment();
+		int defaultPayAmount = lastPayment != null ? lastPayment.getAmount() : cnsp.getPayableAmount();
+
 		itbAddPaymentPayAmount.setValue(defaultPayAmount);
 	}
 
@@ -609,12 +586,15 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		String msg = "";
 		boolean success = true;
 		for (Consumption cnsp : model.getSelection()) {
-			boolean result = accountService.addPayment(cnsp, DateFormatUtil.parseLocalDate(dtbPayAllPayDate.getValue()),
+			Payment pm = accountService.createPayment(cnsp, DateFormatUtil.parseLocalDate(dtbPayAllPayDate.getValue()),
 					cnsp.getPayableAmount());
 			if (!DataFO.isEmptyString(msg))
 				msg += "\n";
-			msg += "消費" + cnsp.getInfo() + "付款" + (result ? "成功。" : "失敗！");
-			success = success && result;
+			msg += "消費" + cnsp.getInfo() + "付款" + (pm != null ? "成功。" : "失敗！");
+			success = success && pm != null;
+
+			if (pm != null)
+				cnsp.clearPaymentList();
 		}
 
 		if (success) {

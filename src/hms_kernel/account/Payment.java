@@ -1,15 +1,10 @@
 package hms_kernel.account;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 import hms_kernel.HmsObjectModel;
 import hms_kernel.data.account.AccountDataService;
 import legion.DataServiceFactory;
-import legion.kernel.LegionObject;
-import legion.util.DataFO;
-import legion.util.DateFormatUtil;
 import legion.util.NumberFormatUtil;
 
 public class Payment extends HmsObjectModel {
@@ -19,8 +14,8 @@ public class Payment extends HmsObjectModel {
 
 	// -----------------------------------------------------------
 	// ------------------------constructor------------------------
-	private Payment(String _consumptionUid) {
-		this.setConsumptionUid(_consumptionUid);
+	private Payment(String consumptionUid) {
+		this.consumptionUid = consumptionUid;
 	}
 
 	static Payment newInstance(String _consumptionUid) {
@@ -29,10 +24,7 @@ public class Payment extends HmsObjectModel {
 		return payment;
 	}
 
-//	public static Payment getInstance(String _uid, String _consumptionUid, LocalDateTime _oCreateDate,
-//			LocalDateTime _oUpdateDate) {
-	public static Payment getInstance(String _uid, String _consumptionUid, long _oCreateDate,
-			long _oUpdateDate) {
+	public static Payment getInstance(String _uid, String _consumptionUid, long _oCreateDate, long _oUpdateDate) {
 		Payment payment = new Payment(_consumptionUid);
 		payment.configGetInstance(_uid, _oCreateDate, _oUpdateDate);
 		return payment;
@@ -64,24 +56,29 @@ public class Payment extends HmsObjectModel {
 		this.amount = amount;
 	}
 
-	// -----------------------------------------------------------
-	// ----------------------override_method----------------------
+	// -------------------------------------------------------------------------------
+	// ----------------------------------ObjectModel----------------------------------
 	@Override
 	public boolean save() {
-//		return AccountDataService.getInstance().savePayment(this);
 		return DataServiceFactory.getInstance().getService(AccountDataService.class).savePayment(this);
 	}
 
 	@Override
 	public boolean delete() {
-//		return AccountDataService.getInstance().deletePayment(this.getUid());
 		return DataServiceFactory.getInstance().getService(AccountDataService.class).deletePayment(this.getUid());
 	}
 
-	// -----------------------------------------------------------
+	// -------------------------------------------------------------------------------
+	public static Payment create(String _consumptionUid, LocalDate _date, int _amount) {
+		Payment pm = newInstance(_consumptionUid);
+		pm.setDate(_date);
+		pm.setAmount(_amount);
+		return pm.save() ? pm : null;
+	}
+	
+	// -------------------------------------------------------------------------------
 	/** 各欄位摘要資訊 */
 	public String getInfo() {
-		return "[" + consumptionUid + "][" + date.toString() + "]["
-				+ NumberFormatUtil.getIntegerString(amount) + "]";
+		return "[" + consumptionUid + "][" + date.toString() + "][" + NumberFormatUtil.getIntegerString(amount) + "]";
 	}
 }

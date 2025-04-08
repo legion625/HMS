@@ -5,8 +5,9 @@ import java.util.Comparator;
 import java.util.List;
 
 import legion.kernel.Field;
+import legion.type.IdxEnum;
 
-public enum PaymentTypeEnum implements Field{
+public enum PaymentTypeEnum implements IdxEnum{
 	UNDEFINED(0, "未定義"), CASH(1, "現金"), CARD(2, "刷卡"), CARD_INSTALLMENT(3, "刷卡分期"), LOAN(4, "貸款");
 
 	// -----------------------------------------------------------
@@ -30,12 +31,13 @@ public enum PaymentTypeEnum implements Field{
 
 	// -----------------------------------------------------------
 	// -----------------------getter&setter-----------------------
-	public int getDbIndex() {
+	@Override
+	public int getIdx() {
 		return dbIndex;
 	}
 
 	@Override
-	public String getTitle() {
+	public String getName() {
 		return title;
 	}
 
