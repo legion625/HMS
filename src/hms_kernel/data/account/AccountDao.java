@@ -5,29 +5,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import hms_kernel.account.Bank;
-import hms_kernel.account.CardIssuer;
 import hms_kernel.account.Consumption;
 import hms_kernel.account.ConsumptionSearchParam;
-import hms_kernel.account.CreditCard;
 import hms_kernel.account.DirectionEnum;
 import hms_kernel.account.Payment;
 import hms_kernel.account.PaymentTypeEnum;
 import hms_kernel.account.TypeEnum;
-import hms_kernel.data.DataSource;
-import legion.data.MySqlDao;
-import legion.data.MySqlDataSource;
 import legion.data.service.AbstractMySqlDao;
 import legion.util.DataFO;
-import legion.util.JsonUtil;
 import legion.util.LogUtil;
 
-//public class AccountDao extends MySqlDao implements AccountDataService {
-public class AccountDao extends AbstractMySqlDao  {
+public class AccountDao extends AbstractMySqlDao {
 	protected AccountDao(String source) {
 		super(source);
 	}
@@ -60,34 +51,27 @@ public class AccountDao extends AbstractMySqlDao  {
 	}
 
 	private Consumption parseConsumption(ResultSet _rs) {
-		Consumption cnsp = null;
-//		String testStr = null;
 		try {
-//			String uid = _rs.getString(COL_UID);
-//			LocalDateTime oCreateTime = LocalDateTime.parse(_rs.getString(COL_OBJECT_CREATE_TIME));
-//			LocalDateTime oUpdateTime = LocalDateTime.parse(_rs.getString(COL_OBJECT_UPDATE_TIME));
-			
-//			cnsp = Consumption.getInstance(uid, oCreateTime, oUpdateTime);
-			cnsp = Consumption.getInstance(parseUid(_rs), parseObjectCreateTime(_rs), parseObjectUpdateTime(_rs));
+			Consumption cnsp = Consumption.getInstance(parseUid(_rs), parseObjectCreateTime(_rs),
+					parseObjectUpdateTime(_rs));
 			/* pack attributes */
 			cnsp.setType(TypeEnum.getInstance(_rs.getInt(COL_CONSUMPTION_TYPE_INDEX)));
 			cnsp.setDirection(DirectionEnum.getInstance(_rs.getInt(COL_CONSUMPTION_DIRECTION_INDEX)));
 			cnsp.setAmount(_rs.getInt(COL_CONSUMPTION_AMOUNT));
 			cnsp.setDescription(_rs.getString(COL_CONSUMPTION_DESCRIPTION));
 			cnsp.setPaymentType(PaymentTypeEnum.getInstance(_rs.getInt(COL_CONSUMPTION_PAYMENT_TYPE_INDEX)));
-//			testStr = _rs.getString(COL_CONSUMPTION_DATE);
 			cnsp.setDate(LocalDate.parse(_rs.getString(COL_CONSUMPTION_DATE)));
+			return cnsp;
 		} catch (Throwable e) {
 			LogUtil.log(e);
 			return null;
 		}
-		return cnsp;
 	}
 
 	Consumption loadConsumption(String _uid) {
 		return loadObject(TABLE_CONSUMPTION, _uid, this::parseConsumption);
 	}
-	
+
 	public List<Consumption> searchConsumptions(ConsumptionSearchParam _searchParam) {
 		List<Consumption> resultList = new ArrayList<>();
 
@@ -147,7 +131,7 @@ public class AccountDao extends AbstractMySqlDao  {
 			if (_searchParam.getLimit() > 0) {
 				qstr += " limit " + _searchParam.getLimit();
 			}
-			
+
 			System.out.println("qstr: " + qstr);
 			pstmt = conn.prepareStatement(qstr);
 			rs = pstmt.executeQuery();
@@ -179,7 +163,7 @@ public class AccountDao extends AbstractMySqlDao  {
 				DbColumn.of(COL_PAYMENT_AMOUNT, ColType.INT, Payment::getAmount),
 		};
 		return saveObject(TABLE_PAYMENT, cols, _payment);
-		
+
 	}
 
 	boolean deletePayment(String _uid) {
@@ -208,7 +192,7 @@ public class AccountDao extends AbstractMySqlDao  {
 	Payment loadPayment(String _uid) {
 		return loadObject(TABLE_PAYMENT, _uid, this::parsePayment);
 	}
-	
+
 	List<Payment> loadPayments(String _consumptionUid) {
 		return loadObjectList(TABLE_PAYMENT, COL_PAYMENT_CONSUMPTION_UID, _consumptionUid, this::parsePayment);
 //		List<Payment> resultList = new ArrayList<>();
@@ -261,7 +245,7 @@ public class AccountDao extends AbstractMySqlDao  {
 			}
 			if (!DataFO.isEmptyString(wstr))
 				qstr += " and (" + wstr + ")";
-			
+
 			/* direction */
 			if (_searchParam.getDirection() != null)
 				qstr += " and " + COL_CONSUMPTION_DIRECTION_INDEX + " = " + _searchParam.getDirection().getIdx();

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import legion.kernel.Field;
-
 public enum TypeCategoryEnum {
 	UNDEFINED("未定義"), FOOD("餐飲費"), TRAFFIC("交通費"), CLOTHES("治裝費"), LIFE("生活費"), ADDITIONAL("額外開支"), DUTY("孝親費");
 

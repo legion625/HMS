@@ -7,35 +7,22 @@ import java.util.Date;
 import java.util.List;
 
 import hms_kernel.auth.User;
-import hms_kernel.data.DataSource;
-import legion.data.AccessDao;
 
-public class AuthAccessDao extends AccessDao implements AuthDataService {
-	private AuthAccessDao() {
-//		super(DataSource.getAccessDataSource());
-		super();
-	}
+public class AuthAccessDao {
 
-	private final static AuthAccessDao INSTANCE = new AuthAccessDao();
-
-	protected final static AuthAccessDao getInstance() {
-		return INSTANCE;
-	}
-
-	@Override
-	public boolean saveUser(User _user) {
+	// TODO
+	
+	 boolean saveUser(User _user) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	@Override
-	public boolean deleteUser(String _uid) {
+	 boolean deleteUser(String _uid) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	@Override
-	public List<User> loadUsers() {
+	 List<User> loadUsers() {
 		// TODO Auto-generated method stub
 		return null;
 	}

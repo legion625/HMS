@@ -1,11 +1,7 @@
 package hms_kernel.account;
 
-import java.time.LocalDateTime;
-import java.util.Date;
-
 import hms_kernel.HmsObjectModel;
 import hms_kernel.auth.User;
-import legion.kernel.LegionObject;
 
 public class CreditCard extends HmsObjectModel {
 	private String title;

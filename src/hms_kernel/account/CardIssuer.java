@@ -1,6 +1,5 @@
 package hms_kernel.account;
 
-import legion.kernel.Field;
 import legion.type.IdxEnum;
 
 public enum CardIssuer implements IdxEnum{
