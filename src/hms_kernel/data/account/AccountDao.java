@@ -15,10 +15,12 @@ import hms_kernel.account.Payment;
 import hms_kernel.account.PaymentTypeEnum;
 import hms_kernel.account.TypeEnum;
 import legion.data.service.AbstractMySqlDao;
+import legion.data.service.PgDao;
 import legion.util.DataFO;
 import legion.util.LogUtil;
 
-public class AccountDao extends AbstractMySqlDao {
+//public class AccountDao extends AbstractMySqlDao {
+public class AccountDao extends PgDao {
 	protected AccountDao(String source) {
 		super(source);
 	}
@@ -38,7 +40,7 @@ public class AccountDao extends AbstractMySqlDao {
 				DbColumn.of(COL_CONSUMPTION_TYPE_INDEX, ColType.INT, Consumption::getTypeIndex),
 				DbColumn.of(COL_CONSUMPTION_DIRECTION_INDEX, ColType.INT, Consumption::getDirectionIndex),
 				DbColumn.of(COL_CONSUMPTION_AMOUNT, ColType.INT, Consumption::getAmount),
-				DbColumn.of(COL_CONSUMPTION_DESCRIPTION, ColType.STRING, Consumption::getDescription, 45),
+				DbColumn.of(COL_CONSUMPTION_DESCRIPTION, ColType.STRING, Consumption::getDescription),
 				DbColumn.of(COL_CONSUMPTION_PAYMENT_TYPE_INDEX, ColType.INT, Consumption::getPaymentTypeIndex),
 				DbColumn.of(COL_CONSUMPTION_DATE, ColType.STRING,
 						(Consumption cnsp) -> cnsp.getDate() == null ? "" : cnsp.getDate().toString()), // XXX

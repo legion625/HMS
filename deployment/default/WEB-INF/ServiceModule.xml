@@ -20,7 +20,7 @@
 			<Parameter name="source" value="hms" />
 			<Parameter name="serverId" value="0" />
 		</Service>
-		<Service name="SystemDataService" interface="legion.data.SystemDataService" imp="legion.data.service.system.SystemDataServiceImp">
+		<Service name="SystemDataService" interface="legion.data.SystemDataService" imp="legion.data.service.system.SystemDataServiceImpPg">
 			<Parameter name="source" value="hms" />
 		</Service>
 		<!-- hms -->

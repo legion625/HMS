@@ -15,21 +15,26 @@
 		</parameter>
 		<parameter>
 			<name>driverClassName</name>
-			<value>com.mysql.cj.jdbc.Driver</value> <!-- jdbc8 -->
+			<!--<value>com.mysql.cj.jdbc.Driver</value> --> <!-- jdbc8 -->
 			<!--<value>com.mysql.jdbc.Driver</value>--> <!-- jdbc5 -->
+			<value>org.postgresql.Driver</value>
 		</parameter>
 		<parameter>
 			<name>url</name>
 			<!--<value>jdbc:mysql://localhost:3306/ekp_web?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC</value>  --><!-- jdbc8 -->
-			<value>jdbc:mysql://localhost:3306/hms_dev</value> <!-- MySql5 -->
+			<!--<value>jdbc:mysql://localhost:3306/hms_dev</value> --><!-- MySql5 -->
+			<value>jdbc:postgresql://dpg-cvrf5vre5dus7387koag-a.singapore-postgres.render.com:5432/legion_h3u9?currentSchema=hms_dev</value>
 		</parameter>
 		<parameter>
 			<name>username</name>
-			<value>root</value>
+			<!-- 
+			<value>root</value>-->
+			<value>legion_user</value>
 		</parameter>
 		<parameter>
 			<name>password</name>
-			<value>root!87570620</value>
+			<!-- <value>root!87570620</value>-->
+			<value>JaNibhJzdkjNm62MvX7SVJt4oSPH39qW</value>
 		</parameter>
 		<parameter>
 			<name>testOnBorrow</name>
