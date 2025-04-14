@@ -1,0 +1,12 @@
+*.log
+*.md
+target/
+build/
+.idea/
+*.iml
+*.class
+*.jar
+*.war
+*.zip
+*.tar.gz
+.DS_Store
