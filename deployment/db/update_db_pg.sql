@@ -1,8 +1,4 @@
--- hms_dev
--- hms
-
-
-
+-- 0.7.1 -> 1.0.0
 CREATE TABLE sys_attr (
     uid character varying NOT NULL,
     type_idx smallint,
@@ -43,3 +39,6 @@ CREATE TABLE payment (
     object_update_time bigint,
     PRIMARY KEY (uid)
 );
+
+-- hms_dev
+-- hms_release

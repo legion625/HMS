@@ -1,10 +1,10 @@
-Min-Hua, 2025.04.14
+------------------------------------------------------------------------------
+v1.0.0 released by Min-Hua, 2025.04.15
 [deployment]
 1. ServiceModeul.xml的SystemDataService的Imp改為legion.data.service.system.SystemDataServiceImpPg。
 2. datasource.xml的hms改用PostgreSQL。
 3. 執行update_db_pg.sql。
 
-Min-Hua, 2025.04.14
 [lib]
 1. 升級Legionmodule: 0.14.0 -> 0.15.0。
 
