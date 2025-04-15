@@ -26,7 +26,7 @@ import legion.util.LogUtil;
 
 public class AbstractHmsKernelInitTest extends HmsKernelInitLogTest{
 //	private static Logger log = LoggerFactory.getLogger(AbstractHmsKernelInitTest.class);
-	private static Logger log = LoggerFactory.getLogger(DebugLogMark.class);
+	protected static Logger log = LoggerFactory.getLogger(TestLogMark.class);
 	private static volatile boolean initFlag = false;
 	
 	@BeforeClass

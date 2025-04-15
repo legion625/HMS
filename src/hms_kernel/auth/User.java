@@ -5,7 +5,6 @@ import java.util.Date;
 
 import hms_kernel.HmsObjectModel;
 import hms_kernel.data.auth.AuthDataService;
-import legion.kernel.LegionObject;
 
 public class User extends HmsObjectModel {
 	// -------------------------------------------------------------------------------
@@ -48,12 +47,16 @@ public class User extends HmsObjectModel {
 	// ---------------------------------LegionObject----------------------------------
 	@Override
 	protected boolean save() {
-		return AuthDataService.getInstance().saveUser(this);
+		// TODO
+		return false;
+//		return AuthDataService.getInstance().saveUser(this);
 	}
 
 	@Override
 	protected boolean delete() {
-		return AuthDataService.getInstance().deleteUser(this.getUid());
+		// TODO
+				return false;
+//		return AuthDataService.getInstance().deleteUser(this.getUid());
 	}
 
 	// -------------------------------------------------------------------------------

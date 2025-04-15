@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import legion.kernel.Field;
 import legion.type.IdxEnum;
 
 public enum TypeEnum implements IdxEnum{
