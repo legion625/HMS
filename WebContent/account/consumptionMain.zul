@@ -92,8 +92,9 @@
 				</toolbar>
 				<tabpanels>
 					<tabpanel>
-						<listbox id="lbxConsumption" vflex="1" checkmark="true" mold="paging" pageSize="20"
-							emptyMessage="無資料項">
+						<listbox id="lbxConsumption" vflex="1" checkmark="true" mold="paging" pageSize="10" emptyMessage="無資料項">
+						<!-- pageSize="20" -->
+							
 							<listhead sizable="true">
 								<listheader width="45px" />
 								<listheader label="消費日期" sort="auto('date')" width="110px"
