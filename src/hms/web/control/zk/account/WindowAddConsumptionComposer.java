@@ -53,7 +53,6 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 	// -------------------------------------------------------------------------------
 	private final static String SRC = "/account/windowAddConsumption.zul";
 
-//	final static String DYNAMIC_PROPERTY_CSM_AFTER_ADDING_CNSP = "DYNAMIC_PROPERTY_CSM_AFTER_ADDING_CNSP";
 	// -------------------------------------------------------------------------------
 
 	private Logger log = LoggerFactory.getLogger(WindowAddConsumptionComposer.class);
@@ -99,27 +98,21 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 	private Datebox dtbConsumptionDate;
 
 	// -------------------------------------------------------------------------------
-	private Consumer<Set<Consumption>> csmAfterAddingCnsp = set->{}; // default do nothing
+	private Consumer<Set<Consumption>> csmAfterAddingCnsp = set -> {
+	}; // default do nothing
 
 	// -------------------------------------------------------------------------------
 	@Override
 	public void doAfterCompose(Component comp) {
 		try {
 			super.doAfterCompose(comp);
-//			csmAfterAddingCnsp = (Consumer<Set<Consumption>>) requestScope.get(DYNAMIC_PROPERTY_CSM_AFTER_ADDING_CNSP);
-//			if (csmAfterAddingCnsp == null)
-//				csmAfterAddingCnsp = set -> {
-//				};
-
-//			init();
 		} catch (Throwable e) {
 			LogUtil.log(e, Level.ERROR);
 		}
 	}
 
 	// -------------------------------------------------------------------------------
-//	private void init() {
-	 void init(Consumer<Set<Consumption>> csmAfterAddingCnsp) {
+	void init(Consumer<Set<Consumption>> csmAfterAddingCnsp) {
 		/* init cbbTypeCategory items */
 		ZKUtil.configureConsumptionTypeCategory(cbbTypeCategory);
 		cbbTypeCategory.addEventListener(Events.ON_SELECT, cnspCateSyncEl);
@@ -145,27 +138,20 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 
 	private boolean defaultTypeFlag = true; // 當cbbType隨cbbTypeCate變動時，是否要帶入預設值
 
-	private EventListener<Event> cnspCateSyncEl =  evt -> {
+	private EventListener<Event> cnspCateSyncEl = evt -> {
 		cbbType.getChildren().clear();
 
 		TypeCategoryEnum _cate = cbbTypeCategory.getSelectedItem().getValue();
 
-//		for (TypeEnum type : BusinessServiceFactory.getInstance().getService(AccountService.class).getTypes(_cate, true)) { // 只載入enabled的類型
-//			Comboitem cbi = new Comboitem(type.getName());
-//			cbi.setValue(type);
-//			cbbType.appendChild(cbi);
-//		}
-		ZkUtil.initCbb(cbbType, BusinessServiceFactory.getInstance().getService(AccountService.class).getTypes(_cate, true), false);
+		ZkUtil.initCbb(cbbType,
+				BusinessServiceFactory.getInstance().getService(AccountService.class).getTypes(_cate, true), false);
 
-		if(defaultTypeFlag) {
+		if (defaultTypeFlag) {
 			if (cbbType.getItemCount() > 0)
 				cbbType.setSelectedIndex(0);
 			else
 				cbbType.setValue(null);
 		}
-
-
-		System.out.println("cbbType.getValue(): "+cbbType.getValue());
 	};
 
 	private void resetBlanks() {
@@ -195,9 +181,6 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 	// -------------------------------------------------------------------------------
 	@Listen(Events.ON_SELECT + "=#cbbBehavior")
 	public void cbbBehavior_selected() {
-//		rowInAdv.setVisible(false);
-//		chbInAdv.setDisabled(true);
-
 		switch (cbbBehavior.getSelectedIndex()) {
 		case 0:
 			rowDirection.setVisible(true);
@@ -228,7 +211,6 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 	public void chbInAdv_checked() {
 		itbInAdv.setDisabled(!chbInAdv.isChecked());
 	}
-
 
 	void copyCnsp(Consumption _cnsp) {
 		defaultTypeFlag = false;
@@ -285,14 +267,13 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 			return;
 		}
 
-
 		/* InAdv */
 		TypeEnum type = cbbType.getSelectedItem().getValue();
 		String description = txbDescription.getValue();
 		LocalDate cnspDate = DateFormatUtil.parseLocalDate(dtbConsumptionDate.getValue());
 		boolean inAdv = chbInAdv.isChecked();
 		Integer inAdvAmt = itbInAdv.getValue();
-		if (inAdv && inAdvAmt!=null && inAdvAmt > 0) {
+		if (inAdv && inAdvAmt != null && inAdvAmt > 0) {
 
 			CnspBuilder1 inAdvCnspBuilder = BpuFacade.getInstance().getBuilder(AcntBpuType.CNSP_1);
 			if (inAdvCnspBuilder == null) {
@@ -301,29 +282,32 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 				return;
 			}
 			inAdvCnspBuilder.appendType(type).appendDirection(DirectionEnum.IN_ADV).appendAmount(inAdvAmt)
-			.appendDescription("代付-"+description).appendPaymentType(PaymentTypeEnum.CASH).appendDate(cnspDate);
+					.appendDescription("代付-" + description).appendPaymentType(PaymentTypeEnum.CASH)
+					.appendDate(cnspDate);
 
 			StringBuilder inAdvMsg = new StringBuilder();
 			Consumption cnspInAdv = inAdvCnspBuilder.build(inAdvMsg, tt);
 
-
-			String msgInAdv = "新增代付流入[" + type.getCategory().getTitle() + "][" + type.getName() + "][" + DirectionEnum.IN_ADV.getName()
-			+ "][" + "代付-"+description + "][" + NumberFormatUtil.getIntegerString(inAdvAmt) + "]["
-			+ PaymentTypeEnum.CASH.getName() + "][" + cnspDate.toString() + "]";
-			if(cnspInAdv!=null) {
-				msgInAdv+="成功。";
-				HmsMessageBox.info(msg.toString() + System.lineSeparator() + msgInAdv);
+			String msgInAdv = "新增代付流入[" + type.getCategory().getTitle() + "][" + type.getName() + "]["
+					+ DirectionEnum.IN_ADV.getName() + "][" + "代付-" + description + "]["
+					+ NumberFormatUtil.getIntegerString(inAdvAmt) + "][" + PaymentTypeEnum.CASH.getName() + "]["
+					+ cnspDate.toString() + "]";
+			if (cnspInAdv != null) {
+				msgInAdv += "成功。";
+//				HmsMessageBox.info(msg.toString() + System.lineSeparator() + msgInAdv);
+				HmsNotification.info(msg.toString() + System.lineSeparator() + msgInAdv);
 				set.add(cnspInAdv);
-			}else {
-				msgInAdv+="失敗。";
-				HmsMessageBox.error(msg.toString() + System.lineSeparator() + msgInAdv+ System.lineSeparator() +inAdvMsg.toString());
+			} else {
+				msgInAdv += "失敗。";
+				HmsMessageBox.error(msg.toString() + System.lineSeparator() + msgInAdv + System.lineSeparator()
+						+ inAdvMsg.toString());
 			}
 		}
 		//
 		else {
-			HmsMessageBox.info(msg.toString());
+//			HmsMessageBox.info(msg.toString());
+			HmsNotification.info(msg.toString());
 		}
-
 
 		csmAfterAddingCnsp.accept(set);
 	}
@@ -396,8 +380,8 @@ public class WindowAddConsumptionComposer extends SelectorComposer<Component> {
 
 		bpu.appendCnspType(type).appendDescription(description).appendAmount(cnspAmount).appendDate(cnspDate);
 
-		String msg = "新增"+_discountMediaName+"折抵[" + type.getCategory().getTitle() + "][" + type.getName() + "][" + description
-				+ "][" + NumberFormatUtil.getIntegerString(cnspAmount) + "][" + cnspDate.toString() + "]";
+		String msg = "新增" + _discountMediaName + "折抵[" + type.getCategory().getTitle() + "][" + type.getName() + "]["
+				+ description + "][" + NumberFormatUtil.getIntegerString(cnspAmount) + "][" + cnspDate.toString() + "]";
 
 		if (bpu.build(_msg, _tt)) {
 			_msg.append(msg + "成功。");
