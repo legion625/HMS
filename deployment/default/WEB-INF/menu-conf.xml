@@ -34,10 +34,10 @@
 	</MenuItem>-->
 	<MenuItem text="帳務資訊(電腦版)">
 		<MenuItem text="消費管理" navigateUrl="/account/consumptionMain.zul"></MenuItem>
-		<MenuItem text="付款管理" invalidHidden="false"></MenuItem>
+		<!-- <MenuItem text="付款管理" invalidHidden="false"></MenuItem>-->
 	</MenuItem>
-	<MenuItem text="帳務資訊(行動版)" navigateUrl="/mobile/account/accountFunction.zul">
-	</MenuItem>
+	<!-- <MenuItem text="帳務資訊(行動版)" navigateUrl="/mobile/account/accountFunction.zul"> 
+	</MenuItem>-->
 	<MenuItem text="開發中...">
 		<MenuItem text="Pivot Demo" navigateUrl="/developing/pivotDemo/pivotDemo.zul"></MenuItem>
 		<MenuItem text="Cnsp Pivot Page" navigateUrl="/account/cnspPivot/cnspPivotPage.zul"></MenuItem>

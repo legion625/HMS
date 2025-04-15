@@ -92,8 +92,7 @@
 				</toolbar>
 				<tabpanels>
 					<tabpanel>
-						<listbox id="lbxConsumption" vflex="1" checkmark="true" mold="paging" pageSize="20"
-							emptyMessage="無資料項">
+						<listbox id="lbxConsumption" vflex="1" checkmark="true" mold="paging" pageSize="20" emptyMessage="無資料項">
 							<listhead sizable="true">
 								<listheader width="45px" />
 								<listheader label="消費日期" sort="auto('date')" width="110px"
@@ -107,7 +106,7 @@
 								<listheader label="付款金額" sort="auto('payedAmount')" width="95px" style="direction: rtl;"
 									iconSclass="fas fa-pen-square fa-fw" />
 								<listheader label="付款方式" sort="auto('paymentType')" width="90px" />
-								<listheader label="說明" width="200px" style="direction: rtl;"
+								<listheader label="說明" width="300px" style="direction: rtl;"
 									iconSclass="fas fa-pen-square fa-fw"/>
 							</listhead>
 							<listfoot>
@@ -125,7 +124,7 @@
 							<menuitem id="miAddPayment" label="新增付款" />
 							<menuitem id="miCopyCnsp" label="複製消費" />
 						</menupopup>
-						<window id="windowPaymentInfo" title="付款資訊" border="normal" width="30%" height="45%"
+						<window id="windowPaymentInfo" title="付款資訊" border="normal" width="360px" height="45%"
 							mode="highlighted" position="center" closable="true" visible="false">
 							<div align="center">
 								<hlayout>
@@ -144,9 +143,9 @@
 							</hlayout>
 							<listbox id="lbxPayment" checkmark="true" emptyMessage="無資料項" vflex="1">
 								<listhead>
-									<listheader width="30px" />
-									<listheader label="付款日期" hflex="3" />
-									<listheader label="付款金額" hflex="2" style="text-align:left" align="right" />
+									<listheader width="35px" />
+									<listheader label="付款日期" width="110px" />
+									<listheader label="付款金額" width="80px" style="text-align:left" align="right" />
 								</listhead>
 							</listbox>
 
