@@ -95,7 +95,7 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 	// pivot
 	@Wire
 	private Include icdCnspPivot;
-	private CnspPivotPageComposer cnspPivotPageComposer;
+//	private CnspPivotPageComposer cnspPivotPageComposer;
 
 	// -------------------------------------------------------------------------------
 	private AccountService accountService = BusinessServiceFactory.getInstance().getService(AccountService.class);
@@ -145,7 +145,7 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 
 		/* init pivot */
 		icdCnspPivot.invalidate();
-		cnspPivotPageComposer = CnspPivotPageComposer.of(icdCnspPivot);
+//		cnspPivotPageComposer = CnspPivotPageComposer.of(icdCnspPivot);
 	}
 
 	// -------------------------------------------------------------------------------
@@ -212,8 +212,8 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		cnspList = accountService.searchConsumptions(param, true);
 		// result list page
 		refreshConsumptionContainer(cnspList);
-		// pivot
-		cnspPivotPageComposer.init(cnspList);
+//		// pivot
+//		cnspPivotPageComposer.init(cnspList);
 	}
 
 	@Listen(Events.ON_CLICK + "=#btnReset")
