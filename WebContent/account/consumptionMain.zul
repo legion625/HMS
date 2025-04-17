@@ -1,5 +1,24 @@
 <?page title="new page title" contentType="text/html;charset=UTF-8"?>
 <zk>
+<style>
+.gridBgTransparent.z-grid {
+    background-color: white !important; /* 或 transparent */
+}
+
+.gridBgTransparent .z-row,
+.gridBgTransparent .z-row:hover,
+.gridBgTransparent .z-row:focus {
+    background-color: white !important; /* 或 transparent */
+}
+
+.gridBgTransparent .z-row td,
+.gridBgTransparent .z-row:hover td,
+.gridBgTransparent .z-row:focus td {
+    background-color: white !important; /* 或 transparent */
+}
+
+</style>
+
 	<borderlayout hflex="1" vflex="1" apply="hms.web.control.zk.account.ConsumptionMainComposer">
 		<north height="55px" border="none" splittable="true">
 			<div align="center">
@@ -14,7 +33,8 @@
 			<vlayout>
 				<groupbox title="查詢消費" closable="false">
 					<!-- <div align="right"><label value="系統只會查出最新的500筆。"></label></div> -->
-					<grid>
+					<grid sclass="gridBgTransparent">
+					
 						<columns>
 							<column width="100px" />
 							<column hflex="3" />

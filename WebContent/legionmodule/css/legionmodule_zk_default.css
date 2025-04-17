@@ -5,6 +5,23 @@
 	border:none; border-top:none 
 }
 
+/**
 .gridBgTransparent .z-grid-body .z-cell{
 	background:transparent;
+}
+*/
+.gridBgTransparent.z-grid {
+    background-color: white !important; /* 或 transparent */
+}
+
+.gridBgTransparent .z-row,
+.gridBgTransparent .z-row:hover,
+.gridBgTransparent .z-row:focus {
+    background-color: white !important; /* 或 transparent */
+}
+
+.gridBgTransparent .z-row td,
+.gridBgTransparent .z-row:hover td,
+.gridBgTransparent .z-row:focus td {
+    background-color: white !important; /* 或 transparent */
 }
