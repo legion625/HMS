@@ -84,7 +84,7 @@
 			<tabbox vflex="1">
 				<tabs>
 					<tab label="消費明細" />
-					<tab label="樞杻分析表" />
+					<tab label="樞杻分析表" disabled="true"/>
 				</tabs>
 				<toolbar>
 					<toolbarbutton id="btnDeleteConsumption" label="刪除消費" />

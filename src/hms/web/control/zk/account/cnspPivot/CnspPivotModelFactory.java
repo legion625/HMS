@@ -8,15 +8,15 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zkoss.pivot.GroupHandler;
-import org.zkoss.pivot.PivotField;
-import org.zkoss.pivot.PivotHeaderContext;
-import org.zkoss.pivot.PivotRenderer;
-import org.zkoss.pivot.Pivottable;
-import org.zkoss.pivot.impl.SimplePivotRenderer;
-import org.zkoss.pivot.impl.StandardCalculator;
-import org.zkoss.pivot.impl.TabularPivotField;
-import org.zkoss.pivot.impl.TabularPivotModel;
+//import org.zkoss.pivot.GroupHandler;
+//import org.zkoss.pivot.PivotField;
+//import org.zkoss.pivot.PivotHeaderContext;
+//import org.zkoss.pivot.PivotRenderer;
+//import org.zkoss.pivot.Pivottable;
+//import org.zkoss.pivot.impl.SimplePivotRenderer;
+//import org.zkoss.pivot.impl.StandardCalculator;
+//import org.zkoss.pivot.impl.TabularPivotField;
+//import org.zkoss.pivot.impl.TabularPivotModel;
 
 import hms_kernel.account.Consumption;
 import hms_kernel.account.TypeCategoryEnum;
@@ -29,11 +29,11 @@ public class CnspPivotModelFactory {
 	    private CnspPivotModelFactory() {
 	    }
 	 
-	    public TabularPivotModel build(List<Consumption> _cnspList) {
-			List<List<Object>> pivotData = _cnspList.stream().map(CnspPivotData::new).map(CnspPivotCol::parse)
-					.collect(Collectors.toList());
-	    	return new TabularPivotModel(pivotData, CnspPivotCol.getColumns());
-	    }
+//	    public TabularPivotModel build(List<Consumption> _cnspList) {
+//			List<List<Object>> pivotData = _cnspList.stream().map(CnspPivotData::new).map(CnspPivotCol::parse)
+//					.collect(Collectors.toList());
+//	    	return new TabularPivotModel(pivotData, CnspPivotCol.getColumns());
+//	    }
 	    
 //	    public TabularPivotModel build(List<List<Object>> _data) {
 //	    	return new TabularPivotModel(_data, CnspPivotCol.getColumns());
@@ -45,61 +45,61 @@ public class CnspPivotModelFactory {
 //	 
 	    // configurator //
 	 
-	    public CnspPivotConfigurator getDefaultConfigurator() {
-//	        return CONFIG_CITY_SALES;
-	    	return CONF_0;
-	    }
-	 
-	    public CnspPivotConfigurator[] getConfigurators() {
-//	        return new CnspPivotConfigurator[] { CONFIG_PERFORMANCE, CONFIG_CITY_SALES, CONFIG_SALES_RACE };
-	    	 return new CnspPivotConfigurator[] {CONF_0 };
-	    }
-	    
-	    private static final CnspPivotConfigurator CONF_0 = new CnspPivotConfigurator("Default") {
-	    	private Logger log = LoggerFactory.getLogger(getClass());
-	    	
-	    	@Override
-			public void configure(TabularPivotModel model) {
-//	    		 model.setFieldType("Type", PivotField.Type.ROW);
-	    		
-	    		model.setFieldType(CnspPivotCol.TYPE_CATE_TITLE.getColLabel(), PivotField.Type.ROW);
-	    		model.setFieldType(CnspPivotCol.CNSP_YEARMONTH.getColLabel(), PivotField.Type.COLUMN);
-	    		model.setFieldType(CnspPivotCol.CNSP_AMOUNT_OUT.getColLabel(), PivotField.Type.DATA);
-	    		
-//	    		model.getField(CnspPivotCol.TYPE_CATE_TITLE.getColLabel()).getComparator().
-	    		/* configurator */
-				model.setFieldKeyComparator(CnspPivotCol.TYPE_CATE_TITLE.getColLabel(),
-						(o1, o2) -> TypeCategoryEnum.getTitleComparator().compare((String) o1, (String) o2));
-	    		 
-//	    		 TabularPivotField field =  		 model.getField("Type");
-//				log.debug("{}\t{}\t{}", field.getFieldName(), field.getTitle(), field.getType());
-//				field.
-//				model.getd
-			}
-	    	
-	    	@Override
-			public void configure(Pivottable table) {
-	    		table.setDataFieldOrient("row");
-			}
-	    	
-			@Override
-			public PivotRenderer getRenderer() {
-				return null; // use default
-				
-//				SimplePivotRenderer r =new SimplePivotRenderer() {
-//					@Override
-//					public String renderDataField(PivotField _field) {
-//						String v = super.renderDataField(_field);
-//log.debug("super.renderDataField(_field): {}", super.renderDataField(_field));
-//return v;
-//					}
-//				};
-//				return r;
-			}
-			
-			
-			
-		};
+//	    public CnspPivotConfigurator getDefaultConfigurator() {
+////	        return CONFIG_CITY_SALES;
+//	    	return CONF_0;
+//	    }
+//	 
+//	    public CnspPivotConfigurator[] getConfigurators() {
+////	        return new CnspPivotConfigurator[] { CONFIG_PERFORMANCE, CONFIG_CITY_SALES, CONFIG_SALES_RACE };
+//	    	 return new CnspPivotConfigurator[] {CONF_0 };
+//	    }
+//	    
+//	    private static final CnspPivotConfigurator CONF_0 = new CnspPivotConfigurator("Default") {
+//	    	private Logger log = LoggerFactory.getLogger(getClass());
+//	    	
+//	    	@Override
+//			public void configure(TabularPivotModel model) {
+////	    		 model.setFieldType("Type", PivotField.Type.ROW);
+//	    		
+//	    		model.setFieldType(CnspPivotCol.TYPE_CATE_TITLE.getColLabel(), PivotField.Type.ROW);
+//	    		model.setFieldType(CnspPivotCol.CNSP_YEARMONTH.getColLabel(), PivotField.Type.COLUMN);
+//	    		model.setFieldType(CnspPivotCol.CNSP_AMOUNT_OUT.getColLabel(), PivotField.Type.DATA);
+//	    		
+////	    		model.getField(CnspPivotCol.TYPE_CATE_TITLE.getColLabel()).getComparator().
+//	    		/* configurator */
+//				model.setFieldKeyComparator(CnspPivotCol.TYPE_CATE_TITLE.getColLabel(),
+//						(o1, o2) -> TypeCategoryEnum.getTitleComparator().compare((String) o1, (String) o2));
+//	    		 
+////	    		 TabularPivotField field =  		 model.getField("Type");
+////				log.debug("{}\t{}\t{}", field.getFieldName(), field.getTitle(), field.getType());
+////				field.
+////				model.getd
+//			}
+//	    	
+//	    	@Override
+//			public void configure(Pivottable table) {
+//	    		table.setDataFieldOrient("row");
+//			}
+//	    	
+//			@Override
+//			public PivotRenderer getRenderer() {
+//				return null; // use default
+//				
+//				//				SimplePivotRenderer r =new SimplePivotRenderer() {
+//				//					@Override
+//				//					public String renderDataField(PivotField _field) {
+//				//						String v = super.renderDataField(_field);
+//				//log.debug("super.renderDataField(_field): {}", super.renderDataField(_field));
+//				//return v;
+//				//					}
+//				//				};
+//				//				return r;
+//			}
+//			
+//			
+//			
+//		};
 	 
 //	    public static final CnspPivotConfigurator CONFIG_PERFORMANCE = new CnspPivotConfigurator("Performance") {
 //	        public void configure(TabularPivotModel model) {
