@@ -38,10 +38,12 @@
 	</MenuItem>
 	<!-- <MenuItem text="帳務資訊(行動版)" navigateUrl="/mobile/account/accountFunction.zul"> 
 	</MenuItem>-->
+	<!-- 
 	<MenuItem text="開發中...">
 		<MenuItem text="Pivot Demo" navigateUrl="/developing/pivotDemo/pivotDemo.zul"></MenuItem>
 		<MenuItem text="Cnsp Pivot Page" navigateUrl="/account/cnspPivot/cnspPivotPage.zul"></MenuItem>
 	</MenuItem>
+	-->
 	
 	<MenuItem text="System">
 		<MenuItem text="About" iconSclass="fa fa-caret-right fa-fw" navigateUrl="/legionmodule/system/about.zul"></MenuItem>
