@@ -1,8 +1,8 @@
 package hms.web.control.zk.developing.pivotDemo;
 
-import org.zkoss.pivot.PivotRenderer;
-import org.zkoss.pivot.Pivottable;
-import org.zkoss.pivot.impl.TabularPivotModel;
+//import org.zkoss.pivot.PivotRenderer;
+//import org.zkoss.pivot.Pivottable;
+//import org.zkoss.pivot.impl.TabularPivotModel;
 
 public abstract class PivotConfigurator {
 	private final String title;
@@ -15,9 +15,9 @@ public abstract class PivotConfigurator {
 		return title;
 	}
 
-	public abstract void configure(TabularPivotModel model);
-
-	public abstract void configure(Pivottable table);
-
-	public abstract PivotRenderer getRenderer();
+//	public abstract void configure(TabularPivotModel model);
+//
+//	public abstract void configure(Pivottable table);
+//
+//	public abstract PivotRenderer getRenderer();
 }
