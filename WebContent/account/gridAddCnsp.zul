@@ -1,0 +1,68 @@
+<?page title="new page title" contentType="text/html;charset=UTF-8"?>
+<zk>
+
+	
+
+
+	<grid id="gridAddCnsp" apply="hms.web.control.zk.account.GridAddCnspComposer" style="overflow:auto">
+		<columns>
+			<column hflex="3" />
+			<column hflex="8" />
+		</columns>
+		<rows>
+			<row>
+				<label value="消費行為"  />
+				<combobox id="cbbBehavior" readonly="true" hflex="1" >
+					<comboitem label="一般消費" />
+					<comboitem label="LINE POINTS折抵" />
+					<comboitem label="悠遊卡折抵" />
+					<comboitem label="一卡通折抵" />
+					<comboitem label="P幣折抵" />
+					<comboitem label="全聯儲值金折抵" />
+					<comboitem label="麥當勞儲值金折抵" />
+				</combobox>
+			</row>
+			<row>
+				<label value="類型目錄" />
+				<combobox id="cbbTypeCategory" readonly="true" hflex="1" />
+			</row>
+			<row>
+				<label value="類型" />
+				<combobox id="cbbType" readonly="true" hflex="1" />
+			</row>
+			<row id="rowDirection">
+				<label value="流向" />
+				<radiogroup id="rgDirection">
+				</radiogroup>
+			</row>
+			<row>
+				<label value="說明" />
+				<textbox id="txbDescription" hflex="1"  />
+			</row>
+			<row>
+				<label value="消費金額" />
+				<intbox id="itbConsumptionAmount" hflex="1" />
+			</row>
+			<row id="rowPaymentType">
+				<label value="付款方式" />
+				<combobox id="cbbPaymentType" hflex="1" readonly="true" />
+			</row>
+			<row id="rowInAdv">
+				<checkbox id="chbInAdv" label="代墊款" checked="false" />
+				<intbox id="itbInAdv" hflex="1" disabled="true" />
+			</row>
+			<row>
+				<label value="消費日期" />
+				<datebox id="dtbConsumptionDate" hflex="1" format="yyyy-MM-dd" />
+			</row>
+			<row>
+				<cell colspan="2" align="center">
+					<hlayout>
+						<button id="btnConfirmAdd" label="送出新增" />
+						<button id="btnResetBlanks" label="重設" />
+					</hlayout>
+				</cell>
+			</row>
+		</rows>
+	</grid>
+</zk>

@@ -1,0 +1,5 @@
+<?page title="new page title" contentType="text/html;charset=UTF-8"?>
+<zk>
+<window border="none" visible="false" apply="hms.web.control.zk.MainComposer">
+</window>
+</zk>
