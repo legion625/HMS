@@ -1,0 +1,79 @@
+@charset "UTF-8";
+
+body {
+	margin: 0;
+	padding: 0;
+}
+
+.header-bar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 60px;
+	background-color: #4A90E2;
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 18px;
+	font-weight: bold;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+	z-index: 1000;
+	letter-spacing: 1px;
+}
+
+.main-content {
+	padding: 70px 12px 90px; /* 避開 header 和 dock */
+}
+
+.dock-bar {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 80px;
+	background-color: #f8f8f8;
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	border-top: 1px solid #ccc;
+	z-index: 1000;
+}
+
+.dock-button {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	color: #333;
+	font-size: 14px;
+}
+
+.dock-button .icon {
+	font-size: 30px; /* 圖示更大 */
+	margin-bottom: 4px;
+}
+
+.dock-button:hover {
+	color: #007bff;
+}
+
+ /* 手機：螢幕寬度小於等於 768px 字體加大 */
+ @media screen and (max-width: 768px) {
+     html body .main-content .z-label,
+     html body .main-content .z-button,
+     html body .main-content .z-textbox,
+     html body .main-content .z-combobox-input,
+     html body .main-content .z-comboitem,
+     html body .main-content .z-intbox,
+     html body .main-content .z-datebox-input,
+     html body .main-content .z-checkbox-content,
+     html body .main-content .z-radio-content {
+         font-size: 18px !important;
+     }
+ }
+ 
+
+

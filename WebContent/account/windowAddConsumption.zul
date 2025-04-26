@@ -2,7 +2,8 @@
 <zk>
 	<window id="wdAddCnsp" title="新增消費" width="500px" vflex="1" mode="highlighted" closable="true" visible="false" sizable="true"
 		apply="hms.web.control.zk.account.WindowAddConsumptionComposer">
-		<grid vflex="1">
+		 <include id="icdAddCnspGrid"/>
+		<!-- <grid vflex="1">
 			<columns>
 				<column hflex="2" />
 				<column hflex="3" />
@@ -31,8 +32,6 @@
 				<row id="rowDirection">
 					<label value="流向" />
 					<radiogroup id="rgDirection">
-					<!-- 	<radio label="出帳" />
-						<radio label="入帳" /> -->
 					</radiogroup>
 				</row>
 				<row>
@@ -64,6 +63,6 @@
 					</cell>
 				</row>
 			</rows>
-		</grid>
+		</grid> -->
 	</window>
 </zk>

@@ -1,0 +1,105 @@
+<?page contentType="text/html;charset=UTF-8"?>
+<zk>
+	<style>
+		.filter-row {
+			padding: 8px;
+			background-color: #f8f8f8;
+			gap: 8px;
+		}
+
+		.advanced-filter {
+			background-color: #f1f1f1;
+			padding: 12px;
+			border-top: 1px solid #ddd;
+		}
+
+		.record-list {
+			padding: 0;
+			margin: 0;
+		}
+
+		.record-card {
+			padding: 12px;
+			border-bottom: 1px solid #e0e0e0;
+			background-color: #ffffff;
+		}
+
+		.record-time {
+			font-size: 12px;
+			color: #888;
+			margin-bottom: 4px;
+		}
+
+		.record-desc {
+			font-size: 16px;
+			font-weight: bold;
+			margin-bottom: 6px;
+		}
+
+		.record-bottom {
+			display: flex;
+			justify-content: space-between;
+			font-size: 14px;
+			color: #444;
+		}
+
+		.record-amount-out {
+			color: #E53935;
+			font-weight: bold;
+		}
+		
+		.record-amount-in {
+			color: #43A047;
+			font-weight: bold;
+		}
+	</style>
+
+	<vlayout width="100%" id="vlyCnspSearchFn" apply="hms.web.control.zk.mobile.account.CnspSearchFnComposer">
+		<!-- <div sclass="header-bar">記帳紀錄</div> -->
+
+		<hlayout sclass="filter-row">
+			<combobox id="cbbRecentCnspPeriod" placeholder="最近消費期間" hflex="1" >
+			<comboitem label="當天"/>
+			<comboitem label="近1週"/>
+			<comboitem label="近1個月"/>
+			<comboitem label="不限"/>
+			</combobox>
+			<combobox id="cbbTypeCate" placeholder="類型目錄" hflex="1" />
+			<button id="btnSearch" label="查詢" width="60px" />
+		</hlayout>
+
+		<vlayout id="advancedFilter" sclass="advanced-filter" visible="false">
+			<textbox id="txbKeyword" placeholder="關鍵字" />
+			<hlayout>
+				<intbox id="intAmountFrom" placeholder="金額下限" hflex="1" />
+				<intbox id="intAmountTo" placeholder="上限" hflex="1" />
+			</hlayout>
+			<combobox id="cbbPayment" placeholder="付款方式" />
+			<button label="查詢" width="100%" />
+		</vlayout>
+
+		<vlayout id="vlyCnspList" sclass="record-list" use="hms.web.zk.ModelVlayout">
+			<!-- <vlayout sclass="record-card">
+				<label value="2025-04-16 08:45" sclass="record-time" />
+				<label value="星巴克 / 早餐" sclass="record-desc" />
+				<hlayout sclass="record-bottom">
+					<label value="- $120" sclass="record-amount" />
+					<label value="信用卡" />
+				</hlayout>
+			</vlayout>
+
+			<vlayout sclass="record-card">
+				<label value="2025-04-15 19:20" sclass="record-time" />
+				<label value="家樂福 / 日用品" sclass="record-desc" />
+				<hlayout sclass="record-bottom">
+					<label value="- $289" sclass="record-amount" />
+					<label value="Line Pay" />
+				</hlayout>
+			</vlayout> -->
+
+			<!-- 更多紀錄... -->
+		</vlayout>
+	</vlayout>
+
+	
+</zk>
