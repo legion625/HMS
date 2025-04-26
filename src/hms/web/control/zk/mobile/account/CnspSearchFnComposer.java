@@ -74,7 +74,8 @@ public class CnspSearchFnComposer  extends SelectorComposer<Component>{
             card.setSclass("record-card");
 
             
-			Label lbCnspDate = new Label(DateFormatUtil.transToDate(DateUtil.toDate(cnsp.getDate())));
+//			Label lbCnspDate = new Label(DateFormatUtil.transToDate(DateUtil.toDate(cnsp.getDate()))); FIXME 這個轉換有錯。
+            Label lbCnspDate = new Label(cnsp.getDate().toString());
 			lbCnspDate.setSclass("record-time");
 			card.appendChild(lbCnspDate);
 
@@ -85,14 +86,15 @@ public class CnspSearchFnComposer  extends SelectorComposer<Component>{
 			Hlayout bottom = new Hlayout();
 			bottom.setSclass("record-bottom");
 
-			Label lbAmount = new Label(NumberFormatUtil.getIntegerString(cnsp.getAmount())+"  "+ cnsp.getDirection().getName());
+//			Label lbAmount = new Label(NumberFormatUtil.getIntegerString(cnsp.getAmount())+"  "+ cnsp.getDirection().getName());
+			Label lbAmount = new Label(NumberFormatUtil.getIntegerString(cnsp.getAmount()));
 			if (DirectionEnum.OUT == cnsp.getDirection())
 				lbAmount.setSclass("record-amount-out");
 			else if (DirectionEnum.IN == cnsp.getDirection() || DirectionEnum.IN_ADV == cnsp.getDirection())
 				lbAmount.setSclass("record-amount-in");
 			bottom.appendChild(lbAmount);
 
-            Label lbPmType = new Label(cnsp.getPaymentType().getName());
+            Label lbPmType = new Label(cnsp.getPaymentType().getName()+"  "+ cnsp.getDirection().getName());
             bottom.appendChild(lbPmType);
             card.appendChild(bottom);
             parent.appendChild(card);
