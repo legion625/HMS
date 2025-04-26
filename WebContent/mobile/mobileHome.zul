@@ -1,0 +1,40 @@
+<zk>
+	<vlayout id="main" width="100%" apply="hms.web.control.zk.mobile.MobileHomeComposer">
+
+		<!-- Header -->
+		<div sclass="header-bar">
+			<label value="Household Management System" sclass="header-bar"></label>
+		</div>
+
+		<!-- 主內容 -->
+		<vlayout sclass="main-content">
+			<include id="icdMainContent" />
+		</vlayout>
+
+		<!-- Bottom Dock -->
+		<div sclass="dock-bar">
+			<div id="btnCreateCnsp" sclass="dock-button" >
+				<span sclass="fas fa-pencil-alt icon" />
+				<span>記帳</span>
+			</div>
+			<div id="btnGotoCnspSearchFnPage" sclass="dock-button" >
+				<span class="fas fa-search icon" />
+				<span>查詢</span>
+			</div>
+			<!-- <div class="dock-button" onClick="zkSeldirect('chart.zul')">
+				<span class="fas fa-chart-bar icon" />
+				<span>統計</span>
+			</div>
+			<div class="dock-button" onClick="zkSeldirect('settings.zul')">
+				<span class="fas fa-cog icon" />
+				<span>設定</span>
+			</div> -->
+		</div>
+	</vlayout>
+
+	<script type="text/javascript">
+		function zkSeldirect(url) {
+			zAu.send(new zk.Event(zk.Widget.$('$main'), 'onRedirect', url));
+		}
+	</script>
+</zk>

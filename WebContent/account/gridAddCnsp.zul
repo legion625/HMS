@@ -1,53 +1,17 @@
 <?page title="new page title" contentType="text/html;charset=UTF-8"?>
 <zk>
-	<!-- <style>
-		@media screen and (max-width: 768px) { .responsive-text { font-size: 18px !important; } }
 
-		@media screen and (min-width: 769px) { .responsive-text { font-size: 14px !important; } }
-	</style> -->
 	
-	
-	<style>
-    /* 手機：螢幕寬度小於等於 768px 字體加大 */
-    @media screen and (max-width: 768px) {
-        .z-label,
-        .z-button,
-        .z-textbox,
-        .z-combobox-input,
-        .z-comboitem,
-        .z-intbox,
-        .z-datebox-input,
-        .z-checkbox-content,
-        .z-radio-content {
-            font-size: 18px !important;
-        }
-    }
-
-    /* 桌機：預設字體小一點 */
-    /*@media screen and (min-width: 769px) {
-        .z-label,
-        .z-button,
-        .z-textbox,
-        .z-combobox-input,
-        .z-comboitem,
-        .z-intbox,
-        .z-datebox-input,
-        .z-checkbox-content,
-        .z-radio-content {
-            font-size: 14px !important;
-        }
-    }*/
-</style>
 
 
 	<grid id="gridAddCnsp" apply="hms.web.control.zk.account.GridAddCnspComposer" style="overflow:auto">
 		<columns>
-			<column hflex="1" />
-			<column hflex="2" />
+			<column hflex="3" />
+			<column hflex="8" />
 		</columns>
 		<rows>
 			<row>
-				<label value="消費行為" sclass="responsive-text" />
+				<label value="消費行為"  />
 				<combobox id="cbbBehavior" readonly="true" hflex="1" >
 					<comboitem label="一般消費" />
 					<comboitem label="LINE POINTS折抵" />
@@ -59,45 +23,43 @@
 				</combobox>
 			</row>
 			<row>
-				<label value="類型目錄" sclass="responsive-text"/>
+				<label value="類型目錄" />
 				<combobox id="cbbTypeCategory" readonly="true" hflex="1" />
 			</row>
 			<row>
-				<label value="類型" sclass="responsive-text"/>
+				<label value="類型" />
 				<combobox id="cbbType" readonly="true" hflex="1" />
 			</row>
 			<row id="rowDirection">
-				<label value="流向" sclass="responsive-text"/>
+				<label value="流向" />
 				<radiogroup id="rgDirection">
-					<!-- 	<radio label="出帳" />
-						<radio label="入帳" /> -->
 				</radiogroup>
 			</row>
 			<row>
-				<label value="說明" sclass="responsive-text"/>
-				<textbox id="txbDescription" hflex="1" sclass="responsive-text" />
+				<label value="說明" />
+				<textbox id="txbDescription" hflex="1"  />
 			</row>
 			<row>
-				<label value="消費金額" sclass="responsive-text"/>
+				<label value="消費金額" />
 				<intbox id="itbConsumptionAmount" hflex="1" />
 			</row>
 			<row id="rowPaymentType">
-				<label value="付款方式" sclass="responsive-text"/>
+				<label value="付款方式" />
 				<combobox id="cbbPaymentType" hflex="1" readonly="true" />
 			</row>
 			<row id="rowInAdv">
-				<checkbox id="chbInAdv" label="代墊款" checked="false" sclass="responsive-text"/>
+				<checkbox id="chbInAdv" label="代墊款" checked="false" />
 				<intbox id="itbInAdv" hflex="1" disabled="true" />
 			</row>
 			<row>
-				<label value="消費日期" sclass="responsive-text"/>
-				<datebox id="dtbConsumptionDate" hflex="1" format="yyyy-MM-dd" sclass="responsive-text"/>
+				<label value="消費日期" />
+				<datebox id="dtbConsumptionDate" hflex="1" format="yyyy-MM-dd" />
 			</row>
 			<row>
 				<cell colspan="2" align="center">
 					<hlayout>
-						<button id="btnConfirmAdd" label="送出新增" sclass="responsive-text"/>
-						<button id="btnResetBlanks" label="重設" sclass="responsive-text"/>
+						<button id="btnConfirmAdd" label="送出新增" />
+						<button id="btnResetBlanks" label="重設" />
 					</hlayout>
 				</cell>
 			</row>

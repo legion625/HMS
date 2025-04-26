@@ -14,7 +14,7 @@ public class MainComposer extends GenericForwardComposer<Component> {
 		boolean isMobile = Executions.getCurrent().getBrowser("mobile") != null;
 
 		if (isMobile) {
-			Executions.sendRedirect("mobileHome.zul");
+			Executions.sendRedirect("mobile/mobileHome.zul");
 		} else {
 			Executions.sendRedirect("legionmodule/main.zul");
 		}

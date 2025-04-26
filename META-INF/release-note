@@ -1,3 +1,11 @@
+Min-Hua, 2025.04.26
+[change]
+1. 提供響應式的手機版畫面。
+
+[deployment]
+1. web.xml的welcome-file改指定自訂的main.zul，再透過此zul檔轉址：電腦版用原本的legionmodule/main.zul；手機版用mobile/mobileHome.zul。
+2. zk.xml新增手機版的css描述檔：<theme-uri>/css/mobile.css</theme-uri>
+
 ------------------------------------------------------------------------------
 v1.0.2 released by Min-Hua, 2025.04.16
 [change]
