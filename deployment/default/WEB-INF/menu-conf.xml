@@ -46,8 +46,8 @@
 	-->
 	
 	<MenuItem text="System">
-		<MenuItem text="About" iconSclass="fa fa-caret-right fa-fw" navigateUrl="/legionmodule/system/about.zul"></MenuItem>
-		<MenuItem text="System attributes" iconSclass="fa fa-caret-right fa-fw" navigateUrl="/legionmodule/system/sysAttrPage.zul"></MenuItem>
+		<MenuItem text="About" iconSclass="fa fa-genderless fa-fw" navigateUrl="/legionmodule/system/about.zul"></MenuItem>
+		<MenuItem text="System attributes" iconSclass="fa fa-genderless fa-fw" navigateUrl="/legionmodule/system/sysAttrPage.zul"></MenuItem>
 	</MenuItem>
 
 </Menu>
