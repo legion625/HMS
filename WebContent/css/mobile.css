@@ -61,7 +61,7 @@ body {
 }
 
  /* 手機：螢幕寬度小於等於 768px 字體加大 */
- @media screen and (max-width: 768px) {
+ /*@media screen and (max-width: 768px) {
      html body .main-content .z-label,
      html body .main-content .z-button,
      html body .main-content .z-textbox,
@@ -74,6 +74,6 @@ body {
          font-size: 18px !important;
      }
  }
- 
+ */
 
 
