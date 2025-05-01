@@ -31,7 +31,7 @@
 	</servlet>
 	<servlet>
         <servlet-name>HealthCheckServlet</servlet-name>
-        <servlet-class>hms.web.HealthCheckServlet</servlet-class>
+        <servlet-class>legion.web.HealthCheckServlet</servlet-class>
     </servlet>
 	<servlet-mapping>
 		<servlet-name>zkLoader</servlet-name>
