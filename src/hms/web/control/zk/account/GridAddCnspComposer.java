@@ -104,7 +104,7 @@ public class GridAddCnspComposer extends SelectorComposer<Component> {
 	// -------------------------------------------------------------------------------
 	public void init(Consumer<Set<Consumption>> csmAfterAddingCnsp) {
 		/* init cbbTypeCategory items */
-		ZKUtil.configureConsumptionTypeCategory(cbbTypeCategory);
+		ZKUtil.configureConsumptionTypeCategory(cbbTypeCategory, false);
 		cbbTypeCategory.addEventListener(Events.ON_SELECT, cnspCateSyncEl);
 
 		/* init rgDirection radios */
@@ -116,7 +116,8 @@ public class GridAddCnspComposer extends SelectorComposer<Component> {
 		}
 
 		/* init cbbPaymentType items */
-		ZKUtil.configurePaymentType(cbbPaymentType);
+//		ZKUtil.configurePaymentType(cbbPaymentType);
+		ZkUtil.initCbb(cbbPaymentType, PaymentTypeEnum.values(false), false);
 
 		//
 		resetBlanks();

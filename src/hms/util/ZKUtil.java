@@ -22,10 +22,15 @@ public class ZKUtil {
 		return (T) _icd.getFellow(_cpnId).getAttribute("$composer");
 	}
 	
-	public static void configureConsumptionTypeCategory(Combobox _cbb) {
+	public static void configureConsumptionTypeCategory(Combobox _cbb, boolean _containsBlank) {
 		if(_cbb==null)
 			return;
 		_cbb.getChildren().clear();
+		
+		if (_containsBlank) {
+			_cbb.appendChild(new Comboitem());
+		}
+		
 		for (TypeCategoryEnum e : TypeCategoryEnum.values(false)) {
 			Comboitem cbi = new Comboitem(e.getTitle());
 			cbi.setValue(e);

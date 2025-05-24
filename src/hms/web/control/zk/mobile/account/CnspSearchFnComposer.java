@@ -7,17 +7,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.slf4j.event.Level;
+import org.zkoss.util.logging.Log;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Listen;
 import org.zkoss.zk.ui.select.annotation.Wire;
+import org.zkoss.zul.Button;
 import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Hlayout;
 import org.zkoss.zul.Include;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.ListitemRenderer;
+import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Vlayout;
 
 import hms.util.ZKUtil;
@@ -28,9 +31,11 @@ import hms_kernel.account.AccountService;
 import hms_kernel.account.Consumption;
 import hms_kernel.account.ConsumptionSearchParam;
 import hms_kernel.account.DirectionEnum;
+import hms_kernel.account.PaymentTypeEnum;
 import hms_kernel.account.TypeCategoryEnum;
 import hms_kernel.account.TypeEnum;
 import legion.BusinessServiceFactory;
+import legion.util.DataFO;
 import legion.util.DateFormatUtil;
 import legion.util.DateUtil;
 import legion.util.LogUtil;
@@ -40,20 +45,28 @@ import legion.web.zk.ZkUtil;
 public class CnspSearchFnComposer  extends SelectorComposer<Component>{
 	
 	private final static String SRC = "/mobile/account/cnspSearchFn.zul";
-	
-	
+
 	public static CnspSearchFnComposer of(Include _icd) {
 		return ZkUtil.of(_icd, SRC, "vlyCnspSearchFn");
 	}
-	
+
 	@Wire
 	private Combobox cbbRecentCnspPeriod;
 	@Wire
 	private Combobox cbbTypeCate;
-	
+
+	@Wire 
+	private Button btnAdvancedFilter;
+	@Wire
+	private Vlayout vlyAdvancedFilter;
+	@Wire
+	private Textbox txbDesp;
+	@Wire
+	private Combobox cbbPmType, cbbDirection;
+
 	@Wire
 	private ModelVlayout<Consumption> vlyCnspList;
-	
+
 	// -------------------------------------------------------------------------------
 	@Override
 	public void doAfterCompose(Component comp) {
@@ -68,12 +81,15 @@ public class CnspSearchFnComposer  extends SelectorComposer<Component>{
 	
 	private void init() {
 		
-		ZKUtil.configureConsumptionTypeCategory(cbbTypeCate);
+		ZKUtil.configureConsumptionTypeCategory(cbbTypeCate, true);
+		ZkUtil.initCbb(cbbPmType, PaymentTypeEnum.values(false), true);
+		ZkUtil.initCbb(cbbDirection, DirectionEnum.values(false), true);
+		
+		//
 		ItemRenderer<Consumption> renderer =  (Vlayout parent, Consumption cnsp, int i) -> {
 			Vlayout card = new Vlayout();
             card.setSclass("record-card");
 
-            
 //			Label lbCnspDate = new Label(DateFormatUtil.transToDate(DateUtil.toDate(cnsp.getDate()))); FIXME 這個轉換有錯。
             Label lbCnspDate = new Label(cnsp.getDate().toString());
 			lbCnspDate.setSclass("record-time");
@@ -102,9 +118,31 @@ public class CnspSearchFnComposer  extends SelectorComposer<Component>{
 		vlyCnspList.setItemRenderer(renderer);
 	}
 
+	
+	// -------------------------------------------------------------------------------
+	@Listen(Events.ON_CLICK + "=#btnAdvancedFilter")
+	public void btnAdvancedFilter_clicked() {
+		if (vlyAdvancedFilter.isVisible())
+			hideAdvancedFilter();
+		else
+			showAdvancedFilter();
+	}
+
+	private void showAdvancedFilter() {
+		vlyAdvancedFilter.setVisible(true);
+		btnAdvancedFilter.setIconSclass("fa fa-arrow-up");
+		btnAdvancedFilter.setLabel("收合條件");
+	}
+
+	private void hideAdvancedFilter() {
+		vlyAdvancedFilter.setVisible(false);
+		btnAdvancedFilter.setIconSclass("fa fa-arrow-down");
+		btnAdvancedFilter.setLabel("更多條件");
+	}
+
 	// -------------------------------------------------------------------------------
 	public void defaultSearch() {
-		cbbRecentCnspPeriod.setSelectedIndex(1);
+		cbbRecentCnspPeriod.setSelectedIndex(0);
 		btnSearch_clicked();
 	}
 	
@@ -114,16 +152,20 @@ public class CnspSearchFnComposer  extends SelectorComposer<Component>{
 
 		ConsumptionSearchParam param = new ConsumptionSearchParam();
 
+		/* conditions */
 		//
 		LocalDate nowDate = LocalDate.now();
 		switch (cbbRecentCnspPeriod.getSelectedIndex()) {
 		case 0: // 當日
 			param.setConsumptionDateStart(nowDate);
 			break;
-		case 1: // 近1週
+		case 1: // 近3天
+			param.setConsumptionDateStart(nowDate.minusDays(3));
+			break;
+		case 2: // 近1週
 			param.setConsumptionDateStart(nowDate.minusWeeks(1));
 			break;
-		case 2: // 近1月
+		case 3: // 近1月
 			param.setConsumptionDateStart(nowDate.minusMonths(1));
 			break;
 		default: // 不限
@@ -131,7 +173,7 @@ public class CnspSearchFnComposer  extends SelectorComposer<Component>{
 		}
 
 		//
-		if (cbbTypeCate.getSelectedItem() != null) {
+		if (cbbTypeCate.getSelectedItem() != null && cbbTypeCate.getSelectedItem().getValue()!=null) {
 			TypeCategoryEnum typeCate = cbbTypeCate.getSelectedItem().getValue();
 			List<TypeEnum> typeList = new ArrayList<>();
 			for (TypeEnum type : acntService.getTypes(typeCate, false))
@@ -140,6 +182,28 @@ public class CnspSearchFnComposer  extends SelectorComposer<Component>{
 
 		}
 
+		if (vlyAdvancedFilter.isVisible()) {
+			// 消費說明
+			String desp = txbDesp.getValue();
+			if (!DataFO.isEmptyString(desp)) {
+				desp = "%" + desp + "%";
+				param.setDescription(desp);
+			}
+			// 付款方式
+			if (cbbPmType.getSelectedItem() != null &&  cbbPmType.getSelectedItem().getValue()!=null) {
+				List<PaymentTypeEnum> list = new ArrayList<>();
+				list.add(cbbPmType.getSelectedItem().getValue());
+				param.setPaymentTypeList(list);
+			}
+			
+			// 流向
+			if (cbbDirection.getSelectedItem() != null &&  cbbDirection.getSelectedItem().getValue()!=null) {
+				param.setDirection(cbbDirection.getSelectedItem().getValue());
+			}
+		}
+		
+
+		/* search */
 		// data
 		List<Consumption> cnspList = acntService.searchConsumptions(param, false);
 		cnspList = cnspList.stream().sorted(Comparator.comparing(Consumption::getDate).thenComparing(Consumption::getObjectCreateTime).reversed())

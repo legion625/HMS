@@ -19,21 +19,21 @@
 		}
 
 		.record-card {
-			padding: 12px;
+			padding: 6px;
 			border-bottom: 1px solid #e0e0e0;
 			background-color: #ffffff;
 		}
 
 		.record-time {
-			font-size: 12px;
+			font-size: 14px;
 			color: #888;
-			margin-bottom: 4px;
+			margin-bottom: 2px;
 		}
 
 		.record-desc {
 			font-size: 16px;
 			font-weight: bold;
-			margin-bottom: 6px;
+			margin-bottom: 3px;
 		}
 
 		.record-bottom {
@@ -46,11 +46,13 @@
 		.record-amount-out {
 			color: #E53935;
 			font-weight: bold;
+			font-size: 16px;
 		}
 		
 		.record-amount-in {
 			color: #43A047;
 			font-weight: bold;
+			font-size: 16px;
 		}
 	</style>
 
@@ -60,22 +62,27 @@
 		<hlayout sclass="filter-row">
 			<combobox id="cbbRecentCnspPeriod" placeholder="最近消費期間" hflex="1" >
 			<comboitem label="當天"/>
+			<comboitem label="近3天"/>
 			<comboitem label="近1週"/>
 			<comboitem label="近1個月"/>
 			<comboitem label="不限"/>
 			</combobox>
-			<combobox id="cbbTypeCate" placeholder="類型目錄" hflex="1" />
+			<combobox id="cbbTypeCate" placeholder="類型目錄" readonly="true" hflex="1" />
+			<toolbarbutton id="btnAdvancedFilter" label="更多條件" iconSclass="fa fa-arrow-down" width="80px" />
 			<button id="btnSearch" label="查詢" width="60px" />
 		</hlayout>
-
-		<vlayout id="advancedFilter" sclass="advanced-filter" visible="false">
-			<textbox id="txbKeyword" placeholder="關鍵字" />
-			<hlayout>
+		<vlayout id="vlyAdvancedFilter" sclass="advanced-filter" visible="false">
+			<textbox id="txbDesp" placeholder="消費說明" hflex="1"/>
+			<!-- <hlayout>
 				<intbox id="intAmountFrom" placeholder="金額下限" hflex="1" />
 				<intbox id="intAmountTo" placeholder="上限" hflex="1" />
+			</hlayout> -->
+			<hlayout>
+			<combobox id="cbbPmType" placeholder="付款方式" readonly="true" hflex="1" />
+			<combobox id="cbbDirection" placeholder="流向" readonly="true" hflex="1" />
 			</hlayout>
-			<combobox id="cbbPayment" placeholder="付款方式" />
-			<button label="查詢" width="100%" />
+			
+			<!-- <button label="查詢" width="100%" /> -->
 		</vlayout>
 
 		<vlayout id="vlyCnspList" sclass="record-list" use="hms.web.zk.ModelVlayout">
