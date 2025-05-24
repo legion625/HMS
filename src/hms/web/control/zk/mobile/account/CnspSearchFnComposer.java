@@ -142,7 +142,7 @@ public class CnspSearchFnComposer  extends SelectorComposer<Component>{
 
 		// data
 		List<Consumption> cnspList = acntService.searchConsumptions(param, false);
-		cnspList = cnspList.stream().sorted(Comparator.comparing(Consumption::getDate).reversed())
+		cnspList = cnspList.stream().sorted(Comparator.comparing(Consumption::getDate).thenComparing(Consumption::getObjectCreateTime).reversed())
 				.collect(Collectors.toList());
 
 		// 轉成model
