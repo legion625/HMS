@@ -1,11 +1,13 @@
 package hms.web.control.zk.account;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,7 +125,7 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		windowAddConsumptionComposer.init(csmAfterAddingCnsp);
 
 		/* init cbbTypeCategory items */
-		ZKUtil.configureConsumptionTypeCategory(cbbTypeCategory);
+		ZKUtil.configureConsumptionTypeCategory(cbbTypeCategory, true);
 
 		/* init cbbDirection */
 		ZkUtil.initCbb(cbbDirection, DirectionEnum.values(false), true);
@@ -210,6 +212,9 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		param.setPayDateEnd(DateFormatUtil.parseLocalDate(dtbPayDateEnd.getValue()));
 
 		cnspList = accountService.searchConsumptions(param, true);
+		cnspList = cnspList.stream().sorted(Comparator.comparing(Consumption::getDate).thenComparing(Consumption::getObjectCreateTime))
+				.collect(Collectors.toList());
+
 		// result list page
 		refreshConsumptionContainer(cnspList);
 //		// pivot
