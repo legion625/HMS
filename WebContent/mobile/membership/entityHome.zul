@@ -1,0 +1,176 @@
+<?page title="new page title" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<!-- <style>
+		
+		.record-card {
+		border: 1px solid #ddd;
+		padding: 10px;
+		border-radius: 12px;
+		margin-bottom: 10px;
+		background-color: #fefefe;
+		}
+		
+		.record-desc {
+		font-weight: bold;
+		font-size: 16px;
+		}
+		
+		.record-note {
+		font-size: 14px;
+		color: #666;
+		}
+		</style> -->
+
+
+<style>
+
+	.record-desc {
+		font-weight: bold;
+		font-size: 16px;
+		}
+
+    .swipe-container {
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+
+    .swipe-content {
+      background: #fff;
+      /* padding: 16px; */
+      padding: 6px;
+      border: 1px solid red;
+      transition: transform 0.3s ease;
+    }
+
+    .swipe-actions {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+      display: flex;
+      /* background: #f44336; */
+      background: #4A90E2;
+      transition: transform 0.3s ease;
+    }
+
+    .swipe-action {
+      color: white;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      /* background: #f44336; */
+      background: #4A90E2;
+      
+      font-weight: bold;
+    }
+
+    .swipe-container.swiped .swipe-content {
+      transform: translateX(-120px); /* 根據按鈕寬度調整 */
+    }
+
+    .swipe-container.swiped .swipe-actions {
+      transform: translateX(0);
+    }
+
+    .swipe-actions {
+      transform: translateX(120px);
+    }
+  </style>
+  
+ <script type="text/javascript"><![CDATA[
+    zk.afterMount(function () {
+      document.querySelectorAll('.swipe-container').forEach(function (el) {
+        let startX = 0, currentX = 0;
+
+        el.addEventListener('touchstart', function (e) {
+          startX = e.touches[0].clientX;
+        });
+
+        el.addEventListener('touchmove', function (e) {
+          currentX = e.touches[0].clientX;
+        });
+
+        el.addEventListener('touchend', function (e) {
+          let deltaX = currentX - startX;
+          if (deltaX < -50) {
+            // 先收合其他項目
+            document.querySelectorAll('.swipe-container.swiped').forEach(function (other) {
+              other.classList.remove('swiped');
+            });
+            el.classList.add('swiped');
+          } else if (deltaX > 50) {
+            el.classList.remove('swiped');
+          }
+        });
+      });
+
+      document.addEventListener('click', function (e) {
+        // 如果點在功能按鈕上，就略過
+        if (e.target.closest('.swipe-action')) return;
+
+        // 其他情況一律收合
+        document.querySelectorAll('.swipe-container.swiped').forEach(function (el) {
+          el.classList.remove('swiped');
+        });
+      });
+    });
+  ]]></script>
+
+
+
+	<vlayout id="vlyEntityHome" hflex="1" apply="hms.web.control.zk.mobile.membership.EntityHomeComposer">
+
+		<groupbox title="家庭成員管理" hflex="1">
+
+			<!-- 新增區塊 -->
+			<hlayout hflex="1">
+				<textbox id="txbAlias" placeholder="名稱" width="80px" />
+				<combobox id="cbbType" placeholder="類型" width="60px">
+					<comboitem label="人" value="person" />
+					<comboitem label="動產" value="vehicle" />
+					<comboitem label="不動產" value="property" />
+				</combobox>
+				<!-- <datebox id="dtbBirthDate" placeholder="生日" hflex="1"/> -->
+				<button id="btnAddEntity" label="新增" />
+			</hlayout>
+
+			<!-- 查詢結果列表 -->
+			<vlayout id="vlyEntityList" sclass="record-list" use="hms.web.zk.ModelVlayout">
+				<div sclass="swipe-container">
+					<div sclass="swipe-content">
+						<label value="HANA / 人 / 2017-05-12" sclass="record-desc" />
+					</div>
+					<div sclass="swipe-actions">
+						<button sclass="swipe-action" label="編輯" />
+						<button sclass="swipe-action" label="刪除" />
+					</div>
+				</div>
+				<div sclass="swipe-container">
+					<div sclass="swipe-content">
+						<label value="KUNI / 人 / 2019-03-21" sclass="record-desc"/>
+					</div>
+					<div sclass="swipe-actions">
+						<button sclass="swipe-action" label="編輯" />
+						<button id="btnTest" sclass="swipe-action" iconSclass="fa fa-trash fa-2x" />
+					</div>
+				</div>
+			</vlayout>
+
+			<!-- TEST -->
+		<vlayout>
+    <div sclass="swipe-container">
+      <div sclass="swipe-content">
+        <label value="這是記錄項目" />
+      </div>
+      <div sclass="swipe-actions">
+        <button sclass="swipe-action" label="編輯" />
+        <button sclass="swipe-action" label="刪除" />
+      </div>
+    </div>
+  </vlayout>
+
+
+		</groupbox>
+	</vlayout>
+</zk>

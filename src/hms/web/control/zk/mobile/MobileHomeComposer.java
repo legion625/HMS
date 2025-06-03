@@ -9,6 +9,7 @@ import org.zkoss.zul.Include;
 
 import hms.web.control.zk.account.GridAddCnspComposer;
 import hms.web.control.zk.mobile.account.CnspSearchFnComposer;
+import hms.web.control.zk.mobile.membership.EntityHomeComposer;
 
 public class MobileHomeComposer extends SelectorComposer<Component> {
 
@@ -25,6 +26,13 @@ public class MobileHomeComposer extends SelectorComposer<Component> {
 	public void btnGotoCnspSearchFnPage_clicked() {
 		CnspSearchFnComposer c = CnspSearchFnComposer.of(icdMainContent);
 		c.defaultSearch();
+	}
+	
+	
+	@Listen(Events.ON_CLICK + "=#btnGotoEntityPage")
+	public void btnGotoEntityPage_clicked() {
+		EntityHomeComposer c = EntityHomeComposer.of(icdMainContent);
+		c.loadEntities();
 	}
 	
 	

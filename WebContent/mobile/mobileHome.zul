@@ -1,4 +1,6 @@
 <zk>
+
+
 	<vlayout id="main" width="100%" apply="hms.web.control.zk.mobile.MobileHomeComposer">
 
 		<!-- Header -->
@@ -17,14 +19,15 @@
 				<span sclass="fas fa-pencil-alt icon" />
 				<span>記帳</span>
 			</div>
-			<div id="btnGotoCnspSearchFnPage" sclass="dock-button" >
+			<div id="btnGotoCnspSearchFnPage" sclass="dock-button">
 				<span class="fas fa-search icon" />
 				<span>查詢</span>
 			</div>
-			<!-- <div class="dock-button" onClick="zkSeldirect('chart.zul')">
+			<div id="btnGotoEntityPage" sclass="dock-button">
 				<span class="fas fa-chart-bar icon" />
-				<span>統計</span>
+				<span>成員</span>
 			</div>
+			<!--
 			<div class="dock-button" onClick="zkSeldirect('settings.zul')">
 				<span class="fas fa-cog icon" />
 				<span>設定</span>

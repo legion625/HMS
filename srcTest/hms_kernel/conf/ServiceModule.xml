@@ -6,6 +6,7 @@
 		<Service name="SystemService" interface="legion.system.SystemService" imp="legion.system.SystemServiceImp" />
 		<!-- hms -->
 		<Service name="AccountService" interface="hms_kernel.account.AccountService" imp="hms_kernel.account.AccountServiceImp" />
+		
 		<!--
 		<Service name="InvtService" interface="ekp.invt.InvtService" imp="ekp.invt.InvtServiceImp" />
 		<Service name="MbomService" interface="ekp.mbom.MbomService" imp="ekp.mbom.MbomServiceImp" />
@@ -25,6 +26,9 @@
 		</Service>
 		<!-- hms -->
 		<Service name="AccountDataService" interface="hms_kernel.data.account.AccountDataService" imp="hms_kernel.data.account.AccountDataServiceImp">
+			<Parameter name="source" value="hms" />
+		</Service>
+		<Service name="MembershipDataService" interface="hms_kernel.data.membership.MembershipDataService" imp="hms_kernel.data.membership.MembershipDataServiceImp">
 			<Parameter name="source" value="hms" />
 		</Service>
 		

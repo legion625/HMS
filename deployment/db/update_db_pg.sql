@@ -40,5 +40,18 @@ CREATE TABLE payment (
     PRIMARY KEY (uid)
 );
 
--- hms_dev
 -- hms_release
+
+-- 1.1.3 -> unstaging
+CREATE TABLE mbr_entity
+(
+    uid character varying NOT NULL,
+    alias character varying,
+    type_idx smallint,
+    birth_date bigint,
+    object_create_time bigint,
+    object_update_time bigint,
+    PRIMARY KEY (uid)
+);
+
+-- hms_dev
