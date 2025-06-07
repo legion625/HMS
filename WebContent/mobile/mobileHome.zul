@@ -24,8 +24,8 @@
 				<span>查詢</span>
 			</div>
 			<div id="btnGotoEntityPage" sclass="dock-button">
-				<span class="fas fa-chart-bar icon" />
-				<span>成員</span>
+				<span class="fas fa-cog icon" />
+				<span>設定</span>
 			</div>
 			<!--
 			<div class="dock-button" onClick="zkSeldirect('settings.zul')">

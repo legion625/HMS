@@ -70,6 +70,10 @@ public class Entity extends HmsObjectModel {
 		return (getType() == null ? EntityType.UNDEFINED : getType()).getName();
 	}
 
+	public String getBirthDateStr() {
+		return getBirthDate() <= 0 ? "(未指定)" : DateFormatUtil.transToDate(new Date(getBirthDate()));
+	}
+	
 	// -------------------------------------------------------------------------------
 	// ----------------------------------ObjectModel----------------------------------
 	@Override
@@ -84,11 +88,11 @@ public class Entity extends HmsObjectModel {
 
 	// -------------------------------------------------------------------------------
 	// ------------------------------------Entity-------------------------------------
-	public static Entity create(String _alias, EntityType _type) {
+	public static Entity create(String _alias, EntityType _type, long _birthDate) {
 		Entity ett = newInstance();
 		ett.setAlias(_alias);
 		ett.setType(_type);
-		ett.setBirthDate(0); // not assigned yet
+		ett.setBirthDate(_birthDate);
 		return ett.save() ? ett : null;
 	}
 

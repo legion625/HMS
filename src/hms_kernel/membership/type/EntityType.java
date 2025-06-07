@@ -3,7 +3,7 @@ package hms_kernel.membership.type;
 import legion.type.IdxEnum;
 
 public enum EntityType implements IdxEnum {
-	UNDEFINED(0, "未定義"), HUMAN(1, "人"), VEHICLE(2, "動產"), PROPERTY(3, "不動產");
+	UNDEFINED(0, "未定義"), HUMAN(1, "人"),  PROPERTY(2, "不動產"),  VEHICLE(3, "動產"), STUFF(4,"物品");
 
 	private int idx;
 	private String name;
