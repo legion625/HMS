@@ -19,7 +19,6 @@ import legion.data.service.PgDao;
 import legion.util.DataFO;
 import legion.util.LogUtil;
 
-//public class AccountDao extends AbstractMySqlDao {
 public class AccountDao extends PgDao {
 	protected AccountDao(String source) {
 		super(source);
@@ -119,12 +118,13 @@ public class AccountDao extends PgDao {
 						+ "'";
 			/* payDateStart */
 			if (_searchParam.getPayDateStart() != null)
-				qstr += " and " + COL_UID + " in (select "+COL_PAYMENT_CONSUMPTION_UID+" from " + TABLE_PAYMENT + " where "
-						+ COL_PAYMENT_DATE + " >= '" + _searchParam.getPayDateStart().toString() + "'" + ")";
+				qstr += " and " + COL_UID + " in (select " + COL_PAYMENT_CONSUMPTION_UID + " from " + TABLE_PAYMENT
+						+ " where " + COL_PAYMENT_DATE + " >= '" + _searchParam.getPayDateStart().toString() + "'"
+						+ ")";
 			/* payDateEnd */
 			if (_searchParam.getPayDateEnd() != null)
-				qstr += " and " + COL_UID + " in (select "+COL_PAYMENT_CONSUMPTION_UID+" from " + TABLE_PAYMENT + " where "
-						+ COL_PAYMENT_DATE + " <= '" + _searchParam.getPayDateEnd().toString() + "'" + ")";
+				qstr += " and " + COL_UID + " in (select " + COL_PAYMENT_CONSUMPTION_UID + " from " + TABLE_PAYMENT
+						+ " where " + COL_PAYMENT_DATE + " <= '" + _searchParam.getPayDateEnd().toString() + "'" + ")";
 
 //			qstr += " order by " + COL_CONSUMPTION_DATE + " desc";
 			qstr += " order by " + COL_CONSUMPTION_DATE + " asc";
@@ -161,9 +161,9 @@ public class AccountDao extends PgDao {
 	boolean savePayment(Payment _payment) {
 		DbColumn<Payment>[] cols = new DbColumn[] {
 				DbColumn.of(COL_PAYMENT_CONSUMPTION_UID, ColType.STRING, Payment::getConsumptionUid),
-				DbColumn.of(COL_PAYMENT_DATE, ColType.STRING, (Payment pm)->pm.getDate() == null ? null : pm.getDate().toString()),
-				DbColumn.of(COL_PAYMENT_AMOUNT, ColType.INT, Payment::getAmount),
-		};
+				DbColumn.of(COL_PAYMENT_DATE, ColType.STRING,
+						(Payment pm) -> pm.getDate() == null ? null : pm.getDate().toString()),
+				DbColumn.of(COL_PAYMENT_AMOUNT, ColType.INT, Payment::getAmount), };
 		return saveObject(TABLE_PAYMENT, cols, _payment);
 
 	}
@@ -180,7 +180,8 @@ public class AccountDao extends PgDao {
 //			LocalDateTime oCreateTime = LocalDateTime.parse(_rs.getString(COL_OBJECT_CREATE_TIME));
 //			LocalDateTime oUpdateTime = LocalDateTime.parse(_rs.getString(COL_OBJECT_UPDATE_TIME));
 //			pm = Payment.getInstance(uid, _consumptionUid, oCreateTime, oUpdateTime);
-			pm = Payment.getInstance(parseUid(_rs), _consumptionUid, parseObjectCreateTime(_rs), parseObjectUpdateTime(_rs));
+			pm = Payment.getInstance(parseUid(_rs), _consumptionUid, parseObjectCreateTime(_rs),
+					parseObjectUpdateTime(_rs));
 			/* pack attributes */
 			pm.setDate(LocalDate.parse(_rs.getString(COL_PAYMENT_DATE)));
 			pm.setAmount(_rs.getInt(COL_PAYMENT_AMOUNT));

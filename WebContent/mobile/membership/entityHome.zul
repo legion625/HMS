@@ -1,0 +1,51 @@
+<?page title="new page title" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<style>
+		.z-groupbox-title-content{ font-size:16px; font-weight:bold;}
+
+		.record-desc { font-weight: bold; font-size: 16px; }
+	</style>
+
+	<vlayout id="vlyEntityHome" hflex="1" apply="hms.web.control.zk.mobile.membership.EntityHomeComposer">
+
+		<groupbox title="家庭成員管理" hflex="1">
+			<!-- 新增區塊 -->
+			<vlayout>
+				<hlayout hflex="1">
+					<textbox id="txbAlias" placeholder="名稱" width="80px" />
+					<combobox id="cbbType" placeholder="類型" width="60px">
+						<comboitem label="人" value="person" />
+						<comboitem label="動產" value="vehicle" />
+						<comboitem label="不動產" value="property" />
+					</combobox>
+					<datebox id="dtbBirthDate" format="yyyy-MM-dd" placeholder="生日" hflex="1" />
+					<button id="btnAddEntity" label="新增" />
+					<toolbarbutton id="btnAddEntityClear" label="清空" />
+				</hlayout>
+			</vlayout>
+
+			<!-- 查詢結果列表 -->
+			<vlayout id="vlyEntityList" sclass="record-list" use="hms.web.zk.ModelVlayout"></vlayout>
+		</groupbox>
+		<groupbox title="咕溜標籤管理" hflex="1">
+			<!-- 新增區塊 -->
+			<vlayout>
+				<hlayout hflex="1">
+					<textbox id="txbAddGscName" placeholder="名稱" width="80px" />
+					<textbox id="txbAddGscColor" placeholder="顏色" width="80px" />
+					<button id="btnAddGsc" label="新增" />
+					<toolbarbutton id="btnAddGscClear" label="清空" />
+				</hlayout>
+			</vlayout>
+			<!-- 查詢結果列表 -->
+			<vlayout id="vlyGscList" sclass="record-list" use="hms.web.zk.ModelVlayout"></vlayout>
+		</groupbox>
+
+		<!-- <groupbox title="消費類型/子類型管理">
+			(施工中...)
+			</groupbox> -->
+
+
+
+	</vlayout>
+</zk>
