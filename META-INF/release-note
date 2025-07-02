@@ -1,10 +1,13 @@
-Min-Hua, 2025.06.08
+Min-Hua, 2025.07.02
 [change]
-1. 新增「設定」分頁提供「家庭成員管理」功能。包含人或其他可以視為成員的實體，例如不動產（房子）、動產（車子）或物品等。
+1. 新增「咕溜」分頁：我們一家的大小事，都可以在這裡作為里程碑的紀錄囉。
+2. 新增「設定」分頁。
+  -1. 提供「家庭成員管理」功能。包含人或其他可以視為成員的實體，例如不動產（房子）、動產（車子）或物品等。
+  -2. 提供「咕溜標籤管理」功能，可自定義標籤。
 
 [deployment]
 1. ServiceModeul.xml新增MembershipService和MembershipDataService服務宣告。
-2. 新增資料表mbr_entity。
+2. 新增資料表：mbr_entity、mbr_guloo_stamp、mbr_guloo_stamp_entity_conj、mbr_guloo_stamp_cate及mbr_guloo_stamp_cate_conj。
 
 ------------------------------------------------------------------------------
 v1.1.3 released by Min-Hua, 2025.05.24

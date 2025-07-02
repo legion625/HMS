@@ -96,8 +96,6 @@ public class Entity extends HmsObjectModel {
 		return ett.save() ? ett : null;
 	}
 
-	
-	
 	// -------------------------------------------------------------------------------
 	public String getInfo() {
 		return "[" + getAlias() + "][" + getTypeName() + "][" + DateFormatUtil.transToDate(new Date(getBirthDate()))  + "]";

@@ -54,4 +54,46 @@ CREATE TABLE mbr_entity
     PRIMARY KEY (uid)
 );
 
+CREATE TABLE mbr_guloo_stamp
+(
+    uid character varying NOT NULL,
+    stamp_date bigint,
+    desp character varying,
+    remark character varying,
+    object_create_time bigint,
+    object_update_time bigint,
+    PRIMARY KEY (uid)
+);
+
+CREATE TABLE mbr_guloo_stamp_entity_conj
+(
+    uid character varying NOT NULL,
+    stamp_uid character varying,
+    entity_uid character varying,
+    object_create_time bigint,
+    object_update_time bigint,
+    PRIMARY KEY (uid)
+);
+
+CREATE TABLE mbr_guloo_stamp_cate
+(
+    uid character varying NOT NULL,
+    name character varying,
+    color character varying,
+    object_create_time bigint,
+    object_update_time bigint,
+    PRIMARY KEY (uid)
+);
+
+
+CREATE TABLE mbr_guloo_stamp_cate_conj
+(
+    uid character varying NOT NULL,
+    stamp_uid character varying,
+    cate_uid character varying,
+    object_create_time bigint,
+    object_update_time bigint,
+    PRIMARY KEY (uid)
+);
+
 -- hms_dev
