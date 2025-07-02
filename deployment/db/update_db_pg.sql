@@ -40,9 +40,7 @@ CREATE TABLE payment (
     PRIMARY KEY (uid)
 );
 
--- hms_release
-
--- 1.1.3 -> unstaging
+-- 1.1.3 -> 2.0.0
 CREATE TABLE mbr_entity
 (
     uid character varying NOT NULL,
@@ -97,3 +95,4 @@ CREATE TABLE mbr_guloo_stamp_cate_conj
 );
 
 -- hms_dev
+-- hms_release
