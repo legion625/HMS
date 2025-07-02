@@ -23,8 +23,8 @@
 			<name>url</name>
 			<!--<value>jdbc:mysql://localhost:3306/ekp_web?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC</value>  --><!-- jdbc8 -->
 			<!--<value>jdbc:mysql://localhost:3306/hms_dev</value> --><!-- MySql5 -->
-			<!-- <value>jdbc:postgresql://dpg-cvrf5vre5dus7387koag-a.singapore-postgres.render.com:5432/legion_h3u9?currentSchema=hms_dev</value>-->
-			<value>jdbc:postgresql://dpg-cvrf5vre5dus7387koag-a.singapore-postgres.render.com:5432/legion_h3u9?currentSchema=hms_release</value>
+			<value>jdbc:postgresql://dpg-cvrf5vre5dus7387koag-a.singapore-postgres.render.com:5432/legion_h3u9?currentSchema=hms_dev</value>
+			<!-- <value>jdbc:postgresql://dpg-cvrf5vre5dus7387koag-a.singapore-postgres.render.com:5432/legion_h3u9?currentSchema=hms_release</value>-->
 		</parameter>
 		<parameter>
 			<name>username</name>

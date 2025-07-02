@@ -2,15 +2,17 @@ package hms.web.zk;
 
 import org.zkoss.zk.ui.UiException;
 import org.zkoss.zk.ui.ext.AfterCompose;
+import org.zkoss.zul.Hlayout;
 import org.zkoss.zul.ListModel;
 import org.zkoss.zul.Vlayout;
 
-public class ModelVlayout<T> extends Vlayout implements AfterCompose {
-	private ListModel<T> model;
-	private ModelVlayoutItemRenderer<T> itemRenderer;
 
-	public interface ModelVlayoutItemRenderer<T> {
-		void render(Vlayout parent, T data, int index) throws Exception;
+public class ModelHlayout<T> extends Hlayout implements AfterCompose {
+	private ListModel<T> model;
+	private ModelHlayoutItemRenderer<T> itemRenderer;
+	
+	public interface ModelHlayoutItemRenderer<T> {
+		void render(Hlayout parent, T data, int index) throws Exception;
 	}
 
 	public void setModel(ListModel<T> model) {
@@ -18,7 +20,7 @@ public class ModelVlayout<T> extends Vlayout implements AfterCompose {
 		renderModel();
 	}
 
-	public void setItemRenderer(ModelVlayoutItemRenderer<T> itemRenderer) {
+	public void setItemRenderer(ModelHlayoutItemRenderer<T> itemRenderer) {
 		this.itemRenderer = itemRenderer;
 	}
 
@@ -32,7 +34,7 @@ public class ModelVlayout<T> extends Vlayout implements AfterCompose {
 		try {
 			for (int i = 0; i < model.getSize(); i++) {
 				T data = model.getElementAt(i);
-				// 將子元件 attach 到這個 Vlayout
+				// 將子元件 attach 到這個 Hlayout
 				itemRenderer.render(this, data, i);
 			}
 		} catch (Exception e) {
@@ -45,4 +47,5 @@ public class ModelVlayout<T> extends Vlayout implements AfterCompose {
 		// 如果一開始就有 model，要先 render
 		renderModel();
 	}
+	
 }
