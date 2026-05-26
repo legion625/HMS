@@ -1,0 +1,6 @@
+@charset "UTF-8";
+
+/* 讓 ZK notification 的內容能夠辨識 \n 換行 */
+.z-notification-content {
+	white-space: pre-line;
+}
