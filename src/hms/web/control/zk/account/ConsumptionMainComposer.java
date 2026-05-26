@@ -276,7 +276,14 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 			}
 
 			for (Consumption cnsp : tempSet)
-				model.remove(cnsp);
+				model.remove(cnsp); // 移除畫面的元件
+			
+			// 同步把記憶體暫存的 cnspList 裡面的過期資料清掉！
+			if (cnspList != null) {
+			    cnspList.removeAll(tempSet);
+			}
+			
+			
 			HmsMessageBox.info(msg);
 
 		};
@@ -503,7 +510,6 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 			for (Payment p : selectedPaymentSet) {
 				String str = "刪除付款[" + p.getDate().toString() + "][" + NumberFormatUtil.getIntegerString(p.getAmount())
 						+ "]";
-//				boolean temp = accountService.deletePayment(getTargetConsumption(), p);
 				boolean temp = p.delete();
 				getTargetConsumption().clearPaymentList();
 				str += temp ? "成功" : "失敗";
