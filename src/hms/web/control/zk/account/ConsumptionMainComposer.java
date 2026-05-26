@@ -561,7 +561,16 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		if (pm != null) {
 			HmsMessageBox.info("新增付款成功。");
 			cnsp.clearPaymentList();
+			
+			// 🌟 1. 取得主畫面 Listbox 的 Model
+	        ListModelList<Consumption> model = (ListModelList) lbxConsumption.getModel();
+	        if (model != null) {
+	            // 🌟 2. 精準通知 ZK：這筆消費資料改變了，請主畫面重新渲染這一個 Row 的金額與小計
+	            model.notifyChange(cnsp); 
+	        }
+			
 			refreshPaymentInfo(cnsp);
+			
 			windowAddPayment_closed(new Event("evt"));
 		} else
 			HmsMessageBox.error("新增付款失敗。");
