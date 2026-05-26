@@ -1,0 +1,54 @@
+<?page title="new page title" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<style>
+		.z-groupbox-title-content{ font-size:16px; font-weight:bold;}
+
+		.record-desc { font-weight: bold; font-size: 16px; }
+	</style>
+
+	<vlayout id="vlyGulooStampHome" height="100%" hflex="1"
+		apply="hms.web.control.zk.mobile.membership.GulooStampHomeComposer">
+
+		<toolbarbutton id="btnShowCreateArea" iconSclass="fas fa-plus fa-lg"></toolbarbutton>
+		<!-- <groupbox title="新增咕溜印章"  hflex="1" open="false"> -->
+		<groupbox id="gbxCreateArea" hflex="1" open="false">
+			<!-- 新增區塊 -->
+			<vlayout>
+				<hlayout hflex="1">
+					<datebox id="dtbStampDate" format="yyyy-MM-dd" placeholder="日期" width="100px" />
+
+					<!-- <combobox id="cbbStampCate" placeholder="分類" width="70px" /> -->
+
+					<textbox id="txbDesp" placeholder="簡述" hflex="1" />
+				</hlayout>
+				<hlayout hflex="1">
+					<combobox id="cbbEntity" placeholder="成員..." width="70px"></combobox>
+					<toolbarbutton id="btnAppendEntity" iconSclass="fas fa-user-plus" tooltiptext="加入後雙擊可移除" />
+					<hlayout id="hlyEntitiesAppended" use="hms.web.zk.ModelHlayout" style="overflow:auto" hflex="1"></hlayout>
+				</hlayout>
+				<hlayout hflex="1">
+					<combobox id="cbbGsc" placeholder="標籤..." width="70px"></combobox>
+					<toolbarbutton id="btnAppendCate" iconSclass="fas fa-user-plus" tooltiptext="加入後雙擊可移除" />
+					<hlayout id="hlyCatesAppended" use="hms.web.zk.ModelHlayout" style="overflow:auto" hflex="1"></hlayout>
+				</hlayout>
+				
+				
+
+				<hlayout>
+					<textbox id="txbRemark" placeholder="備註" hflex="1" />
+				</hlayout>
+				<div align="right">
+					<hlayout>
+						<button id="btnAddGulooStamp" label="新增" />
+						<toolbarbutton id="btnAddGulooStampClear" label="清空" />
+					</hlayout>
+				</div>
+			</vlayout>
+		</groupbox>
+		<groupbox title="咕溜印章列表">
+			<!-- 查詢結果列表 -->
+			<vlayout id="vlyGulooStampList" sclass="record-list" use="hms.web.zk.ModelVlayout"></vlayout>
+		</groupbox>
+
+	</vlayout>
+</zk>

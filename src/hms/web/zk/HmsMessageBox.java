@@ -14,10 +14,11 @@ public class HmsMessageBox {
 		Messagebox.show(_msg, "HMS", Messagebox.OK, Messagebox.EXCLAMATION);
 	}
 	
-	public static void exclamation(String _msg, Consumer<Void> _csmAction) {
+	public static void exclamation(String _msg, Runnable _r) {
 		Messagebox.show(_msg, "HMS", Messagebox.OK, Messagebox.EXCLAMATION, e -> {
 			if ((int) e.getData() == Messagebox.OK)
-				_csmAction.accept(null);
+//				_csmAction.accept(null);
+				_r.run();
 		});
 	}
 
@@ -25,10 +26,10 @@ public class HmsMessageBox {
 		Messagebox.show(_msg, "HMS", Messagebox.OK, Messagebox.ERROR);
 	}
 
-	public static void confirm(String _msg, Consumer<Void> _csmAction) {
+	public static void confirm(String _msg, Runnable _r) {
 		Messagebox.show(_msg, "HMS", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, e -> {
 			if ((int) e.getData() == Messagebox.OK)
-				_csmAction.accept(null);
+				_r.run();
 		});
 	}
 }

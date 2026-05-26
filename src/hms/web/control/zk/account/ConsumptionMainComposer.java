@@ -251,7 +251,7 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 			return;
 		}
 
-		Consumer<Void> csmDelete = v -> {
+		Runnable csmDelete = () -> {
 			String msg = "";
 
 			Set<Consumption> tempSet = new HashSet<>();
@@ -286,7 +286,7 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 
 	@Listen(Events.ON_CLICK + "=#btnPayAll")
 	public void btnPayAll_clicked() {
-		HmsMessageBox.exclamation("請謹慎使用此功能。", v -> {
+		HmsMessageBox.exclamation("請謹慎使用此功能。", () -> {
 			windowPayAll_btnReset_clicked();
 			windowPayAll.setVisible(true);
 		});
@@ -497,7 +497,7 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 			return;
 		}
 
-		HmsMessageBox.confirm("確定刪除被選取的付款項目?", v -> {
+		HmsMessageBox.confirm("確定刪除被選取的付款項目?", () -> {
 			StringBuffer strBuffer = new StringBuffer();
 			boolean result = true;
 			for (Payment p : selectedPaymentSet) {

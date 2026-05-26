@@ -7,9 +7,9 @@ import org.zkoss.zul.Vlayout;
 
 public class ModelVlayout<T> extends Vlayout implements AfterCompose {
 	private ListModel<T> model;
-	private ItemRenderer<T> itemRenderer;
+	private ModelVlayoutItemRenderer<T> itemRenderer;
 
-	public interface ItemRenderer<T> {
+	public interface ModelVlayoutItemRenderer<T> {
 		void render(Vlayout parent, T data, int index) throws Exception;
 	}
 
@@ -18,7 +18,7 @@ public class ModelVlayout<T> extends Vlayout implements AfterCompose {
 		renderModel();
 	}
 
-	public void setItemRenderer(ItemRenderer<T> itemRenderer) {
+	public void setItemRenderer(ModelVlayoutItemRenderer<T> itemRenderer) {
 		this.itemRenderer = itemRenderer;
 	}
 

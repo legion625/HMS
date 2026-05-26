@@ -30,8 +30,8 @@ public class Payment extends HmsObjectModel {
 		return payment;
 	}
 
-	// -----------------------------------------------------------
-	// -----------------------getter&setter-----------------------
+	// -------------------------------------------------------------------------------
+	// ---------------------------------getter&setter---------------------------------
 	public String getConsumptionUid() {
 		return consumptionUid;
 	}
@@ -75,7 +75,7 @@ public class Payment extends HmsObjectModel {
 		pm.setAmount(_amount);
 		return pm.save() ? pm : null;
 	}
-	
+
 	// -------------------------------------------------------------------------------
 	/** 各欄位摘要資訊 */
 	public String getInfo() {

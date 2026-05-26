@@ -26,7 +26,7 @@ import org.zkoss.zul.Vlayout;
 import hms.util.ZKUtil;
 import hms.web.control.zk.account.GridAddCnspComposer;
 import hms.web.zk.ModelVlayout;
-import hms.web.zk.ModelVlayout.ItemRenderer;
+import hms.web.zk.ModelVlayout.ModelVlayoutItemRenderer;
 import hms_kernel.account.AccountService;
 import hms_kernel.account.Consumption;
 import hms_kernel.account.ConsumptionSearchParam;
@@ -86,7 +86,7 @@ public class CnspSearchFnComposer  extends SelectorComposer<Component>{
 		ZkUtil.initCbb(cbbDirection, DirectionEnum.values(false), true);
 		
 		//
-		ItemRenderer<Consumption> renderer =  (Vlayout parent, Consumption cnsp, int i) -> {
+		ModelVlayoutItemRenderer<Consumption> renderer =  (Vlayout parent, Consumption cnsp, int i) -> {
 			Vlayout card = new Vlayout();
             card.setSclass("record-card");
 

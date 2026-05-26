@@ -1,0 +1,46 @@
+@charset "UTF-8";
+
+.swipe-container {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.swipe-content {
+  background: #fff;
+  padding: 6px;
+  /* border: 1px solid red; */
+  transition: transform 0.3s ease;
+}
+
+.swipe-actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  display: flex;
+  background: #4A90E2;
+  transition: transform 0.3s ease;
+  /*transform: translateX(120px);*/
+   transform: translateX(var(--swipe-width, 120px));
+}
+
+.swipe-action {
+  color: white;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  background: #4A90E2;
+  font-weight: bold;
+}
+
+.swipe-container.swiped .swipe-content {
+  /* transform: translateX(-120px); */
+   transform: translateX(calc(-1 * var(--swipe-width, 120px)));
+}
+
+.swipe-container.swiped .swipe-actions {
+  transform: translateX(0);
+}
+
+
