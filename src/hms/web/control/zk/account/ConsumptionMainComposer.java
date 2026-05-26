@@ -50,6 +50,7 @@ import hms_kernel.account.PaymentTypeEnum;
 import hms_kernel.account.TypeCategoryEnum;
 import hms_kernel.account.TypeEnum;
 import legion.BusinessServiceFactory;
+import legion.DebugLogMark;
 import legion.biz.BpuFacade;
 import legion.util.DataFO;
 import legion.util.DateFormatUtil;
@@ -58,6 +59,7 @@ import legion.web.zk.ZkUtil;
 
 public class ConsumptionMainComposer extends SelectorComposer<Component> {
 	private Logger log = LoggerFactory.getLogger(getClass());
+//	private Logger log = LoggerFactory.getLogger(DebugLogMark.class);
 
 	// -------------------------------------------------------------------------------
 	@Wire
@@ -212,7 +214,8 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		param.setPayDateEnd(DateFormatUtil.parseLocalDate(dtbPayDateEnd.getValue()));
 
 		cnspList = accountService.searchConsumptions(param, true);
-		cnspList = cnspList.stream().sorted(Comparator.comparing(Consumption::getDate).thenComparing(Consumption::getObjectCreateTime))
+		cnspList = cnspList.stream()
+				.sorted(Comparator.comparing(Consumption::getDate).thenComparing(Consumption::getObjectCreateTime))
 				.collect(Collectors.toList());
 
 		// result list page
@@ -276,7 +279,13 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 			}
 
 			for (Consumption cnsp : tempSet)
-				model.remove(cnsp);
+				model.remove(cnsp); // 移除畫面的元件
+
+			// 同步把記憶體暫存的 cnspList 裡面的過期資料清掉！
+			if (cnspList != null) {
+				cnspList.removeAll(tempSet);
+			}
+
 			HmsMessageBox.info(msg);
 
 		};
@@ -432,18 +441,53 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 
 	private void refreshConsumptionContainer(List<Consumption> _cnspList) {
 
-		ListModelList<Consumption> model = new ListModelList<>(_cnspList);
+		ListModelList<Consumption> model = new ListModelList<>(_cnspList) {
+			@Override
+			protected void fireEvent(int type, int indexFrom, int indexTo) {
+				super.fireEvent(type, indexFrom, indexTo);
+				// 🌟 當 Model 內部的任何資料發生改變（新增/刪除/notifyChange）時，自動觸發後端計算並刷新 UI
+				updateFooterSummary(this);
+			}
+		};
 		model.setMultiple(true);
 		lbxConsumption.setModel(model);
 
-		lftrSumCnspAmt.setLabel(NumberFormatUtil.getIntegerString(_cnspList.parallelStream()
-				.mapToInt(cnsp -> DirectionEnum.OUT == cnsp.getDirection() ? cnsp.getAmount() : -cnsp.getAmount())
-				.sum()));
+		// 初次載入時先計算一次
+		updateFooterSummary(model);
+	}
 
-//		lftrSumPayedAmt.setLabel(NumberFormatUtil.getIntegerString(_cnspList.parallelStream().mapToInt( // XXX 用parallelStream可能引發connection的問題。
-		lftrSumPayedAmt.setLabel(NumberFormatUtil.getIntegerString(_cnspList.stream().mapToInt(
+	// 🌟 新增這個私有方法，集中處理 Footer 的顯示
+	private void updateFooterSummary(List<Consumption> currentList) {
+		if (currentList == null || lftrSumCnspAmt == null || lftrSumPayedAmt == null)
+			return;
+
+		int totalCnsp = currentList.stream()
+				.mapToInt(cnsp -> DirectionEnum.OUT == cnsp.getDirection() ? cnsp.getAmount() : -cnsp.getAmount())
+				.sum();
+
+		int totalPayed = currentList.stream().mapToInt(
 				cnsp -> DirectionEnum.OUT == cnsp.getDirection() ? cnsp.getPayedAmount() : -cnsp.getPayedAmount())
-				.sum()));
+				.sum();
+
+		lftrSumCnspAmt.setLabel(NumberFormatUtil.getIntegerString(totalCnsp));
+		lftrSumPayedAmt.setLabel(NumberFormatUtil.getIntegerString(totalPayed));
+	}
+
+	// 在 Composer 裡面寫兩個計算當前 model 總和的方法
+	public int getTotalAmount() {
+		log.debug("getTotalAmount");
+		if (cnspList == null)
+			return 0;
+		return cnspList.stream().mapToInt(c -> DirectionEnum.OUT == c.getDirection() ? c.getAmount() : -c.getAmount())
+				.sum();
+	}
+
+	public int getTotalPayedAmount() {
+		log.debug("getTotalPayedAmount");
+		if (cnspList == null)
+			return 0;
+		return cnspList.stream()
+				.mapToInt(c -> DirectionEnum.OUT == c.getDirection() ? c.getPayedAmount() : -c.getPayedAmount()).sum();
 	}
 
 	@Listen(Events.ON_CLICK + "=#miShowPaymentInfo")
@@ -503,7 +547,6 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 			for (Payment p : selectedPaymentSet) {
 				String str = "刪除付款[" + p.getDate().toString() + "][" + NumberFormatUtil.getIntegerString(p.getAmount())
 						+ "]";
-//				boolean temp = accountService.deletePayment(getTargetConsumption(), p);
 				boolean temp = p.delete();
 				getTargetConsumption().clearPaymentList();
 				str += temp ? "成功" : "失敗";
@@ -516,7 +559,14 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 
 			if (result) {
 				HmsMessageBox.info(strBuffer.toString());
-				refreshConsumptionContainer(cnspList);
+//				refreshConsumptionContainer(cnspList);
+
+				// 🌟 將原本的 refreshConsumptionContainer(cnspList); 改為以下精準更新：
+				ListModelList<Consumption> cnspModel = (ListModelList) lbxConsumption.getModel();
+				if (cnspModel != null) {
+					cnspModel.notifyChange(getTargetConsumption());
+				}
+
 			} else
 				HmsMessageBox.error(strBuffer.toString());
 		});
@@ -555,7 +605,16 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 		if (pm != null) {
 			HmsMessageBox.info("新增付款成功。");
 			cnsp.clearPaymentList();
+
+			// 🌟 1. 取得主畫面 Listbox 的 Model
+			ListModelList<Consumption> model = (ListModelList) lbxConsumption.getModel();
+			if (model != null) {
+				// 🌟 2. 精準通知 ZK：這筆消費資料改變了，請主畫面重新渲染這一個 Row 的金額與小計
+				model.notifyChange(cnsp);
+			}
+
 			refreshPaymentInfo(cnsp);
+
 			windowAddPayment_closed(new Event("evt"));
 		} else
 			HmsMessageBox.error("新增付款失敗。");

@@ -1,9 +1,5 @@
 <?page title="new page title" contentType="text/html;charset=UTF-8"?>
 <zk>
-
-	
-
-
 	<grid id="gridAddCnsp" apply="hms.web.control.zk.account.GridAddCnspComposer" style="overflow:auto">
 		<columns>
 			<column hflex="3" />
@@ -11,8 +7,8 @@
 		</columns>
 		<rows>
 			<row>
-				<label value="消費行為"  />
-				<combobox id="cbbBehavior" readonly="true" hflex="1" >
+				<label value="消費行為" />
+				<combobox id="cbbBehavior" readonly="true" hflex="1">
 					<comboitem label="一般消費" />
 					<comboitem label="LINE POINTS折抵" />
 					<comboitem label="悠遊卡折抵" />
@@ -32,12 +28,11 @@
 			</row>
 			<row id="rowDirection">
 				<label value="流向" />
-				<radiogroup id="rgDirection">
-				</radiogroup>
+				<radiogroup id="rgDirection"></radiogroup>
 			</row>
 			<row>
 				<label value="說明" />
-				<textbox id="txbDescription" hflex="1"  />
+				<textbox id="txbDescription" hflex="1" />
 			</row>
 			<row>
 				<label value="消費金額" />

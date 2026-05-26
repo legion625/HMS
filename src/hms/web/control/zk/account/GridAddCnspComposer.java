@@ -39,6 +39,7 @@ import hms_kernel.account.PaymentTypeEnum;
 import hms_kernel.account.TypeCategoryEnum;
 import hms_kernel.account.TypeEnum;
 import legion.BusinessServiceFactory;
+import legion.DebugLogMark;
 import legion.biz.BpuFacade;
 import legion.util.DateFormatUtil;
 import legion.util.LogUtil;
@@ -51,7 +52,8 @@ public class GridAddCnspComposer extends SelectorComposer<Component> {
 	private final static String SRC = "/account/gridAddCnsp.zul";
 
 	// -------------------------------------------------------------------------------
-	private Logger log = LoggerFactory.getLogger(GridAddCnspComposer.class);
+//	private Logger log = LoggerFactory.getLogger(GridAddCnspComposer.class);
+	private Logger log = LoggerFactory.getLogger(DebugLogMark.class);
 
 	public static GridAddCnspComposer of(Include _icd) {
 		return ZkUtil.of(_icd, SRC, "gridAddCnsp");
@@ -254,7 +256,7 @@ public class GridAddCnspComposer extends SelectorComposer<Component> {
 		if (b1) {
 
 		} else {
-			HmsMessageBox.error(msg.toString());
+			HmsNotification.warning(msg.toString());
 			return;
 		}
 
@@ -305,11 +307,14 @@ public class GridAddCnspComposer extends SelectorComposer<Component> {
 
 	/** 行為0：一般消費 */
 	private boolean behavior0(Set<Consumption> _set, StringBuilder _msg, TimeTraveler _tt) {
+		log.debug("behavior0");
+		
 		TypeEnum type = cbbType.getSelectedItem().getValue();
 		DirectionEnum direction = rgDirection.getSelectedItem().getValue();
 
 		String description = txbDescription.getValue();
-		int cnspAmount = itbConsumptionAmount.getValue();
+		Integer cnspAmount = itbConsumptionAmount.getValue();
+		log.debug("cnspAmount: {}", cnspAmount);
 		PaymentTypeEnum paymentType = cbbPaymentType.getSelectedItem().getValue();
 		LocalDate cnspDate = DateFormatUtil.parseLocalDate(dtbConsumptionDate.getValue());
 
@@ -322,8 +327,8 @@ public class GridAddCnspComposer extends SelectorComposer<Component> {
 		}
 
 		//
-		bpu.appendType(type).appendDirection(direction).appendDescription(description).appendAmount(cnspAmount)
-				.appendPaymentType(paymentType).appendDate(cnspDate);
+		bpu.appendType(type).appendDirection(direction).appendDescription(description)
+				.appendAmount(cnspAmount == null ? 0 : cnspAmount).appendPaymentType(paymentType).appendDate(cnspDate);
 
 		//
 		if (!bpu.verify(_msg))

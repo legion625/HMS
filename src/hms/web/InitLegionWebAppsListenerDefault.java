@@ -13,7 +13,6 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import hms_kernel.DebugLogMark;
 import legion.ISystemWebInfo;
 import legion.LegionContext;
 import legion.SystemInfoDefault;
