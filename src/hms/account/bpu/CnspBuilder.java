@@ -117,6 +117,7 @@ public abstract class CnspBuilder extends Bpu<Consumption> {
 		}
 
 		// amount
+		log.debug("getAmount(): {}",getAmount());
 		if (getAmount() == 0) {
 			_msg.append("Amount should NOT be 0.").append(System.lineSeparator());
 			v = false;

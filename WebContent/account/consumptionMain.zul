@@ -1,4 +1,5 @@
 <?page title="new page title" contentType="text/html;charset=UTF-8"?>
+
 <zk>
 <style>
 .gridBgTransparent.z-grid {
@@ -131,8 +132,8 @@
 							</listhead>
 							<listfoot>
 								<listfooter label="小計" span="5" align="right"></listfooter>
-								<listfooter id="lftrSumCnspAmt" align="right"></listfooter>
-								<listfooter id="lftrSumPayedAmt" align="right"></listfooter>
+							 <listfooter id="lftrSumCnspAmt" label="0" align="right"/>
+								<listfooter id="lftrSumPayedAmt" label="0" align="right"/>
 								<listfooter></listfooter>
 								<listfooter></listfooter>
 
