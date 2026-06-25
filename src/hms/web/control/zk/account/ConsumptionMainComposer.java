@@ -402,6 +402,13 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 				return;
 			}
 			Payment pm = pmList.get(0);
+			Integer newPayedAmount = itbPayedAmount.getValue();
+			if(newPayedAmount==null) {
+				HmsNotification.error("未填付款金額，更新失敗。");
+				itbPayedAmount.setValue(cnsp.getPayedAmount());
+				return;
+			}
+			pm.setAmount(itbPayedAmount.getValue());
 			boolean r = accountService.updatePayment(pm);
 			if (r)
 				HmsNotification.info("更新付款金額成功。");
@@ -410,8 +417,61 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 				itbPayedAmount.setValue(cnsp.getPayedAmount());
 			}
 		});
+//		// 付款方式
+//		listitem.appendChild(new Listcell(cnsp.getPaymentType().getName()));
+		
 		// 付款方式
-		listitem.appendChild(new Listcell(cnsp.getPaymentType().getName()));
+		Combobox cbbPaymentType = new Combobox();
+		cbbPaymentType.setInplace(true); // 保持與說明欄位一致的 inplace 質感
+		cbbPaymentType.setReadonly(true); // 讓使用者隻能用選的，不能自己打字
+		cbbPaymentType.setHflex("1");
+
+		// 1. 動態將列舉（PaymentTypeEnum）的所有選項塞入 Combobox
+		ZkUtil.initCbb(cbbPaymentType, PaymentTypeEnum.values(), false);
+
+		// 2. 預設選取目前這筆消費的付款方式
+		for (Comboitem item : cbbPaymentType.getItems()) {
+		    if (item.getValue() == cnsp.getPaymentType()) {
+		        cbbPaymentType.setSelectedItem(item);
+		        break;
+		    }
+		}
+
+		Listcell lcPaymentType = new Listcell();
+		lcPaymentType.appendChild(cbbPaymentType);
+		listitem.appendChild(lcPaymentType);
+
+		// 3. 建立動態更新付款方式的事件監聽器
+		EventListener<Event> updatePaymentTypeEl = evt -> {
+		    Comboitem selectedItem = cbbPaymentType.getSelectedItem();
+		    if (selectedItem != null) {
+		        PaymentTypeEnum newType = selectedItem.getValue();
+		        
+		        // 只有在真的有變更時才執行 DB 更新
+		        if (newType != cnsp.getPaymentType()) {
+		            cnsp.setPaymentType(newType);
+		            boolean r = accountService.updateCnsp(cnsp);
+		            if (r) {
+		                HmsNotification.info("更新付款方式成功。");
+		            } else {
+		                HmsNotification.error("更新付款方式失敗。");
+		                // 失敗時還原回原本的值
+		                for (Comboitem item : cbbPaymentType.getItems()) {
+		                    if (item.getValue() == cnsp.getPaymentType()) {
+		                        cbbPaymentType.setSelectedItem(item);
+		                        break;
+		                    }
+		                }
+		            }
+		        }
+		    }
+		};
+
+		// 4. 綁定監聽器到 ON_SELECT 事件
+		cbbPaymentType.addEventListener(Events.ON_SELECT, updatePaymentTypeEl);
+		
+		
+		
 		// 說明
 		Textbox txbDesp = new Textbox(cnsp.getDescription());
 		txbDesp.setHflex("1");
@@ -681,5 +741,76 @@ public class ConsumptionMainComposer extends SelectorComposer<Component> {
 	}
 
 	// -------------------------------------------------------------------------------
+	// 🌟 注入新設計的 ZK 元件
+	@Wire
+	private Window windowOffsetConsumption;
+	@Wire("#windowOffsetConsumption #txbOffsetDescription")
+	private Textbox txbOffsetDescription;
+	@Wire("#windowOffsetConsumption #dtbOffsetPayDate")
+	private Datebox dtbOffsetPayDate;
+
+	// 🌟 1. 右鍵選單點擊事件
+	@Listen(Events.ON_CLICK + "=#miOffsetConsumption")
+	public void miOffsetConsumption_clicked() {
+	    Consumption cnsp = getTargetConsumption(); //
+	    if (cnsp.getPayableAmount() <= 0) {
+	        HmsMessageBox.exclamation("此筆消費已付清，無法進行沖銷折抵。");
+	        return;
+	    }
+	    
+	    // 初始化彈出視窗數值
+	    txbOffsetDescription.setValue("以美金餘額沖銷折抵");
+	    dtbOffsetPayDate.setValue(new java.util.Date()); // 預設今天為對帳付款日
+	    windowOffsetConsumption.setVisible(true);
+	}
+
+	// 🌟 2. 視窗內的「確認沖銷」送出按鈕
+	@Listen(Events.ON_CLICK + "=#windowOffsetConsumption #btnSubmitOffset")
+	public void btnSubmitOffset_clicked() {
+	    Consumption targetCnsp = getTargetConsumption(); // 原消費
+	    String desc = txbOffsetDescription.getValue();
+	    java.time.LocalDate offsetDate = DateFormatUtil.parseLocalDate(dtbOffsetPayDate.getValue());
+
+	    try {
+	        // 呼叫 Service 執行複式分錄沖銷
+	        Consumption offsetCnsp = accountService.offsetConsumption(targetCnsp, desc, offsetDate);
+	        
+	        if (offsetCnsp != null) {
+	            HmsMessageBox.info("沖銷折抵處理成功。");
+	            
+	            // 🌟 精準通知主畫面模型：原消費那一列刷新 (付款金額會補滿)
+	            ListModelList<Consumption> model = (ListModelList) lbxConsumption.getModel(); //
+	            if (model != null) {
+	                model.notifyChange(targetCnsp); 
+	                
+	                // 將新產生的反向沖銷消費也塞進畫面 List 中，讓使用者看得到對沖紀錄
+	                model.add(offsetCnsp); 
+	                if (cnspList != null) {
+	                    cnspList.add(offsetCnsp); // 同步暫存的 List
+	                }
+	            }
+	            
+	            // 如果你採用了上一題「客製化 ListModelList」或有刷新小計的方法，這裡會自動連帶加總
+	            windowOffsetConsumption.setVisible(false);
+	        }
+	    } catch (Exception e) {
+	        HmsMessageBox.error("沖銷失敗: " + e.getMessage());
+	    }
+	}
+
+	// 🌟 3. 取消與關閉視窗事件
+	
+	// 修正後：確保事件名稱正確（onClose），且逗號前後沒有任何空格
+	@Listen(Events.ON_CLICK + "=#windowOffsetConsumption #btnCancelOffset;onClose=#windowOffsetConsumption")
+	public void windowOffsetConsumption_closed(Event _evt) {
+	    _evt.stopPropagation();
+	    windowOffsetConsumption.setVisible(false);
+	}
+	
+//	@Listen(Events.ON_CLICK + "=#windowOffsetConsumption #btnCancelOffset, ON_CLOSE=#windowOffsetConsumption")
+//	public void windowOffsetConsumption_closed(Event _evt) {
+//	    _evt.stopPropagation(); //
+//	    windowOffsetConsumption.setVisible(false);
+//	}
 
 }
