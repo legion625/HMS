@@ -126,7 +126,8 @@
 									iconSclass="fas fa-pen-square fa-fw" />
 								<listheader label="付款金額" sort="auto('payedAmount')" width="95px" style="direction: rtl;"
 									iconSclass="fas fa-pen-square fa-fw" />
-								<listheader label="付款方式" sort="auto('paymentType')" width="90px" />
+								<listheader label="付款方式" sort="auto('paymentType')" width="90px" style="direction: rtl;"
+									iconSclass="fas fa-pen-square fa-fw"/>
 								<listheader label="說明" width="300px" style="direction: rtl;"
 									iconSclass="fas fa-pen-square fa-fw"/>
 							</listhead>
@@ -144,6 +145,7 @@
 							<menuitem id="miShowPaymentInfo" label="付款資訊" />
 							<menuitem id="miAddPayment" label="新增付款" />
 							<menuitem id="miCopyCnsp" label="複製消費" />
+							<menuitem id="miOffsetConsumption" label="沖銷折抵" />
 						</menupopup>
 						<window id="windowPaymentInfo" title="付款資訊" border="normal" width="360px" height="45%"
 							mode="highlighted" position="center" closable="true" visible="false">
@@ -217,6 +219,35 @@
 								</hlayout>
 							</div>
 						</window>
+						
+						<!-- 🌟 新增：沖銷折抵彈出小視窗 -->
+<window id="windowOffsetConsumption" title="沖銷折抵作業" border="normal" mode="highlighted"
+    width="320px" position="center" closable="true" visible="false">
+    <grid>
+        <columns>
+            <column width="90px" />
+            <column />
+        </columns>
+        <rows>
+            <row>
+                <label value="折抵說明" />
+                <textbox id="txbOffsetDescription" hflex="1" value="以美金餘額沖銷折抵" />
+            </row>
+            <row>
+                <label value="折抵/對帳日期" />
+                <datebox id="dtbOffsetPayDate" format="yyyy-MM-dd" hflex="1" />
+            </row>
+        </rows>
+    </grid>
+    <separator spacing="10px" />
+    <div align="center">
+        <hlayout>
+            <button id="btnSubmitOffset" label="確認沖銷" />
+            <button id="btnCancelOffset" label="取消" />
+        </hlayout>
+    </div>
+</window>
+						
 					</tabpanel>
 					<tabpanel>
 					<include id="icdCnspPivot"></include>

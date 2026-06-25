@@ -18,6 +18,8 @@ public interface AccountService extends BusinessService {
 	public List<Consumption> searchConsumptions(ConsumptionSearchParam _queryParam, boolean _loadPayments);
 
 	public List<Consumption> getPayableConsumptions();
+	
+	public Consumption offsetConsumption(Consumption targetCnsp, String offsetDescription, LocalDate offsetDate) ;
 
 	// -------------------------------------------------------------------------------
 	// -------------------------------------Type--------------------------------------
