@@ -6,12 +6,8 @@
 
 	<div id="divSwipe" sclass="swipe-container" apply="hms.web.control.zk.common.SwipeDivComposer">
 		<div id="divContent" sclass="swipe-content">
-
-			<!-- <label value="HANA / 人 / 2017-05-12" sclass="record-desc" /> -->
 		</div>
 		<div sclass="swipe-actions">
-			<!-- <button id="btnR1" sclass="swipe-action" label="編輯" />
-				<button id="btnR2" sclass="swipe-action" label="刪除" /> -->
 			<button id="btnR1" sclass="swipe-action" />
 			<button id="btnR2" sclass="swipe-action" />
 		</div>
