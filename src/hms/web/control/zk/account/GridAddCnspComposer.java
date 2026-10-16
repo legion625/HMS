@@ -205,7 +205,7 @@ public class GridAddCnspComposer extends SelectorComposer<Component> {
 		itbInAdv.setDisabled(!chbInAdv.isChecked());
 	}
 
-	void copyCnsp(Consumption _cnsp) {
+	public void copyCnsp(Consumption _cnsp) {
 		defaultTypeFlag = false;
 
 		cbbBehavior.setSelectedIndex(0);
