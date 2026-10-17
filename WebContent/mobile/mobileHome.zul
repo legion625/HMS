@@ -1,10 +1,5 @@
-<?xel-method prefix="hms" name="ver" class="hms.web.zk.ResourceVersion" signature="java.lang.String of(java.lang.String)"?>
 <zk>
 
-	<!-- 滑動卡片(/common/swipeDiv.zul)共用的樣式與行為，只載入一次 -->
-	<!-- ?v= 為檔案最後修改時間，檔案更新後瀏覽器會自動重抓，不會沿用快取的舊檔 -->
-	<style src="/css/swipe.css?v=${hms:ver('/css/swipe.css')}" />
-	<script src="/js/swipe.js?v=${hms:ver('/js/swipe.js')}" />
 
 	<vlayout id="main" width="100%" apply="hms.web.control.zk.mobile.MobileHomeComposer">
 
