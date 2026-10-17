@@ -34,6 +34,11 @@
   font-weight: bold;
 }
 
+/* 危險操作(例如刪除)的按鈕 */
+.swipe-action.swipe-action-danger {
+  background: #E53935;
+}
+
 .swipe-container.swiped .swipe-content {
   /* transform: translateX(-120px); */
    transform: translateX(calc(-1 * var(--swipe-width, 120px)));
