@@ -175,8 +175,8 @@ public class GulooStampHomeComposer extends SelectorComposer<Component> {
 			divContent.appendChild(vly);
 
 			/**/
+			c.setBtnR1Style(SwipeDivComposer.ActionStyle.DANGER);
 			Button btnR1 = c.getBtnR1();
-			btnR1.setSclass("swipe-action swipe-action-danger");
 			btnR1.setIconSclass("fa fa-trash fa-2x");
 			btnR1.addEventListener(Events.ON_CLICK, e -> {
 				HmsMessageBox.confirm("確認刪除咕溜[" + gs.getDesp() + "]?", () -> {

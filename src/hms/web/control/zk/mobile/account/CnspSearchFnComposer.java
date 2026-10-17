@@ -142,8 +142,8 @@ public class CnspSearchFnComposer  extends SelectorComposer<Component>{
             });
             btnCopy.setVisible(true);
             // 右側按鈕 2：刪除
+            swipe.setBtnR2Style(SwipeDivComposer.ActionStyle.DANGER);
             Button btnDel = swipe.getBtnR2();
-            btnDel.setSclass("swipe-action swipe-action-danger");
             btnDel.setIconSclass("fa fa-trash fa-2x");
             btnDel.addEventListener(Events.ON_CLICK, e -> {
             	String info = "[" + cnsp.getDate() + "][" + cnsp.getDescription() + "]["

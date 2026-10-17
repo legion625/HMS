@@ -97,9 +97,9 @@ public class EntityHomeComposer extends SelectorComposer<Component> {
 			btnR1.addEventListener(Events.ON_CLICK,e->HmsNotification.info("施工中..."));
 			btnR1.setVisible(false);
 
+			c.setBtnR2Style(SwipeDivComposer.ActionStyle.DANGER);
 			Button btnR2 = c.getBtnR2();
 //			btnR2.setLabel("按鈕2");
-			btnR2.setSclass("swipe-action swipe-action-danger");
 			btnR2.setIconSclass("fa fa-trash fa-2x");
 			btnR2.addEventListener(Events.ON_CLICK,e->{
 				HmsMessageBox.confirm("確認刪除家庭成員["+ett.getAlias()+"]?", ()->{
@@ -130,8 +130,8 @@ public class EntityHomeComposer extends SelectorComposer<Component> {
 			lb.setSclass("record-desc");
 			divContent.appendChild(lb);
 
+			c.setBtnR1Style(SwipeDivComposer.ActionStyle.DANGER);
 			Button btnR1 = c.getBtnR1();
-			btnR1.setSclass("swipe-action swipe-action-danger");
 			btnR1.setIconSclass("fa fa-trash fa-2x");
 			btnR1.addEventListener(Events.ON_CLICK, e -> {
 				HmsMessageBox.confirm("確認刪除咕溜標籤[" + gsc.getName() + "]?", () -> {
