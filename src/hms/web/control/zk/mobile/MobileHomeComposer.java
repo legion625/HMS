@@ -26,6 +26,12 @@ public class MobileHomeComposer extends SelectorComposer<Component> {
 	@Listen(Events.ON_CLICK + "=#btnGotoCnspSearchFnPage")
 	public void btnGotoCnspSearchFnPage_clicked() {
 		CnspSearchFnComposer c = CnspSearchFnComposer.of(icdMainContent);
+		// 複製：切到新增畫面，並帶入該筆消費的內容(消費日期為當天)
+		c.setCopyHandler(cnsp -> {
+			GridAddCnspComposer addComposer = GridAddCnspComposer.of(icdMainContent);
+			addComposer.init(null);
+			addComposer.copyCnsp(cnsp);
+		});
 		c.defaultSearch();
 	}
 	

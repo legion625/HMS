@@ -99,6 +99,7 @@ public class EntityHomeComposer extends SelectorComposer<Component> {
 
 			Button btnR2 = c.getBtnR2();
 //			btnR2.setLabel("按鈕2");
+			btnR2.setSclass("swipe-action swipe-action-danger");
 			btnR2.setIconSclass("fa fa-trash fa-2x");
 			btnR2.addEventListener(Events.ON_CLICK,e->{
 				HmsMessageBox.confirm("確認刪除家庭成員["+ett.getAlias()+"]?", ()->{
@@ -130,13 +131,14 @@ public class EntityHomeComposer extends SelectorComposer<Component> {
 			divContent.appendChild(lb);
 
 			Button btnR1 = c.getBtnR1();
+			btnR1.setSclass("swipe-action swipe-action-danger");
 			btnR1.setIconSclass("fa fa-trash fa-2x");
 			btnR1.addEventListener(Events.ON_CLICK, e -> {
 				HmsMessageBox.confirm("確認刪除咕溜標籤[" + gsc.getName() + "]?", () -> {
-					boolean b = mbrService.deleteEntity(gsc.getUid());
+					boolean b = mbrService.deleteGulooStampCate(gsc.getUid());
 					if (b) {
 						HmsNotification.info("刪除咕溜標籤[" + gsc.getName() + "]成功。");
-						loadEntities();
+						loadGulooStampCates();
 					} else {
 						HmsNotification.error();
 					}
@@ -145,7 +147,7 @@ public class EntityHomeComposer extends SelectorComposer<Component> {
 			btnR1.setVisible(true);
 
 			Button btnR2 = c.getBtnR2();
-			btnR2.setVisible(true);
+			btnR2.setVisible(false);
 
 			parent.appendChild(icd);
 		};

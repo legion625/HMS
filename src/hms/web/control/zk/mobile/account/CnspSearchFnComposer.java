@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.slf4j.event.Level;
@@ -23,8 +24,13 @@ import org.zkoss.zul.ListitemRenderer;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Vlayout;
 
+import hms.account.bpu.AcntBpuType;
+import hms.account.bpu.CnspBpuDel;
 import hms.util.ZKUtil;
+import hms.web.control.zk.common.SwipeDivComposer;
 import hms.web.control.zk.account.GridAddCnspComposer;
+import hms.web.zk.HmsMessageBox;
+import hms.web.zk.HmsNotification;
 import hms.web.zk.ModelVlayout;
 import hms.web.zk.ModelVlayout.ModelVlayoutItemRenderer;
 import hms_kernel.account.AccountService;
@@ -35,6 +41,7 @@ import hms_kernel.account.PaymentTypeEnum;
 import hms_kernel.account.TypeCategoryEnum;
 import hms_kernel.account.TypeEnum;
 import legion.BusinessServiceFactory;
+import legion.biz.BpuFacade;
 import legion.util.DataFO;
 import legion.util.DateFormatUtil;
 import legion.util.DateUtil;
@@ -67,6 +74,13 @@ public class CnspSearchFnComposer  extends SelectorComposer<Component>{
 	@Wire
 	private ModelVlayout<Consumption> vlyCnspList;
 
+	/** 點選卡片上的「複製」時的處理，由外層頁面指定(例如帶到新增畫面)。 */
+	private Consumer<Consumption> copyHandler;
+
+	public void setCopyHandler(Consumer<Consumption> copyHandler) {
+		this.copyHandler = copyHandler;
+	}
+
 	// -------------------------------------------------------------------------------
 	@Override
 	public void doAfterCompose(Component comp) {
@@ -87,6 +101,10 @@ public class CnspSearchFnComposer  extends SelectorComposer<Component>{
 		
 		//
 		ModelVlayoutItemRenderer<Consumption> renderer =  (Vlayout parent, Consumption cnsp, int i) -> {
+			// 滑動容器：卡片放在 divContent，左滑後顯示右側按鈕
+			Include icd = new Include();
+			SwipeDivComposer swipe = SwipeDivComposer.of(icd);
+
 			Vlayout card = new Vlayout();
             card.setSclass("record-card");
 
@@ -113,7 +131,35 @@ public class CnspSearchFnComposer  extends SelectorComposer<Component>{
             Label lbPmType = new Label(cnsp.getPaymentType().getName()+"  "+ cnsp.getDirection().getName());
             bottom.appendChild(lbPmType);
             card.appendChild(bottom);
-            parent.appendChild(card);
+            swipe.getDivContent().appendChild(card);
+
+            // 右側按鈕 1：複製(帶到新增畫面)
+            Button btnCopy = swipe.getBtnR1();
+            btnCopy.setIconSclass("fa fa-copy fa-2x");
+            btnCopy.addEventListener(Events.ON_CLICK, e -> {
+            	if (copyHandler != null)
+            		copyHandler.accept(cnsp);
+            });
+            btnCopy.setVisible(true);
+            // 右側按鈕 2：刪除
+            Button btnDel = swipe.getBtnR2();
+            btnDel.setSclass("swipe-action swipe-action-danger");
+            btnDel.setIconSclass("fa fa-trash fa-2x");
+            btnDel.addEventListener(Events.ON_CLICK, e -> {
+            	String info = "[" + cnsp.getDate() + "][" + cnsp.getDescription() + "]["
+            			+ NumberFormatUtil.getIntegerString(cnsp.getAmount()) + "]";
+            	HmsMessageBox.confirm("確認刪除消費" + info + "?", () -> {
+            		CnspBpuDel bpu = BpuFacade.getInstance().getBuilder(AcntBpuType.CNSP$DEL, cnsp);
+            		if (bpu.build(new StringBuilder(), null)) {
+            			HmsNotification.info("刪除消費" + info + "成功。");
+            			btnSearch_clicked(); // 依目前條件重新查詢，刷新清單
+            		} else
+            			HmsNotification.error();
+            	});
+            });
+            btnDel.setVisible(true);
+
+            parent.appendChild(icd);
 			};
 		vlyCnspList.setItemRenderer(renderer);
 	}
