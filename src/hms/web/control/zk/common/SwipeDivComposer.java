@@ -35,5 +35,27 @@ public class SwipeDivComposer extends SelectorComposer<Component> {
 		return btnR2;
 	}
 
+	/** 右側按鈕的樣式(對應 swipe.css)。 */
+	public enum ActionStyle {
+		/** 一般操作(藍底) */
+		NORMAL("swipe-action"),
+		/** 危險操作，例如刪除(紅底) */
+		DANGER("swipe-action swipe-action-danger");
+
+		private final String sclass;
+
+		private ActionStyle(String _sclass) {
+			this.sclass = _sclass;
+		}
+	}
+
+	public void setBtnR1Style(ActionStyle _style) {
+		btnR1.setSclass(_style.sclass);
+	}
+
+	public void setBtnR2Style(ActionStyle _style) {
+		btnR2.setSclass(_style.sclass);
+	}
+
 
 }
