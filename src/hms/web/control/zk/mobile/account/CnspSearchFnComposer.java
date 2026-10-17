@@ -24,9 +24,13 @@ import org.zkoss.zul.ListitemRenderer;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Vlayout;
 
+import hms.account.bpu.AcntBpuType;
+import hms.account.bpu.CnspBpuDel;
 import hms.util.ZKUtil;
 import hms.web.control.zk.common.SwipeDivComposer;
 import hms.web.control.zk.account.GridAddCnspComposer;
+import hms.web.zk.HmsMessageBox;
+import hms.web.zk.HmsNotification;
 import hms.web.zk.ModelVlayout;
 import hms.web.zk.ModelVlayout.ModelVlayoutItemRenderer;
 import hms_kernel.account.AccountService;
@@ -37,6 +41,7 @@ import hms_kernel.account.PaymentTypeEnum;
 import hms_kernel.account.TypeCategoryEnum;
 import hms_kernel.account.TypeEnum;
 import legion.BusinessServiceFactory;
+import legion.biz.BpuFacade;
 import legion.util.DataFO;
 import legion.util.DateFormatUtil;
 import legion.util.DateUtil;
@@ -136,7 +141,23 @@ public class CnspSearchFnComposer  extends SelectorComposer<Component>{
             		copyHandler.accept(cnsp);
             });
             btnCopy.setVisible(true);
-            swipe.getBtnR2().setVisible(false);
+            // 右側按鈕 2：刪除
+            swipe.setBtnR2Style(SwipeDivComposer.ActionStyle.DANGER);
+            Button btnDel = swipe.getBtnR2();
+            btnDel.setIconSclass("fa fa-trash fa-2x");
+            btnDel.addEventListener(Events.ON_CLICK, e -> {
+            	String info = "[" + cnsp.getDate() + "][" + cnsp.getDescription() + "]["
+            			+ NumberFormatUtil.getIntegerString(cnsp.getAmount()) + "]";
+            	HmsMessageBox.confirm("確認刪除消費" + info + "?", () -> {
+            		CnspBpuDel bpu = BpuFacade.getInstance().getBuilder(AcntBpuType.CNSP$DEL, cnsp);
+            		if (bpu.build(new StringBuilder(), null)) {
+            			HmsNotification.info("刪除消費" + info + "成功。");
+            			btnSearch_clicked(); // 依目前條件重新查詢，刷新清單
+            		} else
+            			HmsNotification.error();
+            	});
+            });
+            btnDel.setVisible(true);
 
             parent.appendChild(icd);
 			};

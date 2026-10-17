@@ -21,8 +21,8 @@
   display: flex;
   background: #4A90E2;
   transition: transform 0.3s ease;
-  /*transform: translateX(120px);*/
-   transform: translateX(var(--swipe-width, 120px));
+  /* 以自身寬度推出畫面外，不需依賴 JS 預先量測 */
+  transform: translateX(100%);
 }
 
 .swipe-action {
@@ -32,6 +32,11 @@
   align-items: center;
   background: #4A90E2;
   font-weight: bold;
+}
+
+/* 危險操作(例如刪除)的按鈕 */
+.swipe-action.swipe-action-danger {
+  background: #E53935;
 }
 
 .swipe-container.swiped .swipe-content {
