@@ -1,8 +1,7 @@
 <?page title="new page title" contentType="text/html;charset=UTF-8"?>
 <zk>
 
-	<style src="/css/swipe.css" />
-	<script src="/js/swipe.js" />
+	<!-- swipe.css / swipe.js 由外層頁面(mobileHome.zul)載入一次，避免每張卡片重複載入 -->
 
 	<div id="divSwipe" sclass="swipe-container" apply="hms.web.control.zk.common.SwipeDivComposer">
 		<div id="divContent" sclass="swipe-content">
