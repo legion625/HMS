@@ -10,7 +10,8 @@
 	<div id="divSwipe" sclass="swipe-container" apply="hms.web.control.zk.common.SwipeDivComposer">
 		<div id="divContent" sclass="swipe-content">
 		</div>
-		<div sclass="swipe-actions">
+		<!-- 先隱藏，等 swipe.css 載入後才顯示(見 swipe.css)；避免切換分頁時按鈕區先未套樣式露出、再滑出畫面的閃動 -->
+		<div sclass="swipe-actions" style="display: none;">
 			<button id="btnR1" sclass="swipe-action" />
 			<button id="btnR2" sclass="swipe-action" />
 		</div>
