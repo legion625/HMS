@@ -58,6 +58,16 @@ public class CnspStatisticsTest {
 	}
 
 	@Test
+	public void testMonthlyAvg() {
+		CnspStatistics stat = new CnspStatistics(START, END); // 1~4 月，共 4 個月
+		stat.addConsumption(LocalDate.of(2026, 2, 1), TypeEnum.FOOD, DirectionEnum.OUT, PaymentTypeEnum.CASH, 1000, 0);
+		stat.addPayment(LocalDate.of(2026, 3, 1), DirectionEnum.OUT, 1002);
+		assertEquals(4, stat.getMonthCount());
+		assertEquals(250, stat.getCnspMonthlyAvg());
+		assertEquals(251, stat.getPayMonthlyAvg()); // 250.5 四捨五入
+	}
+
+	@Test
 	public void testPaymentTypeSplit() {
 		CnspStatistics stat = new CnspStatistics(START, END);
 		stat.addConsumption(LocalDate.of(2026, 2, 1), TypeEnum.FOOD, DirectionEnum.OUT,

@@ -3,6 +3,7 @@ package hms.web.control.zk.account;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.YearMonth;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Datebox;
 import org.zkoss.zul.Label;
+import org.zkoss.zul.Textbox;
 
 import hms.account.CnspStatistics;
 import hms.util.ZKUtil;
@@ -34,6 +36,7 @@ import hms_kernel.account.TypeEnum;
 import legion.BusinessServiceFactory;
 import legion.util.DateFormatUtil;
 import legion.util.NumberFormatUtil;
+import legion.web.zk.ZkUtil;
 
 /** 消費統計 dashboard(電腦版) */
 public class CnspDashboardComposer extends SelectorComposer<Component> {
@@ -43,10 +46,12 @@ public class CnspDashboardComposer extends SelectorComposer<Component> {
 	@Wire
 	private Datebox dtbStart, dtbEnd;
 	@Wire
-	private Combobox cbbTypeCategory;
+	private Combobox cbbTypeCategory, cbbType;
+	@Wire
+	private Textbox txbKeyword;
 
 	@Wire
-	private Label lbCnspAmount, lbPayAmount, lbPayableAmount, lbCnspCount;
+	private Label lbCnspAmount, lbPayAmount, lbPayableAmount, lbCnspCount, lbCnspAvg, lbPayAvg;
 
 	// -------------------------------------------------------------------------------
 	private AccountService accountService = BusinessServiceFactory.getInstance().getService(AccountService.class);
@@ -60,7 +65,51 @@ public class CnspDashboardComposer extends SelectorComposer<Component> {
 
 	private void init() {
 		ZKUtil.configureConsumptionTypeCategory(cbbTypeCategory, true);
-		btnLast12Months_clicked();
+		btnLast3Years_clicked();
+	}
+
+	// -------------------------------------------------------------------------------
+	// -----------------------------------condition-----------------------------------
+	@Listen(Events.ON_SELECT + "=#cbbTypeCategory")
+	public void cbbTypeCategory_selected() {
+		cbbType.setValue("");
+		cbbType.getChildren().clear();
+		TypeCategoryEnum typeCate = getSelectedValue(cbbTypeCategory);
+		if (typeCate != null)
+			ZkUtil.initCbb(cbbType, accountService.getTypes(typeCate, false), true);
+	}
+
+	@Listen(Events.ON_CLICK + "=#btnReset")
+	public void btnReset_clicked() {
+		cbbTypeCategory.setValue("");
+		cbbTypeCategory.setSelectedItem(null);
+		cbbType.setValue("");
+		cbbType.getChildren().clear();
+		txbKeyword.setValue("");
+		btnSearch_clicked();
+	}
+
+	/** 類型目錄、類型、說明關鍵字(空白分隔，符合任一即可，不分大小寫) */
+	private Predicate<Consumption> buildFilter() {
+		TypeCategoryEnum typeCate = getSelectedValue(cbbTypeCategory);
+		TypeEnum type = getSelectedValue(cbbType);
+		String keyword = txbKeyword.getValue() == null ? "" : txbKeyword.getValue().trim().toLowerCase();
+		List<String> keywords = keyword.isEmpty() ? List.of() : Arrays.asList(keyword.split("\\s+"));
+
+		return c -> {
+			if (typeCate != null && c.getType().getCategory() != typeCate)
+				return false;
+			if (type != null && c.getType() != type)
+				return false;
+			if (keywords.isEmpty())
+				return true;
+			String desp = c.getDescription() == null ? "" : c.getDescription().toLowerCase();
+			return keywords.stream().anyMatch(desp::contains);
+		};
+	}
+
+	private static <T> T getSelectedValue(Combobox _cbb) {
+		return _cbb.getSelectedItem() == null ? null : _cbb.getSelectedItem().getValue();
 	}
 
 	// -------------------------------------------------------------------------------
@@ -89,7 +138,13 @@ public class CnspDashboardComposer extends SelectorComposer<Component> {
 		search(today.minusMonths(11).withDayOfMonth(1), today);
 	}
 
-	@Listen(Events.ON_CLICK + "=#btnSearch; " + Events.ON_SELECT + "=#cbbTypeCategory")
+	@Listen(Events.ON_CLICK + "=#btnLast3Years")
+	public void btnLast3Years_clicked() {
+		LocalDate today = LocalDate.now();
+		search(today.minusYears(2).withDayOfYear(1), today);
+	}
+
+	@Listen(Events.ON_CLICK + "=#btnSearch; " + Events.ON_OK + "=#txbKeyword")
 	public void btnSearch_clicked() {
 		LocalDate start = DateFormatUtil.parseLocalDate(dtbStart.getValue());
 		LocalDate end = DateFormatUtil.parseLocalDate(dtbEnd.getValue());
@@ -105,9 +160,7 @@ public class CnspDashboardComposer extends SelectorComposer<Component> {
 		dtbStart.setValue(toDate(_start));
 		dtbEnd.setValue(toDate(_end));
 
-		TypeCategoryEnum typeCate = cbbTypeCategory.getSelectedItem() == null ? null
-				: cbbTypeCategory.getSelectedItem().getValue();
-		Predicate<Consumption> filter = typeCate == null ? null : c -> c.getType().getCategory() == typeCate;
+		Predicate<Consumption> filter = buildFilter();
 
 		// 消費日期在期間內的消費
 		ConsumptionSearchParam cnspParam = new ConsumptionSearchParam();
@@ -129,6 +182,9 @@ public class CnspDashboardComposer extends SelectorComposer<Component> {
 		lbPayAmount.setValue(NumberFormatUtil.getIntegerString(stat.getPayAmount()));
 		lbPayableAmount.setValue(NumberFormatUtil.getIntegerString(stat.getPayableAmount()));
 		lbCnspCount.setValue(NumberFormatUtil.getIntegerString(stat.getCnspCount()));
+		String avgSuffix = "(共 " + stat.getMonthCount() + " 個月)";
+		lbCnspAvg.setValue("月平均 " + NumberFormatUtil.getIntegerString(stat.getCnspMonthlyAvg()) + avgSuffix);
+		lbPayAvg.setValue("月平均 " + NumberFormatUtil.getIntegerString(stat.getPayMonthlyAvg()) + avgSuffix);
 
 		// 等 chart.js、cnspDashboard.js 載入後才繪製
 		Clients.evalJavaScript("(function f(d){if(window.hmsCnspDashboard&&window.Chart)hmsCnspDashboard.render(d);"
@@ -149,6 +205,8 @@ public class CnspDashboardComposer extends SelectorComposer<Component> {
 		json.put("months", months);
 		json.put("monthCnsp", monthCnsp);
 		json.put("monthPay", monthPay);
+		json.put("cnspAvg", _stat.getCnspMonthlyAvg());
+		json.put("payAvg", _stat.getPayMonthlyAvg());
 
 		// 類型目錄(含各類型明細，供點選展開)
 		JSONArray categories = new JSONArray();

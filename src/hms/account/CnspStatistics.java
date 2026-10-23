@@ -128,6 +128,21 @@ public class CnspStatistics {
 		return payableAmount;
 	}
 
+	/** 期間涵蓋的月數(頭尾不滿一個月也算一個月) */
+	public int getMonthCount() {
+		return monthlyMap.size();
+	}
+
+	/** 期間消費總額的每月平均(四捨五入) */
+	public int getCnspMonthlyAvg() {
+		return Math.round((float) cnspAmount / getMonthCount());
+	}
+
+	/** 期間付款總額的每月平均(四捨五入) */
+	public int getPayMonthlyAvg() {
+		return Math.round((float) payAmount / getMonthCount());
+	}
+
 	public Map<YearMonth, int[]> getMonthlyMap() {
 		return Collections.unmodifiableMap(monthlyMap);
 	}

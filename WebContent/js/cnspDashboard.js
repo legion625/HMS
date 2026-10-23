@@ -8,8 +8,11 @@ window.hmsCnspDashboard = window.hmsCnspDashboard || (function () {
 		ink: '#52514e',
 		grid: '#e1e0d9'
 	};
+	// 跨年比較：由新到舊依序取色(固定順序，不循環)
+	var YEAR_COLORS = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4'];
 	var charts = {};
 	var data = null;
+	var yoyMetric = 'cnsp';
 
 	function fmt(n) {
 		return Number(n).toLocaleString('zh-TW');
@@ -30,7 +33,7 @@ window.hmsCnspDashboard = window.hmsCnspDashboard || (function () {
 			interaction: { mode: 'index', intersect: false },
 			scales: horizontal ? { x: valueAxis, y: catAxis } : { x: catAxis, y: valueAxis },
 			plugins: {
-				legend: { labels: { color: COLOR.ink, boxWidth: 12 } },
+				legend: { labels: { color: COLOR.ink, boxWidth: 10, boxHeight: 10, padding: 8 } },
 				tooltip: {
 					callbacks: {
 						label: function (ctx) {
@@ -60,14 +63,65 @@ window.hmsCnspDashboard = window.hmsCnspDashboard || (function () {
 		charts[id] = new Chart(canvas, config);
 	}
 
+	// 月平均參考線(虛線，每個月同一個值)
+	function avgLine(label, avg, color) {
+		return {
+			type: 'line', label: label, data: data.months.map(function () { return avg; }),
+			borderColor: color, borderWidth: 2, borderDash: [6, 4],
+			pointRadius: 0, pointHoverRadius: 0, fill: false
+		};
+	}
+
 	function drawTrend() {
 		draw('dsbTrend', {
 			type: 'bar',
 			data: {
 				labels: data.months,
-				datasets: [bar('消費', data.monthCnsp, COLOR.cnsp), bar('付款', data.monthPay, COLOR.pay)]
+				datasets: [
+					bar('消費', data.monthCnsp, COLOR.cnsp), bar('付款', data.monthPay, COLOR.pay),
+					avgLine('消費月平均', data.cnspAvg, COLOR.cnsp), avgLine('付款月平均', data.payAvg, COLOR.pay)
+				]
 			},
 			options: baseOptions(false)
+		});
+	}
+
+	// 跨年同月比較：x 軸 1~12 月，每個年度一條線；期間外的月份不畫點
+	function drawYoy() {
+		var values = yoyMetric === 'pay' ? data.monthPay : data.monthCnsp;
+		var byYear = {};
+		data.months.forEach(function (ym, i) {
+			var y = ym.substring(0, 4), m = parseInt(ym.substring(5, 7), 10) - 1;
+			if (!byYear[y])
+				byYear[y] = [null, null, null, null, null, null, null, null, null, null, null, null];
+			byYear[y][m] = values[i];
+		});
+		var years = Object.keys(byYear).sort().reverse().slice(0, YEAR_COLORS.length);
+		var datasets = years.map(function (y, i) {
+			return {
+				label: y + '年', data: byYear[y],
+				borderColor: YEAR_COLORS[i], backgroundColor: YEAR_COLORS[i],
+				borderWidth: 2, pointRadius: 4, pointHoverRadius: 6,
+				pointBorderColor: '#fcfcfb', pointBorderWidth: 2,
+				spanGaps: false, tension: 0
+			};
+		}).reverse(); // 舊年度在前，圖例由舊到新
+		var labels = [];
+		for (var m = 1; m <= 12; m++)
+			labels.push(m + '月');
+		draw('dsbYoy', { type: 'line', data: { labels: labels, datasets: datasets }, options: baseOptions(false) });
+	}
+
+	function bindYoyToggle() {
+		var btns = document.querySelectorAll('.dsb-toggle-btn');
+		Array.prototype.forEach.call(btns, function (btn) {
+			btn.onclick = function () {
+				yoyMetric = btn.getAttribute('data-metric');
+				Array.prototype.forEach.call(btns, function (b) {
+					b.classList.toggle('dsb-active', b === btn);
+				});
+				drawYoy();
+			};
 		});
 	}
 
@@ -116,6 +170,8 @@ window.hmsCnspDashboard = window.hmsCnspDashboard || (function () {
 	function render(d) {
 		data = d;
 		drawTrend();
+		drawYoy();
+		bindYoyToggle();
 		drawCategory(null);
 		drawPaymentType();
 		var back = document.getElementById('dsbCategoryBack');
