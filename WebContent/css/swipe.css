@@ -18,7 +18,8 @@
   top: 0;
   right: 0;
   height: 100%;
-  display: flex;
+  /* 蓋過 swipeDiv.zul 的 inline display:none：樣式載入後才顯示，且從隱藏到顯示不會觸發 transition */
+  display: flex !important;
   background: #4A90E2;
   transition: transform 0.3s ease;
   /* 以自身寬度推出畫面外，不需依賴 JS 預先量測 */
