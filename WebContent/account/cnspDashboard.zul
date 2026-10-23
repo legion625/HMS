@@ -1,0 +1,74 @@
+<?page title="消費統計" contentType="text/html;charset=UTF-8"?>
+<?xel-method prefix="hms" name="ver" class="hms.web.zk.ResourceVersion" signature="java.lang.String of(java.lang.String)"?>
+<zk>
+	<style src="/css/cnspDashboard.css?v=${hms:ver('/css/cnspDashboard.css')}" />
+	<script src="/js/chart.umd.min.js?v=${hms:ver('/js/chart.umd.min.js')}" />
+	<script src="/js/cnspDashboard.js?v=${hms:ver('/js/cnspDashboard.js')}" />
+
+	<borderlayout hflex="1" vflex="1" apply="hms.web.control.zk.account.CnspDashboardComposer">
+		<north height="50px" border="none">
+			<hlayout sclass="dsb-filter" valign="middle">
+				<label value="消費／付款日期" />
+				<datebox id="dtbStart" format="yyyy-MM-dd" width="120px" />
+				<label value="～" />
+				<datebox id="dtbEnd" format="yyyy-MM-dd" width="120px" />
+				<button id="btnSearch" label="查詢" />
+				<separator orient="vertical" bar="true" />
+				<button id="btnThisMonth" label="本月" />
+				<button id="btnThisYear" label="今年" />
+				<button id="btnLastYear" label="去年" />
+				<button id="btnLast12Months" label="近12月" />
+				<separator orient="vertical" bar="true" />
+				<label value="類型目錄" />
+				<combobox id="cbbTypeCategory" readonly="true" width="120px" />
+			</hlayout>
+		</north>
+		<center border="none" autoscroll="true">
+			<div sclass="dsb">
+				<!-- KPI -->
+				<div sclass="dsb-kpis">
+					<div sclass="dsb-card dsb-kpi">
+						<label sclass="dsb-kpi-title" value="期間消費總額" />
+						<label id="lbCnspAmount" sclass="dsb-kpi-value" />
+					</div>
+					<div sclass="dsb-card dsb-kpi">
+						<label sclass="dsb-kpi-title" value="期間付款總額" />
+						<label id="lbPayAmount" sclass="dsb-kpi-value" />
+					</div>
+					<div sclass="dsb-card dsb-kpi">
+						<label sclass="dsb-kpi-title" value="目前未付餘額" />
+						<label id="lbPayableAmount" sclass="dsb-kpi-value" />
+						<label sclass="dsb-kpi-note" value="所有未付清消費，不限期間" />
+					</div>
+					<div sclass="dsb-card dsb-kpi">
+						<label sclass="dsb-kpi-title" value="期間消費筆數" />
+						<label id="lbCnspCount" sclass="dsb-kpi-value" />
+					</div>
+				</div>
+				<!-- charts -->
+				<div sclass="dsb-charts">
+					<div sclass="dsb-card dsb-wide">
+						<html><![CDATA[
+							<div class="dsb-chart-title">每月消費與付款</div>
+							<div class="dsb-chart-box"><canvas id="dsbTrend"></canvas></div>
+						]]></html>
+					</div>
+					<div sclass="dsb-card">
+						<html><![CDATA[
+							<div class="dsb-chart-title"><span id="dsbCategoryTitle">消費類型目錄</span>
+								<button id="dsbCategoryBack" class="dsb-back" style="display:none">返回</button></div>
+							<div class="dsb-chart-box"><canvas id="dsbCategory"></canvas></div>
+							<div class="dsb-chart-note">點選長條可展開該目錄的類型明細</div>
+						]]></html>
+					</div>
+					<div sclass="dsb-card">
+						<html><![CDATA[
+							<div class="dsb-chart-title">付款方式（期間消費的已付／未付）</div>
+							<div class="dsb-chart-box"><canvas id="dsbPaymentType"></canvas></div>
+						]]></html>
+					</div>
+				</div>
+			</div>
+		</center>
+	</borderlayout>
+</zk>

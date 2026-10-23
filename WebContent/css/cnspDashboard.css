@@ -1,0 +1,84 @@
+/* 消費統計 dashboard */
+.dsb-filter {
+	padding: 10px 12px;
+	white-space: nowrap;
+}
+
+.dsb {
+	padding: 4px 12px 12px;
+	background: #f9f9f7;
+	min-height: 100%;
+	box-sizing: border-box;
+}
+
+.dsb-card {
+	background: #fcfcfb;
+	border: 1px solid rgba(11, 11, 11, 0.10);
+	border-radius: 8px;
+	padding: 12px 16px;
+	box-sizing: border-box;
+}
+
+/* KPI */
+.dsb-kpis {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 12px;
+	margin-bottom: 12px;
+}
+
+.dsb-kpi .z-label {
+	display: block;
+}
+
+.dsb-kpi-title {
+	color: #52514e;
+	font-size: 13px;
+}
+
+.dsb-kpi-value {
+	color: #0b0b0b;
+	font-size: 26px;
+	font-weight: 600;
+	margin-top: 4px;
+}
+
+.dsb-kpi-note {
+	color: #898781;
+	font-size: 12px;
+}
+
+/* charts */
+.dsb-charts {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 12px;
+}
+
+.dsb-wide {
+	grid-column: 1 / -1;
+}
+
+.dsb-chart-title {
+	color: #0b0b0b;
+	font-size: 14px;
+	font-weight: 600;
+	margin-bottom: 8px;
+}
+
+.dsb-chart-box {
+	position: relative;
+	height: 300px;
+}
+
+.dsb-chart-note {
+	color: #898781;
+	font-size: 12px;
+	margin-top: 4px;
+}
+
+.dsb-back {
+	margin-left: 8px;
+	font-size: 12px;
+	cursor: pointer;
+}
