@@ -1,0 +1,10 @@
+<?page title="咕溜時光軸" contentType="text/html;charset=UTF-8"?>
+<?xel-method prefix="hms" name="ver" class="hms.web.zk.ResourceVersion" signature="java.lang.String of(java.lang.String)"?>
+<zk>
+	<!-- 咕溜時光軸(電腦版 prototype)：畫面由 gulooTimeline.js 繪製，資料與新增/刪除由 GulooTimelineComposer 處理 -->
+	<style src="/css/gulooTimeline.css?v=${hms:ver('/css/gulooTimeline.css')}" />
+	<script src="/js/gulooTimeline.js?v=${hms:ver('/js/gulooTimeline.js')}" />
+
+	<div id="divGuloo" sclass="gl-root" hflex="1" vflex="1"
+		apply="hms.web.control.zk.membership.GulooTimelineComposer" />
+</zk>

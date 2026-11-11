@@ -149,6 +149,10 @@ public class MembershipDao extends PgDao {
 		return loadObjectList(TB_GSEC, COL_GSEC$_entity_uid, _entityUid, this::parseGulooStampEntityConj);
 	}
 
+	List<GulooStampEntityConj> loadAllGulooStampEntityConjList() {
+		return loadObjectList(TB_GSEC, this::parseGulooStampEntityConj);
+	}
+
 	// -------------------------------------------------------------------------------
 	// --------------------------------GulooStampCate---------------------------------
 	private final static String TB_GSC = "mbr_guloo_stamp_cate";
@@ -231,6 +235,10 @@ public class MembershipDao extends PgDao {
 	}
 	List<GulooStampCateConj> loadGulooStampCateConjListByCate(String _cateUid){
 		return loadObjectList(TB_GSCC, COL_GSCC$_cate_uid, _cateUid, this::parseGulooStampCateConj);
+	}
+
+	List<GulooStampCateConj> loadAllGulooStampCateConjList() {
+		return loadObjectList(TB_GSCC, this::parseGulooStampCateConj);
 	}
 
 }
