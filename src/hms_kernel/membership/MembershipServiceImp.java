@@ -89,6 +89,16 @@ public class MembershipServiceImp implements MembershipService {
 	}
 
 	@Override
+	public boolean updateGulooStampCateColor(String _uid, String _color) {
+		GulooStampCate gsc = dataService.loadGulooStampCate(_uid);
+		if (gsc == null) {
+			log.error("GulooStampCate null.");
+			return false;
+		}
+		return gsc.updateColor(_color);
+	}
+
+	@Override
 	public List<GulooStampCate> loadGulooStampCateList() {
 		return dataService.loadGulooStampCateList();
 	}

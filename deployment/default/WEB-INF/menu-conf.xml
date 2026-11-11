@@ -37,6 +37,9 @@
 		<MenuItem text="消費統計" navigateUrl="/account/cnspDashboard.zul"></MenuItem>
 		<!-- <MenuItem text="付款管理" invalidHidden="false"></MenuItem>-->
 	</MenuItem>
+	<MenuItem text="咕溜(電腦版)">
+		<MenuItem text="咕溜時光軸" navigateUrl="/membership/gulooTimeline.zul"></MenuItem>
+	</MenuItem>
 	<!-- <MenuItem text="帳務資訊(行動版)" navigateUrl="/mobile/account/accountFunction.zul"> 
 	</MenuItem>-->
 	<!-- 

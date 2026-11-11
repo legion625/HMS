@@ -27,5 +27,6 @@ public interface MembershipService extends BusinessService {
 	// --------------------------------GulooStampCate---------------------------------
 	public GulooStampCate createGulooStampCate(String _name, String _color);
 	public boolean deleteGulooStampCate(String _uid);
+	public boolean updateGulooStampCateColor(String _uid, String _color);
 	public List<GulooStampCate> loadGulooStampCateList();
 }
