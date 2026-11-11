@@ -103,6 +103,11 @@ public class MembershipDataServiceImp implements MembershipDataService {
 		return mbrDao.loadGulooStampEntityConjListByEntity(_entityUid);
 	}
 
+	@Override
+	public List<GulooStampEntityConj> loadAllGulooStampEntityConjList() {
+		return mbrDao.loadAllGulooStampEntityConjList();
+	}
+
 	// -------------------------------------------------------------------------------
 	// --------------------------------GulooStampCate---------------------------------
 	@Override
@@ -150,6 +155,11 @@ public class MembershipDataServiceImp implements MembershipDataService {
 	@Override
 	public List<GulooStampCateConj> loadGulooStampCateConjListByCate(String _cateUid) {
 		return mbrDao.loadGulooStampCateConjListByCate(_cateUid);
+	}
+
+	@Override
+	public List<GulooStampCateConj> loadAllGulooStampCateConjList() {
+		return mbrDao.loadAllGulooStampCateConjList();
 	}
 
 }

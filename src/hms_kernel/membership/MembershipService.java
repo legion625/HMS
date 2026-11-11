@@ -22,7 +22,13 @@ public interface MembershipService extends BusinessService {
 	public boolean deleteGulooStamp(String _uid);
 	
 	public List<GulooStamp> loadGulooStampList();
-	
+
+	/** 全部的咕溜-成員關聯(一次查詢)；畫面需要整批組裝時用，避免逐筆 getEntityList() 的 N+1 查詢 */
+	public List<GulooStampEntityConj> loadAllGulooStampEntityConjList();
+
+	/** 全部的咕溜-標籤關聯(一次查詢)；畫面需要整批組裝時用，避免逐筆 getCateList() 的 N+1 查詢 */
+	public List<GulooStampCateConj> loadAllGulooStampCateConjList();
+
 	// -------------------------------------------------------------------------------
 	// --------------------------------GulooStampCate---------------------------------
 	public GulooStampCate createGulooStampCate(String _name, String _color);

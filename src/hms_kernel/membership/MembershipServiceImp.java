@@ -71,6 +71,16 @@ public class MembershipServiceImp implements MembershipService {
 		return dataService.loadGulooStampList();
 	}
 
+	@Override
+	public List<GulooStampEntityConj> loadAllGulooStampEntityConjList() {
+		return dataService.loadAllGulooStampEntityConjList();
+	}
+
+	@Override
+	public List<GulooStampCateConj> loadAllGulooStampCateConjList() {
+		return dataService.loadAllGulooStampCateConjList();
+	}
+
 	// -------------------------------------------------------------------------------
 	// --------------------------------GulooStampCate---------------------------------
 	@Override

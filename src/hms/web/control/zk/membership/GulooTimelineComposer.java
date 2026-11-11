@@ -1,16 +1,13 @@
 package hms.web.control.zk.membership;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,14 +26,20 @@ import hms.web.zk.HmsNotification;
 import hms_kernel.membership.Entity;
 import hms_kernel.membership.GulooStamp;
 import hms_kernel.membership.GulooStampCate;
+import hms_kernel.membership.GulooStampCateConj;
+import hms_kernel.membership.GulooStampEntityConj;
 import hms_kernel.membership.MembershipService;
 import hms_kernel.membership.type.EntityType;
 import legion.BusinessServiceFactory;
 import legion.biz.BpuFacade;
+import legion.util.DateFormatUtil;
 
 /**
  * 咕溜時光軸(電腦版 prototype)。
- * 畫面、篩選與快速輸入解析都在 gulooTimeline.js；這裡只負責提供資料，以及處理新增(onQuickAdd)、刪除(onDeleteStamp)。
+ * 畫面、篩選與快速輸入解析都在 gulooTimeline.js；這裡負責提供資料，以及處理咕溜、成員、標籤的新增/刪除。
+ *
+ * 資料由 reload() 整批載入(固定 5 次查詢，不隨咕溜筆數增加)，存成 composer 上的 model；
+ * 事件處理一律以 uid 從 model 取用，不再為了找物件重新查詢。
  */
 public class GulooTimelineComposer extends SelectorComposer<Component> {
 	private Logger log = LoggerFactory.getLogger(getClass());
@@ -44,6 +47,53 @@ public class GulooTimelineComposer extends SelectorComposer<Component> {
 	private MembershipService mbrService = BusinessServiceFactory.getInstance().getService(MembershipService.class);
 
 	private Component root;
+
+	// -------------------------------------------------------------------------------
+	// -------------------------------------model-------------------------------------
+	private final Map<String, Entity> entityMap = new LinkedHashMap<>();
+	private final Map<String, GulooStampCate> cateMap = new LinkedHashMap<>();
+	private final Map<String, GulooStamp> stampMap = new LinkedHashMap<>();
+	/** stampUid -> 成員 uid(只含存在的成員) */
+	private final Map<String, List<String>> stampEntityUids = new HashMap<>();
+	/** stampUid -> 標籤 uid(只含存在的標籤) */
+	private final Map<String, List<String>> stampCateUids = new HashMap<>();
+
+	/** 整批重新載入 model：成員、標籤、咕溜、兩種關聯各一次查詢 */
+	private void reload() {
+		long t = System.currentTimeMillis();
+		entityMap.clear();
+		cateMap.clear();
+		stampMap.clear();
+		stampEntityUids.clear();
+		stampCateUids.clear();
+
+		mbrService.loadEntityList().forEach(e -> entityMap.put(e.getUid(), e));
+		mbrService.loadGulooStampCateList().forEach(c -> cateMap.put(c.getUid(), c));
+		mbrService.loadGulooStampList().forEach(s -> stampMap.put(s.getUid(), s));
+
+		// 關聯表可能留有已刪除的咕溜/成員/標籤(刪除時不會連帶刪關聯)，對不上的略過
+		for (GulooStampEntityConj c : mbrService.loadAllGulooStampEntityConjList())
+			if (stampMap.containsKey(c.getStampUid()) && entityMap.containsKey(c.getEntityUid()))
+				stampEntityUids.computeIfAbsent(c.getStampUid(), k -> new ArrayList<>()).add(c.getEntityUid());
+		for (GulooStampCateConj c : mbrService.loadAllGulooStampCateConjList())
+			if (stampMap.containsKey(c.getStampUid()) && cateMap.containsKey(c.getCateUid()))
+				stampCateUids.computeIfAbsent(c.getStampUid(), k -> new ArrayList<>()).add(c.getCateUid());
+
+		log.debug("reload guloo model: {} stamps, {} ms", stampMap.size(), System.currentTimeMillis() - t);
+	}
+
+	private List<String> entityUidsOf(String _stampUid) {
+		return stampEntityUids.getOrDefault(_stampUid, Collections.emptyList());
+	}
+
+	private List<String> cateUidsOf(String _stampUid) {
+		return stampCateUids.getOrDefault(_stampUid, Collections.emptyList());
+	}
+
+	/** 有幾個咕溜使用這個成員/標籤 */
+	private static long countUsage(Map<String, List<String>> _index, String _uid) {
+		return _index.values().stream().filter(l -> l.contains(_uid)).count();
+	}
 
 	// -------------------------------------------------------------------------------
 	@Override
@@ -54,34 +104,27 @@ public class GulooTimelineComposer extends SelectorComposer<Component> {
 	}
 
 	// -------------------------------------------------------------------------------
+	// -------------------------------------咕溜------------------------------------
 	@Listen("onQuickAdd = #divGuloo")
 	public void quickAdd(Event _evt) {
 		Map<?, ?> d = (Map<?, ?>) _evt.getData();
 
-		long stampDate;
-		try {
-			stampDate = LocalDate.parse(String.valueOf(d.get("date"))).atStartOfDay(ZoneId.systemDefault()).toInstant()
-					.toEpochMilli();
-		} catch (DateTimeParseException e) {
+		Date stampDate = DateFormatUtil.parse(str(d.get("date")));
+		if (stampDate == null) {
 			HmsMessageBox.exclamation("日期格式不正確。");
 			return;
 		}
-
-		Map<String, Entity> entityMap = toMap(mbrService.loadEntityList(), Entity::getUid);
-		Map<String, GulooStampCate> cateMap = toMap(mbrService.loadGulooStampCateList(), GulooStampCate::getUid);
-		List<Entity> entities = pick(d.get("entityUids"), entityMap);
-		List<GulooStampCate> cates = pick(d.get("cateUids"), cateMap);
 
 		GulooStampBuilder1 bpu = BpuFacade.getInstance().getBuilder(MbrBpuType.GulooStamp$Create1);
 		if (bpu == null) {
 			HmsNotification.error();
 			return;
 		}
-		bpu.appendStampDate(stampDate);
+		bpu.appendStampDate(stampDate.getTime());
 		bpu.appendDesp(str(d.get("desp")));
 		bpu.appendRemark(str(d.get("remark")));
-		bpu.appendEntityList(entities);
-		bpu.appendCateList(cates);
+		bpu.appendEntityList(pick(d.get("entityUids"), entityMap));
+		bpu.appendCateList(pick(d.get("cateUids"), cateMap));
 
 		StringBuilder msg = new StringBuilder();
 		if (!bpu.verify(msg)) {
@@ -101,9 +144,8 @@ public class GulooTimelineComposer extends SelectorComposer<Component> {
 
 	@Listen("onDeleteStamp = #divGuloo")
 	public void deleteStamp(Event _evt) {
-		String uid = str(((Map<?, ?>) _evt.getData()).get("uid"));
-		GulooStamp gs = mbrService.loadGulooStampList().stream().filter(s -> s.getUid().equals(uid)).findFirst()
-				.orElse(null);
+		String uid = uidOf(_evt);
+		GulooStamp gs = stampMap.get(uid);
 		if (gs == null) {
 			HmsNotification.error();
 			return;
@@ -118,29 +160,13 @@ public class GulooTimelineComposer extends SelectorComposer<Component> {
 		});
 	}
 
-	/** 標籤顏色：#rrggbb，或空字串表示不指定(灰色) */
-	@Listen("onCateColor = #divGuloo")
-	public void updateCateColor(Event _evt) {
-		Map<?, ?> d = (Map<?, ?>) _evt.getData();
-		String uid = str(d.get("uid"));
-		String color = str(d.get("color")).toLowerCase();
-		if (!color.isEmpty() && !color.matches("#[0-9a-f]{6}")) {
-			HmsMessageBox.exclamation("顏色格式不正確。");
-			return;
-		}
-		if (mbrService.updateGulooStampCateColor(uid, color))
-			refresh(null, false, false);
-		else
-			HmsNotification.error();
-	}
-
 	// -------------------------------------------------------------------------------
 	// ------------------------------成員(Entity)新增/刪除------------------------------
 	@Listen("onAddEntity = #divGuloo")
 	public void addEntity(Event _evt) {
 		Map<?, ?> d = (Map<?, ?>) _evt.getData();
 		String alias = str(d.get("alias"));
-		if (!checkName(alias, "成員", mbrService.loadEntityList().stream().map(Entity::getAlias)))
+		if (!checkName(alias, "成員", entityMap.values().stream().map(Entity::getAlias).toArray(String[]::new)))
 			return;
 
 		EntityType type;
@@ -154,15 +180,16 @@ public class GulooTimelineComposer extends SelectorComposer<Component> {
 			return;
 		}
 
+		// 生日可不填(0 表示未指定)
 		long birthDate = 0;
 		String birth = str(d.get("birth"));
 		if (!birth.isEmpty()) {
-			try {
-				birthDate = LocalDate.parse(birth).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
-			} catch (DateTimeParseException e) {
+			Date bd = DateFormatUtil.parse(birth);
+			if (bd == null) {
 				HmsMessageBox.exclamation("生日格式不正確。");
 				return;
 			}
+			birthDate = bd.getTime();
 		}
 
 		if (mbrService.createEntity(alias, type, birthDate) == null) {
@@ -175,14 +202,13 @@ public class GulooTimelineComposer extends SelectorComposer<Component> {
 
 	@Listen("onDeleteEntity = #divGuloo")
 	public void deleteEntity(Event _evt) {
-		String uid = str(((Map<?, ?>) _evt.getData()).get("uid"));
-		Entity ett = mbrService.loadEntityList().stream().filter(e -> e.getUid().equals(uid)).findFirst().orElse(null);
+		String uid = uidOf(_evt);
+		Entity ett = entityMap.get(uid);
 		if (ett == null) {
 			HmsNotification.error();
 			return;
 		}
-		long used = mbrService.loadGulooStampList().stream()
-				.filter(s -> s.getEntityList().stream().anyMatch(e -> e != null && uid.equals(e.getUid()))).count();
+		long used = countUsage(stampEntityUids, uid);
 		String msg = "確認刪除成員[" + ett.getAlias() + "]?"
 				+ (used > 0 ? System.lineSeparator() + "有 " + used + " 個咕溜標記了這位成員，刪除後這些咕溜上將不再顯示。" : "");
 		HmsMessageBox.confirm(msg, () -> {
@@ -196,15 +222,15 @@ public class GulooTimelineComposer extends SelectorComposer<Component> {
 	}
 
 	// -------------------------------------------------------------------------------
-	// ------------------------------標籤(Cate)新增/刪除-------------------------------
+	// ------------------------------標籤(Cate)新增/刪除/顏色-------------------------------
 	@Listen("onAddCate = #divGuloo")
 	public void addCate(Event _evt) {
 		Map<?, ?> d = (Map<?, ?>) _evt.getData();
 		String name = str(d.get("name"));
 		String color = str(d.get("color")).toLowerCase();
-		if (!checkName(name, "標籤", mbrService.loadGulooStampCateList().stream().map(GulooStampCate::getName)))
+		if (!checkName(name, "標籤", cateMap.values().stream().map(GulooStampCate::getName).toArray(String[]::new)))
 			return;
-		if (!color.isEmpty() && !color.matches("#[0-9a-f]{6}")) {
+		if (!isValidColor(color)) {
 			HmsMessageBox.exclamation("顏色格式不正確。");
 			return;
 		}
@@ -219,15 +245,13 @@ public class GulooTimelineComposer extends SelectorComposer<Component> {
 
 	@Listen("onDeleteCate = #divGuloo")
 	public void deleteCate(Event _evt) {
-		String uid = str(((Map<?, ?>) _evt.getData()).get("uid"));
-		GulooStampCate gsc = mbrService.loadGulooStampCateList().stream().filter(c -> c.getUid().equals(uid))
-				.findFirst().orElse(null);
+		String uid = uidOf(_evt);
+		GulooStampCate gsc = cateMap.get(uid);
 		if (gsc == null) {
 			HmsNotification.error();
 			return;
 		}
-		long used = mbrService.loadGulooStampList().stream()
-				.filter(s -> s.getCateList().stream().anyMatch(c -> c != null && uid.equals(c.getUid()))).count();
+		long used = countUsage(stampCateUids, uid);
 		String msg = "確認刪除標籤[" + gsc.getName() + "]?"
 				+ (used > 0 ? System.lineSeparator() + "有 " + used + " 個咕溜使用這個標籤，刪除後這些咕溜上將不再顯示。" : "");
 		HmsMessageBox.confirm(msg, () -> {
@@ -240,23 +264,52 @@ public class GulooTimelineComposer extends SelectorComposer<Component> {
 		});
 	}
 
+	/** 標籤顏色：#rrggbb，或空字串表示不指定(灰色) */
+	@Listen("onCateColor = #divGuloo")
+	public void updateCateColor(Event _evt) {
+		Map<?, ?> d = (Map<?, ?>) _evt.getData();
+		String uid = str(d.get("uid"));
+		String color = str(d.get("color")).toLowerCase();
+		if (!cateMap.containsKey(uid)) {
+			HmsNotification.error();
+			return;
+		}
+		if (!isValidColor(color)) {
+			HmsMessageBox.exclamation("顏色格式不正確。");
+			return;
+		}
+		if (mbrService.updateGulooStampCateColor(uid, color))
+			refresh(null, false, false);
+		else
+			HmsNotification.error();
+	}
+
+	// -------------------------------------------------------------------------------
 	/** 快速輸入以 @名稱、#名稱 比對，所以名稱必填、不可含空白、不可重複(不分大小寫) */
-	private static boolean checkName(String _name, String _label, java.util.stream.Stream<String> _existing) {
+	private static boolean checkName(String _name, String _label, String[] _existing) {
 		String msg = null;
 		if (_name.isEmpty())
 			msg = "請輸入" + _label + "名稱。";
 		else if (_name.matches(".*\\s.*"))
 			msg = _label + "名稱不可包含空白。";
-		else if (_existing.anyMatch(n -> _name.equalsIgnoreCase(n)))
-			msg = "已經有名為[" + _name + "]的" + _label + "。";
+		else
+			for (String n : _existing)
+				if (_name.equalsIgnoreCase(n)) {
+					msg = "已經有名為[" + _name + "]的" + _label + "。";
+					break;
+				}
 		if (msg == null)
 			return true;
 		HmsMessageBox.exclamation(msg);
 		return false;
 	}
 
+	private static boolean isValidColor(String _color) {
+		return _color.isEmpty() || _color.matches("#[0-9a-f]{6}");
+	}
+
 	// -------------------------------------------------------------------------------
-	/** 重新載入全部資料並交給前端繪製 */
+	/** 重新載入 model 並交給前端繪製 */
 	@SuppressWarnings("unchecked")
 	private void refresh(String _newUid, boolean _clearQuick, boolean _closeDrawer) {
 		JSONObject opts = new JSONObject();
@@ -275,16 +328,18 @@ public class GulooTimelineComposer extends SelectorComposer<Component> {
 	}
 
 	private void refresh(JSONObject opts) {
+		reload();
 		String args = "'" + root.getUuid() + "'," + toJson() + "," + opts.toJSONString();
 		// 等 gulooTimeline.js 載入後才繪製
 		Clients.evalJavaScript(
 				"(function f(){if(window.hmsGuloo)hmsGuloo.render(" + args + ");else setTimeout(f,50);})()");
 	}
 
+	/** 由 model 產生前端資料(不查詢) */
 	@SuppressWarnings("unchecked")
 	private String toJson() {
 		JSONArray entities = new JSONArray();
-		for (Entity e : mbrService.loadEntityList()) {
+		for (Entity e : entityMap.values()) {
 			JSONObject o = new JSONObject();
 			o.put("uid", e.getUid());
 			o.put("alias", e.getAlias());
@@ -294,7 +349,7 @@ public class GulooTimelineComposer extends SelectorComposer<Component> {
 		}
 
 		JSONArray cates = new JSONArray();
-		for (GulooStampCate c : mbrService.loadGulooStampCateList()) {
+		for (GulooStampCate c : cateMap.values()) {
 			JSONObject o = new JSONObject();
 			o.put("uid", c.getUid());
 			o.put("name", c.getName());
@@ -303,17 +358,17 @@ public class GulooTimelineComposer extends SelectorComposer<Component> {
 		}
 
 		JSONArray stamps = new JSONArray();
-		for (GulooStamp s : mbrService.loadGulooStampList()) {
+		for (GulooStamp s : stampMap.values()) {
 			JSONObject o = new JSONObject();
 			o.put("uid", s.getUid());
 			o.put("date", toDateStr(s.getStampDate()));
 			o.put("desp", s.getDesp());
 			o.put("remark", s.getRemark());
 			JSONArray eu = new JSONArray();
-			s.getEntityList().stream().filter(Objects::nonNull).forEach(e -> eu.add(e.getUid()));
+			eu.addAll(entityUidsOf(s.getUid()));
 			o.put("entities", eu);
 			JSONArray cu = new JSONArray();
-			s.getCateList().stream().filter(Objects::nonNull).forEach(c -> cu.add(c.getUid()));
+			cu.addAll(cateUidsOf(s.getUid()));
 			o.put("cates", cu);
 			stamps.add(o);
 		}
@@ -322,23 +377,24 @@ public class GulooTimelineComposer extends SelectorComposer<Component> {
 		json.put("entities", entities);
 		json.put("cates", cates);
 		json.put("stamps", stamps);
-		log.debug("guloo stamps: {}", stamps.size());
 		return json.toJSONString();
 	}
 
 	// -------------------------------------------------------------------------------
+	/** yyyy-MM-dd；0 表示未指定，回傳空字串 */
 	private static String toDateStr(long _millis) {
-		return _millis <= 0 ? "" : Instant.ofEpochMilli(_millis).atZone(ZoneId.systemDefault()).toLocalDate().toString();
+		return _millis <= 0 ? "" : DateFormatUtil.transToDate(new Date(_millis));
 	}
 
 	private static String str(Object _o) {
 		return _o == null ? "" : String.valueOf(_o).trim();
 	}
 
-	private static <T> Map<String, T> toMap(List<T> _list, Function<T, String> _key) {
-		return _list.stream().collect(Collectors.toMap(_key, t -> t, (a, b) -> a));
+	private static String uidOf(Event _evt) {
+		return str(((Map<?, ?>) _evt.getData()).get("uid"));
 	}
 
+	/** 前端傳來的 uid 清單換成 model 中的物件(不存在的略過、去重) */
 	private static <T> List<T> pick(Object _uids, Map<String, T> _map) {
 		List<T> list = new ArrayList<>();
 		if (_uids instanceof Collection)
