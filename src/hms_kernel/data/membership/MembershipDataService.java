@@ -43,6 +43,9 @@ public interface MembershipDataService extends IntegrationService {
 
 	public List<GulooStampEntityConj> loadGulooStampEntityConjListByEntity(String _entityUid);
 
+	/** 全部的咕溜-成員關聯(一次查詢)，供整批組裝用 */
+	public List<GulooStampEntityConj> loadAllGulooStampEntityConjList();
+
 	// -------------------------------------------------------------------------------
 	// --------------------------------GulooStampCate---------------------------------
 	public boolean saveGulooStampCate(GulooStampCate _gsc);
@@ -60,5 +63,7 @@ public interface MembershipDataService extends IntegrationService {
 	public GulooStampCateConj loadGulooStampCateConj(String _uid);
 	public List<GulooStampCateConj> loadGulooStampCateConjList(String _gsUid);
 	public List<GulooStampCateConj> loadGulooStampCateConjListByCate(String _cateUid);
+	/** 全部的咕溜-標籤關聯(一次查詢)，供整批組裝用 */
+	public List<GulooStampCateConj> loadAllGulooStampCateConjList();
 
 }

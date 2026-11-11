@@ -68,4 +68,14 @@ public class GulooStampCate extends HmsObjectModel {
 		return cate.save() ? cate : null;
 	}
 
+	/** 更新顏色，空字串表示不指定(畫面顯示為灰色) */
+	public boolean updateColor(String _color) {
+		String org = getColor();
+		setColor(_color);
+		if (save())
+			return true;
+		setColor(org);
+		return false;
+	}
+
 }
