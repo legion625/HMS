@@ -71,6 +71,16 @@ public class MembershipServiceImp implements MembershipService {
 		return dataService.loadGulooStampList();
 	}
 
+	@Override
+	public List<GulooStampEntityConj> loadAllGulooStampEntityConjList() {
+		return dataService.loadAllGulooStampEntityConjList();
+	}
+
+	@Override
+	public List<GulooStampCateConj> loadAllGulooStampCateConjList() {
+		return dataService.loadAllGulooStampCateConjList();
+	}
+
 	// -------------------------------------------------------------------------------
 	// --------------------------------GulooStampCate---------------------------------
 	@Override
@@ -86,6 +96,16 @@ public class MembershipServiceImp implements MembershipService {
 			return false;
 		}
 		return gsc.delete();
+	}
+
+	@Override
+	public boolean updateGulooStampCateColor(String _uid, String _color) {
+		GulooStampCate gsc = dataService.loadGulooStampCate(_uid);
+		if (gsc == null) {
+			log.error("GulooStampCate null.");
+			return false;
+		}
+		return gsc.updateColor(_color);
 	}
 
 	@Override
