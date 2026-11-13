@@ -319,41 +319,89 @@ window.hmsGuloo = window.hmsGuloo || (function () {
 	}
 
 	// -------------------------------------------------------------------------------
-	// drawer
+	// drawer：編輯咕溜
+	// 編輯中的資料在伺服器端的 BPU(GulooStampBpuUpdate)；這裡只顯示 showEdit() 推來的內容，
+	// 並把操作(改欄位、切換成員/標籤、儲存、取消)轉送給 composer。
 	function openDrawer(uid) {
-		var s = data.stamps.filter(function (x) { return x.uid === uid; })[0];
-		if (!s) return closeDrawer();
+		if (state.edit && state.edit.uid !== uid) send('onEditCancel', {}); // 換一筆編輯，先丟掉原本的
 		state.selUid = uid;
-		var d = parseYmd(s.date);
-		var ents = s.entities.map(function (u) { return entityMap[u]; }).filter(Boolean);
-		var cates = s.cates.map(function (u) { return cateMap[u]; }).filter(Boolean);
-		$('#glDrawer').innerHTML =
-			'<div class="gl-drawer-head"><h3>咕溜內容</h3><button class="gl-x" data-act="close" title="關閉 (Esc)">×</button></div>'
-			+ '<div class="gl-drawer-body">'
-			+ '<div class="gl-field"><label>日期</label><input type="date" value="' + esc(s.date) + '" disabled /></div>'
-			+ '<div class="gl-field"><label>簡述</label><input value="' + esc(s.desp) + '" disabled /></div>'
-			+ '<div class="gl-field"><label>成員</label><div class="gl-card-meta">'
-			+ ents.map(function (e) {
-				var age = ageAt(e, d);
-				return '<span class="gl-who">' + avatar(e, true) + esc(e.alias) + (age ? '<span class="gl-who-age">· ' + age + '</span>' : '') + '</span>';
-			}).join('') + '</div></div>'
-			+ '<div class="gl-field"><label>標籤</label><div class="gl-card-meta">'
-			+ (cates.length ? cates.map(function (c) { return tagPill(c); }).join('') : '<span class="gl-who-age">(無)</span>') + '</div></div>'
-			+ '<div class="gl-field"><label>備註</label><textarea rows="4" disabled>' + esc(s.remark) + '</textarea></div>'
-			+ '<div class="gl-note">Prototype：目前 MembershipService 沒有修改咕溜的方法，所以欄位先唯讀；要開放修改需在後端補上 update。</div>'
-			+ '</div>'
-			+ '<div class="gl-drawer-foot"><button class="gl-btn gl-btn-danger" data-act="delete" data-uid="' + esc(s.uid) + '">刪除</button>'
-			+ '<button class="gl-btn" data-act="close">關閉</button></div>';
-		$('#glDrawer').classList.add('gl-open');
+		markSelected(uid);
+		send('onEditStamp', { uid: uid });
+	}
+
+	/** 由 composer 呼叫：顯示 BPU 目前的內容。同一筆只更新成員/標籤與錯誤訊息，不動輸入框(避免游標跳動) */
+	function showEdit(view) {
+		if (!root) return;
+		var same = state.edit && state.edit.uid === view.uid && $('#glDrawer').classList.contains('gl-open');
+		state.edit = view;
+		state.selUid = view.uid;
+		if (!same) {
+			$('#glDrawer').innerHTML =
+				'<div class="gl-drawer-head"><h3>編輯咕溜</h3><button class="gl-x" data-act="close" title="關閉 (Esc)">×</button></div>'
+				+ '<div class="gl-drawer-body">'
+				+ '<div class="gl-field"><label>日期</label><input type="date" data-ed="date" value="' + esc(view.date) + '" /></div>'
+				+ '<div class="gl-field"><label>簡述</label><input data-ed="desp" value="' + esc(view.desp) + '" /></div>'
+				+ '<div class="gl-field"><label>成員(至少一位，點選切換)</label><div class="gl-card-meta" id="glEdEntities"></div></div>'
+				+ '<div class="gl-field"><label>標籤(點選切換)</label><div class="gl-card-meta" id="glEdCates"></div></div>'
+				+ '<div class="gl-field"><label>備註</label><textarea rows="4" data-ed="remark">' + esc(view.remark) + '</textarea></div>'
+				+ '<div class="gl-form-err" id="glEdErr"></div>'
+				+ '</div>'
+				+ '<div class="gl-drawer-foot"><button class="gl-btn gl-btn-danger" data-act="delete" data-uid="' + esc(view.uid) + '">刪除</button>'
+				+ '<span class="gl-spacer"></span>'
+				+ '<button class="gl-btn" data-act="close">取消</button>'
+				+ '<button class="gl-btn gl-btn-primary" data-act="saveStamp">儲存</button></div>';
+			$('#glDrawer').classList.add('gl-open');
+			markSelected(view.uid);
+		}
+		renderEdChips();
+		$('#glEdErr').textContent = view.err || '';
+	}
+
+	/** 成員、標籤切換區：全部列出，BPU 中已選的亮起；成員年紀依編輯中的日期計算 */
+	function renderEdChips() {
+		var ed = state.edit;
+		if (!ed || !$('#glEdEntities')) return;
+		var d = parseYmd(ed.date);
+		$('#glEdEntities').innerHTML = data.entities.map(function (e) {
+			var on = ed.entityUids.indexOf(e.uid) >= 0, age = on ? ageAt(e, d) : '';
+			return '<span class="gl-who gl-pick' + (on ? ' gl-on' : '') + '" data-act="edToggle" data-kind="entity" data-uid="' + esc(e.uid) + '">'
+				+ avatar(e, true) + esc(e.alias) + (age ? '<span class="gl-who-age">· ' + age + '</span>' : '') + '</span>';
+		}).join('') || '<span class="gl-who-age">(尚未建立成員)</span>';
+		$('#glEdCates').innerHTML = data.cates.map(function (c) {
+			var on = ed.cateUids.indexOf(c.uid) >= 0;
+			return '<span class="gl-pick-wrap" data-act="edToggle" data-kind="cate" data-uid="' + esc(c.uid) + '">'
+				+ tagPill(c, ' gl-pick' + (on ? ' gl-on' : '')) + '</span>';
+		}).join('') || '<span class="gl-who-age">(尚未建立標籤)</span>';
+	}
+
+	/** 輸入框的值送給 BPU(與 BPU 目前內容相同就不送) */
+	function sendEditField(el) {
+		var field = el.getAttribute('data-ed');
+		if (state.edit && state.edit[field] !== el.value)
+			send('onEditField', { field: field, value: el.value });
+	}
+
+	/** 儲存：先把輸入框尚未送出的值同步給 BPU，再請 composer 驗證並寫入 */
+	function saveStamp() {
+		if (!state.edit) return;
+		root.querySelectorAll('#glDrawer [data-ed]').forEach(sendEditField);
+		send('onEditSave', {});
+	}
+
+	function markSelected(uid) {
 		root.querySelectorAll('.gl-card.gl-sel').forEach(function (c) { c.classList.remove('gl-sel'); });
-		var card = root.querySelector('.gl-card[data-uid="' + uid + '"]');
+		var card = uid && root.querySelector('.gl-card[data-uid="' + uid + '"]');
 		if (card) card.classList.add('gl-sel');
 	}
-	function closeDrawer() {
+
+	/** 關閉面板；_cancel 為 true 時通知 composer 丟掉 BPU */
+	function closeDrawer(_cancel) {
+		if (_cancel && state.edit) send('onEditCancel', {});
 		state.selUid = null;
+		state.edit = null;
 		if (!root) return;
 		$('#glDrawer').classList.remove('gl-open');
-		root.querySelectorAll('.gl-card.gl-sel').forEach(function (c) { c.classList.remove('gl-sel'); });
+		markSelected(null);
 	}
 
 	// -------------------------------------------------------------------------------
@@ -538,9 +586,13 @@ window.hmsGuloo = window.hmsGuloo || (function () {
 			} else if (act === 'open') {
 				openDrawer(uid);
 			} else if (act === 'close') {
-				closeDrawer();
+				closeDrawer(true);
 			} else if (act === 'delete') {
 				send('onDeleteStamp', { uid: uid });
+			} else if (act === 'saveStamp') {
+				saveStamp();
+			} else if (act === 'edToggle') {
+				if (state.edit) send('onEditToggle', { kind: t.getAttribute('data-kind'), uid: uid });
 			} else if (act === 'pick') {
 				pickSuggest(+t.getAttribute('data-idx'));
 			}
@@ -557,6 +609,9 @@ window.hmsGuloo = window.hmsGuloo || (function () {
 		});
 		root.addEventListener('keydown', function (ev) {
 			if (ev.target.getAttribute && ev.target.getAttribute('data-fv') && ev.key === 'Enter') { submitForm(); ev.preventDefault(); return; }
+			// 編輯面板：單行欄位按 Enter、備註按 Ctrl+Enter 儲存
+			if (ev.target.getAttribute && ev.target.getAttribute('data-ed') && ev.key === 'Enter'
+				&& (ev.target.tagName !== 'TEXTAREA' || ev.ctrlKey)) { saveStamp(); ev.preventDefault(); return; }
 			if (ev.target.id !== 'glQuick') return;
 			var open = suggest.list.length && $('#glSuggest').style.display !== 'none';
 			if (open && (ev.key === 'ArrowDown' || ev.key === 'ArrowUp')) {
@@ -570,6 +625,10 @@ window.hmsGuloo = window.hmsGuloo || (function () {
 				$('#glSuggest').style.display = 'none';
 			}
 		});
+		// 編輯面板的欄位改完(離開欄位或選好日期)就送給 BPU
+		root.addEventListener('change', function (ev) {
+			if (ev.target.getAttribute && ev.target.getAttribute('data-ed')) sendEditField(ev.target);
+		});
 		root.addEventListener('focusout', function (ev) {
 			if (ev.target.id === 'glQuick') setTimeout(function () { if (root) $('#glSuggest').style.display = 'none'; }, 150);
 		});
@@ -580,7 +639,7 @@ window.hmsGuloo = window.hmsGuloo || (function () {
 	document.addEventListener('keydown', function (ev) {
 		if (!root || !document.body.contains(root)) return;
 		var tag = (ev.target.tagName || '').toLowerCase();
-		if (ev.key === 'Escape') { closePicker(); closeDrawer(); }
+		if (ev.key === 'Escape') { closePicker(); closeDrawer(true); }
 		else if (ev.key === '/' && tag !== 'input' && tag !== 'textarea') { $('#glQuick').focus(); ev.preventDefault(); }
 	});
 
@@ -605,8 +664,8 @@ window.hmsGuloo = window.hmsGuloo || (function () {
 		renderSide();
 		renderTimeline(opts.newUid);
 		if (opts.closeDrawer) closeDrawer();
-		else if (state.selUid) openDrawer(state.selUid);
+		else { markSelected(state.selUid); renderEdChips(); } // 成員/標籤清單可能變了，編輯面板跟著更新
 	}
 
-	return { render: render };
+	return { render: render, showEdit: showEdit };
 })();

@@ -118,6 +118,21 @@ public class GulooStamp extends HmsObjectModel {
 		return s.save() ? s : null; 
 	}
 
+	/** 更新日期、簡述、備註；存檔失敗時還原為原本的值 */
+	public boolean update(long _stampDate, String _desp, String _remark) {
+		long orgDate = getStampDate();
+		String orgDesp = getDesp(), orgRemark = getRemark();
+		setStampDate(_stampDate);
+		setDesp(_desp);
+		setRemark(_remark);
+		if (save())
+			return true;
+		setStampDate(orgDate);
+		setDesp(orgDesp);
+		setRemark(orgRemark);
+		return false;
+	}
+
 //	// -------------------------------------------------------------------------------
 //	public boolean assignStampCate(String _stampCateUid) {
 //		setAssignStampCate(!DataFO.isEmptyString(_stampCateUid));
@@ -132,6 +147,11 @@ public class GulooStamp extends HmsObjectModel {
 	public List<GulooStampEntityConj> getEntityConjList(){
 		return entityConjListLoader.getObj(getUid());
 	}
+
+	/** _reload 為 true 時重新從 DB 載入(並更新快取) */
+	public List<GulooStampEntityConj> getEntityConjList(boolean _reload) {
+		return entityConjListLoader.getObj(getUid(), _reload);
+	}
 	
 	public List<Entity> getEntityList(){
 		return getEntityConjList().stream().map(GulooStampEntityConj::getEntity).collect(Collectors.toList());
@@ -143,6 +163,11 @@ public class GulooStamp extends HmsObjectModel {
 	
 	public List<GulooStampCateConj> getCateConjList(){
 		return cateConjListLoader.getObj(getUid());
+	}
+
+	/** _reload 為 true 時重新從 DB 載入(並更新快取) */
+	public List<GulooStampCateConj> getCateConjList(boolean _reload) {
+		return cateConjListLoader.getObj(getUid(), _reload);
 	}
 	
 	public List<GulooStampCate> getCateList(){
