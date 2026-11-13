@@ -19,6 +19,7 @@ import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Listen;
 import org.zkoss.zk.ui.util.Clients;
 
+import hms.membership.bpu.GulooStampBpuUpdate;
 import hms.membership.bpu.GulooStampBuilder1;
 import hms.membership.bpu.MbrBpuType;
 import hms.web.zk.HmsMessageBox;
@@ -152,12 +153,116 @@ public class GulooTimelineComposer extends SelectorComposer<Component> {
 		}
 		HmsMessageBox.confirm("確認刪除咕溜[" + gs.getDesp() + "]?", () -> {
 			if (mbrService.deleteGulooStamp(uid)) {
+				if (editBpu != null && editBpu.getGulooStamp().getUid().equals(uid))
+					editBpu = null;
 				HmsNotification.info("刪除咕溜[" + gs.getDesp() + "]成功。");
 				refresh(null, false, true);
 			} else {
 				HmsNotification.error();
 			}
 		});
+	}
+
+	// -------------------------------------------------------------------------------
+	// ------------------------------------咕溜編輯-------------------------------------
+	/** 編輯中的咕溜：原本的資料與修改中的內容都在 BPU 裡，畫面只負責顯示與轉送操作 */
+	private GulooStampBpuUpdate editBpu;
+
+	/** 開始編輯：建立 BPU(以原本的資料為初始值) */
+	@Listen("onEditStamp = #divGuloo")
+	public void editStamp(Event _evt) {
+		GulooStamp gs = stampMap.get(uidOf(_evt));
+		if (gs == null) {
+			HmsNotification.error();
+			return;
+		}
+		editBpu = BpuFacade.getInstance().getBuilder(MbrBpuType.GulooStamp$Update, gs);
+		if (editBpu == null) {
+			HmsNotification.error();
+			return;
+		}
+		pushEdit("");
+	}
+
+	/** 修改日期、簡述、備註 */
+	@Listen("onEditField = #divGuloo")
+	public void editField(Event _evt) {
+		if (editBpu == null)
+			return;
+		Map<?, ?> d = (Map<?, ?>) _evt.getData();
+		String value = str(d.get("value"));
+		switch (str(d.get("field"))) {
+		case "date":
+			Date date = DateFormatUtil.parse(value);
+			editBpu.appendStampDate(date == null ? 0 : date.getTime());
+			break;
+		case "desp":
+			editBpu.appendDesp(value);
+			break;
+		case "remark":
+			editBpu.appendRemark(value);
+			break;
+		default:
+			return;
+		}
+		pushEdit("");
+	}
+
+	/** 切換成員或標籤 */
+	@Listen("onEditToggle = #divGuloo")
+	public void editToggle(Event _evt) {
+		if (editBpu == null)
+			return;
+		Map<?, ?> d = (Map<?, ?>) _evt.getData();
+		String uid = str(d.get("uid"));
+		if ("entity".equals(d.get("kind")) && entityMap.containsKey(uid))
+			editBpu.toggleEntity(entityMap.get(uid));
+		else if ("cate".equals(d.get("kind")) && cateMap.containsKey(uid))
+			editBpu.toggleCate(cateMap.get(uid));
+		pushEdit("");
+	}
+
+	@Listen("onEditSave = #divGuloo")
+	public void editSave() {
+		if (editBpu == null)
+			return;
+		StringBuilder msg = new StringBuilder();
+		if (!editBpu.verify(msg)) {
+			pushEdit(msg.toString().trim());
+			return;
+		}
+		if (!Boolean.TRUE.equals(editBpu.build(new StringBuilder(), null))) {
+			HmsNotification.error();
+			return;
+		}
+		GulooStamp gs = editBpu.getGulooStamp();
+		editBpu = null;
+		HmsNotification.info("修改咕溜[" + gs.getStampDateStr() + "][" + gs.getDesp() + "]成功。");
+		refresh(gs.getUid(), false, true);
+	}
+
+	/** 取消編輯：丟掉 BPU，修改中的內容不保留 */
+	@Listen("onEditCancel = #divGuloo")
+	public void editCancel() {
+		editBpu = null;
+	}
+
+	/** 把 BPU 目前的內容推給畫面顯示 */
+	@SuppressWarnings("unchecked")
+	private void pushEdit(String _err) {
+		JSONObject o = new JSONObject();
+		o.put("uid", editBpu.getGulooStamp().getUid());
+		o.put("date", toDateStr(editBpu.getStampDate()));
+		o.put("desp", editBpu.getDesp());
+		o.put("remark", editBpu.getRemark());
+		JSONArray eu = new JSONArray();
+		editBpu.getEntityList().forEach(e -> eu.add(e.getUid()));
+		o.put("entityUids", eu);
+		JSONArray cu = new JSONArray();
+		editBpu.getCateList().forEach(c -> cu.add(c.getUid()));
+		o.put("cateUids", cu);
+		o.put("err", _err);
+		Clients.evalJavaScript("hmsGuloo.showEdit(" + o.toJSONString() + ")");
 	}
 
 	// -------------------------------------------------------------------------------
@@ -213,6 +318,10 @@ public class GulooTimelineComposer extends SelectorComposer<Component> {
 				+ (used > 0 ? System.lineSeparator() + "有 " + used + " 個咕溜標記了這位成員，刪除後這些咕溜上將不再顯示。" : "");
 		HmsMessageBox.confirm(msg, () -> {
 			if (mbrService.deleteEntity(uid)) {
+				if (editBpu != null) {
+					editBpu.getEntityList().removeIf(e -> e.getUid().equals(uid));
+					pushEdit("");
+				}
 				HmsNotification.info("刪除成員[" + ett.getAlias() + "]成功。");
 				refresh(null, false, false);
 			} else {
@@ -256,6 +365,10 @@ public class GulooTimelineComposer extends SelectorComposer<Component> {
 				+ (used > 0 ? System.lineSeparator() + "有 " + used + " 個咕溜使用這個標籤，刪除後這些咕溜上將不再顯示。" : "");
 		HmsMessageBox.confirm(msg, () -> {
 			if (mbrService.deleteGulooStampCate(uid)) {
+				if (editBpu != null) {
+					editBpu.getCateList().removeIf(c -> c.getUid().equals(uid));
+					pushEdit("");
+				}
 				HmsNotification.info("刪除標籤[" + gsc.getName() + "]成功。");
 				refresh(null, false, false);
 			} else {

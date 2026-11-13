@@ -1,10 +1,12 @@
 package hms.membership.bpu;
 
+import hms_kernel.membership.GulooStamp;
 import legion.biz.BpuType;
 
 public enum MbrBpuType implements BpuType {
 	/* GulooStamp */
 	GulooStamp$Create1(GulooStampBuilder1.class), //
+	GulooStamp$Update(GulooStampBpuUpdate.class, GulooStamp.class), //
 
 	;
 
@@ -33,6 +35,7 @@ public enum MbrBpuType implements BpuType {
 	public boolean matchBiz(Object... _args) {
 		switch (this) {
 		case GulooStamp$Create1:
+		case GulooStamp$Update:
 			return true;
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + this);
