@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  pom.xml = Project Object Model（專案物件模型）
+  Maven 只看這個檔，就知道：這個專案是誰、需要哪些 jar、怎麼打包。
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- ================================================================
+       區塊 1：專案身分
+       groupId + artifactId + version 三個合起來，就是這個專案在
+       Maven 世界的唯一名稱（就像套件的全名）。
+       version 與 WEB-INF/system-conf.properties 的 system.version 保持一致，
+       發新版時兩邊一起改。
+       ================================================================ -->
+  <groupId>hms</groupId>
+  <artifactId>hms</artifactId>
+  <version>2.2.1</version>
+  <!-- 打包成 war（網頁應用程式），legionmodule 則是 jar -->
+  <packaging>war</packaging>
+
+  <!-- ================================================================
+       區塊 2：共用設定
+       像 Java 的常數，定義一次，下面用 ${名稱} 引用。
+       ================================================================ -->
+  <properties>
+    <!-- 用 Java 17 編譯（與 Eclipse 設定、Dockerfile 的 jdk17 一致） -->
+    <maven.compiler.release>17</maven.compiler.release>
+    <!-- 原始碼是 UTF-8（中文註解才不會亂碼） -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <zk.version>9.6.0.1</zk.version>
+  </properties>
+
+  <!-- ================================================================
+       區塊 3：下載來源
+       Maven 預設只從 Maven Central 下載 jar。
+       ZK 不在 Maven Central，所以要另外加上 ZK 官方的套件庫。
+       ================================================================ -->
+  <repositories>
+    <repository>
+      <id>zk-ce</id>
+      <url>https://mavensync.zkoss.org/maven2</url>
+    </repository>
+  </repositories>
+
+  <!-- ================================================================
+       區塊 4：相依套件（取代 Eclipse 的 User Library）
+       只寫程式「直接用到的」套件，它們需要的其他 jar 由 Maven 自動帶入。
+       scope 決定 jar 什麼時候需要：
+         （沒寫，預設 compile）編譯、執行都需要，會打包進 war
+         runtime   只有執行時需要（程式碼沒有直接 import）
+         provided  只有編譯時需要，執行時由 Tomcat 提供，不打包進 war
+       ================================================================ -->
+  <dependencies>
+
+    <!-- 你自己的框架（Eclipse：legion_module_0.15.1）
+         這個 jar 是用 mvn install:install-file 手動放進 ~/.m2 的，沒有附帶 pom，
+         所以 Maven 不知道它需要哪些套件，下面要自己一個一個列出來。 -->
+    <dependency>
+      <groupId>legion</groupId>
+      <artifactId>legionmodule</artifactId>
+      <version>0.15.1</version>
+    </dependency>
+
+    <!-- ↓↓↓ legionmodule 需要的套件（之後 legionmodule 改用自己的 pom 時，這段可以拿掉） ↓↓↓ -->
+
+    <!-- 日誌介面（Eclipse：slf4j_1.7.36） -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.36</version>
+    </dependency>
+    <!-- 日誌實作（Eclipse：logback_classic_1.2.11） -->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.2.11</version>
+    </dependency>
+    <!-- 日誌核心（Eclipse：logback_core_1.2.11） -->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>1.2.11</version>
+    </dependency>
+    <!-- 讀 properties 設定檔（Eclipse：commons_configuration_1.10） -->
+    <dependency>
+      <groupId>commons-configuration</groupId>
+      <artifactId>commons-configuration</artifactId>
+      <version>1.10</version>
+    </dependency>
+    <!-- commons-configuration 需要的（Eclipse：commons_lang_2.6） -->
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.6</version>
+    </dependency>
+    <!-- commons-configuration、commons-beanutils 需要的（Eclipse：commons_logging_1.2）
+         明確寫出版本，避免 Maven 自動挑到 commons-configuration 指定的舊版 1.1.1 -->
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.2</version>
+    </dependency>
+    <!-- 讀寫物件屬性（Eclipse：commons_beanutils_1.9.3） -->
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+      <version>1.9.3</version>
+    </dependency>
+    <!-- 讀 XML 設定檔，例如 ServiceModule.xml（Eclipse：jdom_2.0.6.1） -->
+    <dependency>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom2</artifactId>
+      <version>2.0.6.1</version>
+    </dependency>
+
+    <!-- ↑↑↑ legionmodule 需要的套件 ↑↑↑ -->
+
+    <!-- ZK 的元件（Window、Label、Combobox…）（Eclipse：zk_9.6.0.1、zk_ext_9.6.0.1）
+         ZK 有發布自己的 pom，所以 zk、zcommon、zweb 等核心 jar 會自動帶入 -->
+    <dependency>
+      <groupId>org.zkoss.zk</groupId>
+      <artifactId>zul</artifactId>
+      <version>${zk.version}</version>
+    </dependency>
+
+    <!-- ZK 佈景主題：zk.xml 裡指定了 iceblue_c（Eclipse：zk_theme_9.6.0.1） -->
+    <dependency>
+      <groupId>org.zkoss.theme</groupId>
+      <artifactId>iceblue_c</artifactId>
+      <version>${zk.version}</version>
+    </dependency>
+
+    <!-- 資料庫驅動（Eclipse：jdbc_PostgreSQL_42.7.5、mysql_connector_java_8.0.27）
+         datasource.xml 裡 PostgreSQL 和 MySQL 都有用到。
+         scope=runtime：程式碼沒直接 import，只有執行時才需要 -->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>42.7.5</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>8.0.27</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <!-- Servlet API（Eclipse：Server Runtime [Apache Tomcat v9.0]）
+         scope=provided：編譯時需要，但 Tomcat 本身就有，所以不打包進 war -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>4.0.1</version>
+      <scope>provided</scope>
+    </dependency>
+
+  </dependencies>
+
+  <!-- ================================================================
+       區塊 5：建置與打包（目前停用）
+       現階段 Maven 只負責管理 library，編譯、匯出 war、部署仍用 Eclipse。
+       以後要改由 Maven 打包 war 時，把下面整段的註解拿掉即可。
+
+       注意：XML 的註解不能包在另一個註解裡，所以下面原本的說明
+       改成用「//」開頭的文字表示，啟用時要一併刪掉這些說明行。
+       ================================================================ -->
+  <!--
+  <build>
+    // 產生的檔名：HMS_release.war
+    <finalName>HMS_release</finalName>
+    // Java 原始碼在 src/（Maven 預設是 src/main/java）
+    <sourceDirectory>src</sourceDirectory>
+
+    <plugins>
+      // 負責打包 war 的外掛
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.4.0</version>
+        <configuration>
+          // 網頁檔（zul、css、js、WEB-INF）在 WebContent/（Maven 預設是 src/main/webapp）
+          <warSourceDirectory>WebContent</warSourceDirectory>
+          // war 輸出到 release/（會覆蓋現有的 HMS_release.war）
+          <outputDirectory>${project.basedir}/release</outputDirectory>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  -->
+
+  <!-- ================================================================
+       區塊 6：Library 同步（目前啟用）
+       把 pom.xml 決定的 jar 複製到 WebContent/WEB-INF/lib，
+       Eclipse 的 Web App Libraries 會自動讀取這個資料夾。
+
+       同步指令（在 pom.xml 所在的資料夾執行）：
+         mvn clean dependency:copy-dependencies
+       1. clean：清空 WEB-INF/lib 裡的 jar（避免升版後新舊版本並存）
+       2. dependency:copy-dependencies：重新複製需要的 jar
+       執行完在 Eclipse 對專案按 F5。
+
+       注意：WEB-INF/lib 的 jar 全部由 Maven 產生，不要手動放 jar 進去，
+       下次同步時會被清掉。
+
+       ※ 以後啟用區塊 5 時，要把兩個 build 的 plugins 合併成同一個 build。
+       ================================================================ -->
+  <build>
+    <plugins>
+
+      <!-- 負責清除的外掛：除了預設的 target/，也清除 WEB-INF/lib 裡的 jar -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>3.3.2</version>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>${project.basedir}/WebContent/WEB-INF/lib</directory>
+              <includes>
+                <include>*.jar</include>
+              </includes>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+
+      <!-- 負責處理相依套件的外掛（dependency:tree 也是它） -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.7.0</version>
+        <configuration>
+          <!-- 複製到哪裡 -->
+          <outputDirectory>${project.basedir}/WebContent/WEB-INF/lib</outputDirectory>
+          <!-- 複製哪些：runtime = 預設（compile）和 runtime 的 jar；
+               provided（Tomcat 提供）和 test（測試用）的不複製 -->
+          <includeScope>runtime</includeScope>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+</project>

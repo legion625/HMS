@@ -7,3 +7,4 @@ WEB-INF/lib/*
 classes/*
 bin/*
 /bin/
+target/
