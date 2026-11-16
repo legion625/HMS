@@ -19,7 +19,6 @@ import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Vlayout;
 
-import com.google.javascript.rhino.jstype.EnumType;
 
 import hms.web.control.zk.common.SwipeDivComposer;
 import hms.web.zk.HmsMessageBox;
