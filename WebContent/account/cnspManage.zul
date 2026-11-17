@@ -1,0 +1,244 @@
+<?page title="消費管理(新版)" contentType="text/html;charset=UTF-8"?>
+<?xel-method prefix="hms" name="ver" class="hms.web.zk.ResourceVersion" signature="java.lang.String of(java.lang.String)"?>
+<!-- 消費管理(新版)：與舊版 consumptionMain.zul 並存，舊版不受影響。 -->
+<zk>
+	<style src="/css/cnspManage.css?v=${hms:ver('/css/cnspManage.css')}" />
+
+	<borderlayout hflex="1" vflex="1" sclass="cm" apply="hms.web.control.zk.account.CnspManageComposer">
+		<center border="none">
+			<vlayout vflex="1" hflex="1" spacing="0" id="vlMain" sclass="cm-main">
+
+				<!-- 第一列：模式、期間、搜尋、新增 -->
+				<hlayout sclass="cm-bar" valign="middle" spacing="6px">
+					<button id="btnModeAll" label="全部明細" sclass="cm-btn cm-seg cm-on" />
+					<button id="btnModePayable" label="待付款" sclass="cm-btn cm-seg" />
+					<separator orient="vertical" bar="true" />
+					<hlayout id="hlPeriod" valign="middle" spacing="4px">
+						<button id="btnThisMonth" label="本月" sclass="cm-btn" />
+						<button id="btnLastMonth" label="上月" sclass="cm-btn" />
+						<button id="btnThisYear" label="今年" sclass="cm-btn" />
+						<datebox id="dtbStart" format="yyyy-MM-dd" width="115px" placeholder="消費日起" />
+						<label value="～" />
+						<datebox id="dtbEnd" format="yyyy-MM-dd" width="115px" placeholder="消費日迄" />
+					</hlayout>
+					<textbox id="txbKeyword" width="200px" placeholder="搜尋說明，按 Enter 查詢" />
+					<button id="btnSearch" label="查詢" sclass="cm-btn" />
+					<button id="btnToggleFilter" label="篩選" iconSclass="z-icon-filter" sclass="cm-btn" />
+					<label id="lbFilterHint" sclass="cm-hint" />
+					<space hflex="1" />
+					<button id="btnAdd" label="新增消費" iconSclass="z-icon-plus" sclass="cm-btn cm-primary" />
+				</hlayout>
+
+				<!-- 進階篩選(全部明細模式) -->
+				<div id="divFilter" sclass="cm-filter" visible="false">
+					<hlayout valign="middle" spacing="6px">
+						<label value="類型" sclass="cm-flabel" />
+						<combobox id="cbbTypeCategory" readonly="true" width="110px" placeholder="全部目錄" />
+						<combobox id="cbbType" readonly="true" width="120px" placeholder="全部類型" />
+						<label value="流向" sclass="cm-flabel" />
+						<combobox id="cbbDirection" readonly="true" width="110px" placeholder="全部" />
+						<label value="付款方式" sclass="cm-flabel" />
+						<combobox id="cbbPaymentType" readonly="true" width="100px" placeholder="全部" />
+						<label value="付款日期" sclass="cm-flabel" />
+						<datebox id="dtbPayDateStart" format="yyyy-MM-dd" width="115px" />
+						<label value="～" />
+						<datebox id="dtbPayDateEnd" format="yyyy-MM-dd" width="115px" />
+						<button id="btnResetFilter" label="清除條件" sclass="cm-btn" />
+					</hlayout>
+				</div>
+
+				<!-- 待付款模式：付款方式快速篩選、結帳日 -->
+				<div id="divPayableBar" sclass="cm-filter" visible="false">
+					<hlayout valign="middle" spacing="6px">
+						<label value="付款方式" sclass="cm-flabel" />
+						<hlayout id="hlPayTypeToggles" spacing="4px" />
+						<separator orient="vertical" bar="true" />
+						<label value="消費日 ≤" sclass="cm-flabel" />
+						<datebox id="dtbPayableEnd" format="yyyy-MM-dd" width="115px" placeholder="不限(結帳日)" />
+						<button id="btnPayableReload" label="重新整理" iconSclass="z-icon-refresh" sclass="cm-btn" />
+						<label value="點列即可勾選；按住 Shift 點另一列可一次勾選整段。" sclass="cm-hint" />
+					</hlayout>
+				</div>
+
+				<!-- KPI -->
+				<div sclass="cm-kpis">
+					<div sclass="cm-kpi">
+						<label sclass="cm-kpi-t" value="支出" />
+						<label id="lbKpiOut" sclass="cm-kpi-v" value="0" />
+					</div>
+					<div sclass="cm-kpi">
+						<label sclass="cm-kpi-t" value="收入／代墊" />
+						<label id="lbKpiIn" sclass="cm-kpi-v" value="0" />
+					</div>
+					<div sclass="cm-kpi">
+						<label id="lbKpiNetTitle" sclass="cm-kpi-t" value="小計(淨額)" />
+						<label id="lbKpiNet" sclass="cm-kpi-v" value="0" />
+					</div>
+					<div sclass="cm-kpi">
+						<label sclass="cm-kpi-t" value="已付(淨額)" />
+						<label id="lbKpiPayed" sclass="cm-kpi-v" value="0" />
+					</div>
+					<div sclass="cm-kpi">
+						<label sclass="cm-kpi-t" value="未付(淨額)" />
+						<label id="lbKpiPayable" sclass="cm-kpi-v cm-danger" value="0" />
+					</div>
+				</div>
+
+				<!-- 消費列表 -->
+				<listbox id="lbxCnsp" vflex="1" hflex="1" sclass="cm-list" checkmark="true" multiple="true"
+					mold="paging" pageSize="100" span="9" emptyMessage="沒有符合條件的消費">
+					<listhead sizable="true">
+						<listheader width="32px" />
+						<listheader label="消費日期" sort="auto('date')" width="98px" />
+						<listheader label="目錄" sort="auto('type.category')" width="64px" />
+						<listheader label="類型" sort="auto('type')" width="92px" />
+						<listheader label="流向" sort="auto('direction')" width="54px" />
+						<listheader label="金額" sort="auto('amount')" width="80px" align="right" />
+						<listheader label="已付" sort="auto('payedAmount')" width="80px" align="right" />
+						<listheader label="應付" sort="auto('payableAmount')" width="76px" align="right" />
+						<listheader label="付款方式" sort="auto('paymentType')" width="80px" />
+						<listheader label="說明" width="150px" />
+						<listheader label="狀態" width="64px" />
+						<listheader width="32px" />
+					</listhead>
+				</listbox>
+
+				<!-- 選取列：合計、帳單核對、批次操作 -->
+				<div sclass="cm-selbar">
+					<hlayout valign="middle" spacing="6px">
+						<label value="已選" />
+						<label id="lbSelCount" sclass="cm-strong" value="0" />
+						<label value="筆 · 應付合計" />
+						<label id="lbSelPayable" sclass="cm-strong cm-big" value="0" />
+						<label value="· 金額合計" sclass="cm-sub" />
+						<label id="lbSelAmount" sclass="cm-sub" value="0" />
+						<separator orient="vertical" bar="true" />
+						<label value="帳單金額" />
+						<intbox id="itbBillAmount" width="100px" format="#,##0" placeholder="輸入以核對" />
+						<label id="lbBillDiff" sclass="cm-pill" visible="false" />
+						<space hflex="1" />
+						<button id="btnSelectAll" label="全選" sclass="cm-btn" />
+						<button id="btnSelectInvert" label="反選" sclass="cm-btn" />
+						<button id="btnSelectClear" label="清除" sclass="cm-btn" />
+						<separator orient="vertical" bar="true" />
+						<button id="btnPaySelected" label="付清所選…" sclass="cm-btn cm-primary" />
+						<button id="btnDeleteSelected" label="刪除" sclass="cm-btn cm-danger-btn" />
+					</hlayout>
+				</div>
+
+				<!-- 右鍵選單與子視窗 -->
+				<menupopup id="mpCnsp">
+					<menuitem id="miShowPaymentInfo" label="付款資訊" iconSclass="z-icon-list" />
+					<menuitem id="miAddPayment" label="新增付款" iconSclass="z-icon-money" />
+					<menuitem id="miCopyCnsp" label="複製消費" iconSclass="z-icon-copy" />
+					<menuitem id="miOffsetConsumption" label="沖銷折抵" iconSclass="z-icon-exchange" />
+				</menupopup>
+
+				<!-- 付款資訊 -->
+				<window id="windowPaymentInfo" title="付款資訊" border="normal" width="380px" height="50%" mode="highlighted"
+					position="center" closable="true" visible="false">
+					<vlayout vflex="1">
+						<label id="lbPiCnspInfo" sclass="cm-sub" />
+						<hlayout valign="middle">
+							<label value="消費金額" />
+							<label id="lbPiCnspAmount" sclass="cm-strong" />
+							<label value="· 已付" />
+							<label id="lbPiPayedAmount" sclass="cm-strong" />
+							<label value="· 待付" />
+							<label id="lbPiPayableAmount" sclass="cm-strong cm-danger" />
+						</hlayout>
+						<hlayout>
+							<button id="btnPiAddPayment" label="新增付款" sclass="cm-btn" />
+							<button id="btnPiDeletePayment" label="刪除所選付款" sclass="cm-btn cm-danger-btn" />
+						</hlayout>
+						<listbox id="lbxPayment" checkmark="true" multiple="true" emptyMessage="尚無付款" vflex="1">
+							<listhead>
+								<listheader width="32px" />
+								<listheader label="付款日期" width="120px" />
+								<listheader label="付款金額" align="right" />
+							</listhead>
+						</listbox>
+					</vlayout>
+				</window>
+
+				<!-- 新增付款 -->
+				<window id="windowAddPayment" title="新增付款" border="normal" mode="highlighted" width="280px" position="center"
+					closable="true" visible="false">
+					<grid>
+						<columns>
+							<column width="80px" />
+							<column />
+						</columns>
+						<rows>
+							<row>
+								<label value="付款日期" />
+								<datebox id="dtbApPayDate" format="yyyy-MM-dd" hflex="1" />
+							</row>
+							<row>
+								<label value="付款金額" />
+								<intbox id="itbApPayAmount" format="#,##0" hflex="1" />
+							</row>
+						</rows>
+					</grid>
+					<separator />
+					<div align="center">
+						<button id="btnApSubmit" label="送出新增" sclass="cm-btn cm-primary" />
+						<button id="btnApReset" label="重設" sclass="cm-btn" />
+					</div>
+				</window>
+
+				<!-- 付清所選 -->
+				<window id="windowPayAll" title="付清所選消費" border="normal" mode="highlighted" width="320px" position="center"
+					closable="true" visible="false">
+					<vlayout>
+						<label id="lbPaSummary" sclass="cm-strong" />
+						<label value="每筆會新增一筆付款，金額為該筆的應付餘額。" sclass="cm-sub" />
+						<hlayout valign="middle">
+							<label value="付款日期" />
+							<datebox id="dtbPaPayDate" format="yyyy-MM-dd" width="130px" />
+						</hlayout>
+					</vlayout>
+					<separator />
+					<div align="center">
+						<button id="btnPaSubmit" label="確認付清" sclass="cm-btn cm-primary" />
+						<button id="btnPaCancel" label="取消" sclass="cm-btn" />
+					</div>
+				</window>
+
+				<!-- 沖銷折抵 -->
+				<window id="windowOffset" title="沖銷折抵作業" border="normal" mode="highlighted" width="320px" position="center"
+					closable="true" visible="false">
+					<grid>
+						<columns>
+							<column width="95px" />
+							<column />
+						</columns>
+						<rows>
+							<row>
+								<label value="折抵說明" />
+								<textbox id="txbOffsetDescription" hflex="1" />
+							</row>
+							<row>
+								<label value="折抵/對帳日期" />
+								<datebox id="dtbOffsetPayDate" format="yyyy-MM-dd" hflex="1" />
+							</row>
+						</rows>
+					</grid>
+					<separator />
+					<div align="center">
+						<button id="btnOffsetSubmit" label="確認沖銷" sclass="cm-btn cm-primary" />
+						<button id="btnOffsetCancel" label="取消" sclass="cm-btn" />
+					</div>
+				</window>
+			</vlayout>
+
+		</center>
+
+		<!-- 新增消費側欄(不鎖定畫面，可一邊查詢一邊複製、連續輸入) -->
+		<east id="eastAdd" width="330px" border="none" splittable="true" collapsible="true" open="false"
+			title="新增消費" sclass="cm-east">
+			<include id="icdAddPanel" />
+		</east>
+	</borderlayout>
+
+</zk>

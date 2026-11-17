@@ -1,0 +1,75 @@
+<?page contentType="text/html;charset=UTF-8"?>
+<!-- 消費管理(新版)的新增消費側欄：電腦版專用，不影響 gridAddCnsp.zul(手機版共用)。 -->
+<zk>
+	<div id="divCnspAddPanel" sclass="cm-add" apply="hms.web.control.zk.account.CnspManageAddPanelComposer">
+		<label id="lbApCopied" sclass="cm-add-copied" visible="false" />
+
+		<div sclass="cm-field">
+			<label value="消費行為" />
+			<combobox id="cbbApBehavior" readonly="true" hflex="1">
+				<comboitem label="一般消費" />
+				<comboitem label="LINE POINTS折抵" />
+				<comboitem label="悠遊卡折抵" />
+				<comboitem label="一卡通折抵" />
+				<comboitem label="P幣折抵" />
+				<comboitem label="全聯儲值金折抵" />
+				<comboitem label="麥當勞儲值金折抵" />
+			</combobox>
+		</div>
+		<div sclass="cm-field">
+			<label value="類型" />
+			<hlayout spacing="4px">
+				<combobox id="cbbApTypeCategory" readonly="true" hflex="1" />
+				<combobox id="cbbApType" readonly="true" hflex="1" />
+			</hlayout>
+		</div>
+		<div id="fldApDirection" sclass="cm-field">
+			<label value="流向" />
+			<radiogroup id="rgApDirection" />
+		</div>
+		<div sclass="cm-field">
+			<label value="說明" />
+			<textbox id="txbApDescription" hflex="1" />
+		</div>
+		<div sclass="cm-field">
+			<label value="消費金額" />
+			<intbox id="itbApAmount" hflex="1" format="#,##0" />
+		</div>
+		<div id="fldApPaymentType" sclass="cm-field">
+			<label value="付款方式" />
+			<combobox id="cbbApPaymentType" readonly="true" hflex="1" />
+		</div>
+		<div sclass="cm-field">
+			<hlayout valign="middle" spacing="6px">
+				<checkbox id="chbApInAdv" label="代墊款" />
+				<intbox id="itbApInAdv" hflex="1" format="#,##0" disabled="true" />
+			</hlayout>
+		</div>
+		<div sclass="cm-field">
+			<label value="消費日期" />
+			<hlayout valign="middle" spacing="4px">
+				<datebox id="dtbApDate" format="yyyy-MM-dd" hflex="1" />
+				<button id="btnApYesterday" label="昨天" sclass="cm-btn" />
+				<button id="btnApToday" label="今天" sclass="cm-btn" />
+			</hlayout>
+		</div>
+
+		<separator spacing="10px" />
+		<hlayout spacing="6px">
+			<button id="btnApAdd" label="新增並繼續 (Enter)" hflex="1" sclass="cm-btn cm-primary" />
+			<button id="btnApClear" label="清空" sclass="cm-btn" />
+		</hlayout>
+		<label value="新增後會保留類型、付款方式與日期，只清空說明和金額，方便連續輸入。" sclass="cm-hint" />
+
+		<div sclass="cm-add-log">
+			<label id="lbApLogSummary" sclass="cm-sub" value="本次尚未新增" />
+			<listbox id="lbxApLog" sclass="cm-list-plain">
+				<listhead visible="false">
+					<listheader width="48px" />
+					<listheader hflex="1" />
+					<listheader width="64px" align="right" />
+				</listhead>
+			</listbox>
+		</div>
+	</div>
+</zk>
