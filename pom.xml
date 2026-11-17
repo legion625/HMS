@@ -17,7 +17,7 @@
        ================================================================ -->
   <groupId>hms</groupId>
   <artifactId>hms</artifactId>
-  <version>2.2.1</version>
+  <version>2.3.0</version>
   <!-- 打包成 war（網頁應用程式），legionmodule 則是 jar -->
   <packaging>war</packaging>
 
