@@ -1,0 +1,281 @@
+/* 消費管理(新版)：配色沿用消費統計 dashboard (cnspDashboard.css) */
+.cm-main {
+	background: #f9f9f7;
+}
+
+/* ---------- 工具列 ---------- */
+.cm-bar {
+	padding: 6px 10px;
+	white-space: nowrap;
+}
+
+.cm-filter {
+	padding: 4px 10px 6px;
+	white-space: nowrap;
+	border-top: 1px dashed rgba(11, 11, 11, 0.10);
+}
+
+.cm-flabel {
+	color: #52514e;
+}
+
+.cm-hint {
+	color: #8a8984;
+	font-size: 12px;
+}
+
+.cm-sub {
+	color: #52514e;
+	font-size: 12px;
+}
+
+.cm-strong {
+	font-weight: 600;
+}
+
+.cm-big {
+	font-size: 16px;
+}
+
+.cm-danger {
+	color: #b42318;
+}
+
+/* 按鈕：比 iceblue 預設更扁平、更緊湊 */
+.z-button.cm-btn {
+	padding: 3px 10px;
+	min-height: 26px;
+	border-radius: 6px;
+	background: #fcfcfb;
+	color: #0b0b0b;
+	border: 1px solid rgba(11, 11, 11, 0.18);
+	text-shadow: none;
+	box-shadow: none;
+	font-size: 13px;
+}
+
+.z-button.cm-btn:hover {
+	background: #efeeeb;
+	color: #0b0b0b;
+}
+
+.z-button.cm-btn.cm-on {
+	background: #e6f1fb;
+	color: #0c447c;
+	border-color: #85b7eb;
+}
+
+.z-button.cm-btn.cm-primary {
+	background: #185fa5;
+	color: #ffffff;
+	border-color: #185fa5;
+}
+
+.z-button.cm-btn.cm-primary:hover {
+	background: #0c447c;
+}
+
+.z-button.cm-btn.cm-danger-btn {
+	color: #b42318;
+}
+
+.z-button.cm-btn .cm-count {
+	font-weight: 600;
+}
+
+/* ---------- KPI ---------- */
+.cm-kpis {
+	display: grid;
+	grid-template-columns: repeat(5, minmax(0, 1fr));
+	gap: 8px;
+	padding: 0 10px 8px;
+}
+
+.cm-kpi {
+	background: #fcfcfb;
+	border: 1px solid rgba(11, 11, 11, 0.10);
+	border-radius: 6px;
+	padding: 5px 12px;
+	min-width: 0;
+}
+
+.cm-kpi .z-label {
+	display: block;
+}
+
+.cm-kpi-t {
+	color: #52514e;
+	font-size: 12px;
+}
+
+.cm-kpi-v {
+	color: #0b0b0b;
+	font-size: 18px;
+	font-weight: 600;
+	line-height: 1.3;
+}
+
+/* ---------- 列表：高密度，一個畫面看得到更多筆 ---------- */
+.z-listbox.cm-list {
+	margin: 0 10px;
+	width: auto !important;
+	border: 1px solid rgba(11, 11, 11, 0.10);
+	border-radius: 6px;
+	background: #fcfcfb;
+}
+
+.cm-list .z-listheader-content {
+	padding: 4px 6px;
+	font-size: 12px;
+	color: #52514e;
+}
+
+.cm-list .z-listcell-content {
+	padding: 1px 6px;
+	line-height: 20px;
+	font-size: 13px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.cm-list .z-listitem:hover > .z-listcell {
+	background: #f3f2ef;
+}
+
+.cm-list .z-listitem.z-listitem-selected > .z-listcell {
+	background: #e6f1fb;
+}
+
+/* 列內編輯元件壓扁，不撐高列高 */
+.cm-list .z-listcell .z-datebox-input,
+.cm-list .z-listcell .z-combobox-input,
+.cm-list .z-listcell .z-intbox,
+.cm-list .z-listcell .z-textbox {
+	height: 20px;
+	padding: 0 4px;
+	font-size: 13px;
+}
+
+.cm-list .z-listcell .z-datebox-button,
+.cm-list .z-listcell .z-combobox-button {
+	height: 20px;
+	line-height: 18px;
+	min-width: 18px;
+}
+
+.cm-num {
+	font-variant-numeric: tabular-nums;
+}
+
+.cm-in {
+	color: #3b6d11;
+}
+
+/* 狀態標籤 */
+.z-label.cm-pill {
+	display: inline-block;
+	font-size: 11px;
+	line-height: 16px;
+	padding: 0 6px;
+	border-radius: 4px;
+}
+
+.cm-pill-ok {
+	background: #eaf3de;
+	color: #27500a;
+}
+
+.cm-pill-part {
+	background: #faeeda;
+	color: #633806;
+}
+
+.cm-pill-no {
+	background: #fcebeb;
+	color: #791f1f;
+}
+
+.cm-copy {
+	cursor: pointer;
+	color: #52514e;
+}
+
+.cm-copy:hover {
+	color: #185fa5;
+}
+
+/* ---------- 選取列 ---------- */
+.cm-selbar {
+	margin: 6px 10px 8px;
+	padding: 6px 10px;
+	background: #efeeeb;
+	border-radius: 6px;
+	white-space: nowrap;
+}
+
+/* ---------- 新增消費側欄 ---------- */
+.cm-add {
+	padding: 8px 12px;
+}
+
+.cm-add .cm-field {
+	margin-top: 6px;
+}
+
+.cm-add .cm-field > .z-label {
+	display: block;
+	color: #52514e;
+	font-size: 12px;
+	margin-bottom: 2px;
+}
+
+.cm-add-copied {
+	display: block;
+	color: #185fa5;
+	font-size: 12px;
+}
+
+.cm-add-log {
+	margin-top: 10px;
+	border-top: 1px solid rgba(11, 11, 11, 0.10);
+	padding-top: 6px;
+}
+
+.cm-add-log .z-listcell-content {
+	padding: 1px 4px;
+	font-size: 12px;
+	line-height: 18px;
+}
+
+/* 待付款模式：Shift 範圍勾選時不要反白文字 */
+.cm-pick .z-listcell {
+	user-select: none;
+	cursor: pointer;
+}
+
+/* 入帳金額 */
+.cm-list .z-listcell.cm-in .z-listcell-content {
+	color: #3b6d11;
+}
+
+/* 工具列、篩選列、選取列在窄畫面(例如開著新增側欄)時換行，按鈕不會被擠出畫面。
+   ZK 9 的 hlayout 是 flex 排版，所以用 flex-wrap(white-space 沒有作用)。 */
+.z-hlayout.cm-bar,
+.cm-filter .z-hlayout,
+.cm-selbar .z-hlayout {
+	flex-wrap: wrap;
+	row-gap: 4px;
+}
+
+/* 讓點擊目標落在 <a> 本身(而不是裡面的圖示 <i>)，ZK 對 <a> 的點擊不會勾選該列 */
+.cm-copy i {
+	pointer-events: none;
+}
+
+/* 連續輸入記錄：單行顯示 */
+.cm-add-log .z-listcell-content {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
