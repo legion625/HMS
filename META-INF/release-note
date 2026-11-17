@@ -25,9 +25,14 @@ Min-Hua, 2026.11.17
   - 新增消費的邏輯從 GridAddCnspComposer 複製到 CnspManageAddPanelComposer，GridAddCnspComposer 不變(仍由原版消費管理與手機版使用)。
   - 列內的類型、付款方式下拉選單在第一次點選時才建立選項，避免一頁 100 筆時元件過多。
 2. 新增 cnspManage.css，配色沿用消費統計 dashboard。
+3. 移除 EntityHomeComposer 沒有用到的 import(com.google.javascript.rhino.jstype.EnumType)。
 
 [deployment]
 1. menu-conf.xml 在「帳務資訊(電腦版)」下新增「消費管理(新版)」選單。
+2. 改用 Maven(pom.xml)管理 jar 檔(jar 本身沒有異動)。
+  -1. 所需的 jar 與版本都寫在 pom.xml；編譯、匯出 war 與部署仍使用 Eclipse。
+  -2. 執行 mvn clean dependency:copy-dependencies 會清空並重新產生 WebContent/WEB-INF/lib 的 jar，執行後在 Eclipse 對專案按 F5；WEB-INF/lib 不要再手動放 jar。
+  -3. .gitignore 新增 target/。
 
 ------------------------------------------------------------------------------
 v2.2.1 released by Min-Hua, 2026.11.14
@@ -431,8 +436,8 @@ v0.0.0 released by Legion, 2018.02.27
 1. 升級LegionModule-0.0.3。
 
 // -----------------------------------------------------------------------------------
-[change]
-[infra]
-[bug]
-[lib]
-[deployment]
+[change] 使用者會感受到的功能變更：新功能、畫面或操作方式改變。
+[infra] 使用者通常感受不到的架構調整、重構、效能優化、程式整理。
+[bug] 使用者會覺得「功能不正常」的問題修正。
+[lib] jar 的異動：新增、升級、移除 library。
+[deployment] 部署或建置時要處理的事：設定檔(menu-conf.xml、zk.xml、web.xml…)、DB 異動、Docker、建置流程(例如 jar 的取得方式)。
