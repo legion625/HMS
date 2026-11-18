@@ -49,8 +49,9 @@
 			<label value="消費日期" />
 			<hlayout valign="middle" spacing="4px">
 				<datebox id="dtbApDate" format="yyyy-MM-dd" hflex="1" />
-				<button id="btnApYesterday" label="昨天" sclass="cm-btn" />
+				<button id="btnApYesterday" iconSclass="z-icon-chevron-left" tooltiptext="前一天" sclass="cm-btn" />
 				<button id="btnApToday" label="今天" sclass="cm-btn" />
+				<button id="btnApNextDay" iconSclass="z-icon-chevron-right" tooltiptext="後一天" sclass="cm-btn" />
 			</hlayout>
 		</div>
 
@@ -59,7 +60,7 @@
 			<button id="btnApAdd" label="新增並繼續 (Enter)" hflex="1" sclass="cm-btn cm-primary" />
 			<button id="btnApClear" label="清空" sclass="cm-btn" />
 		</hlayout>
-		<label value="新增後會保留類型、付款方式與日期，只清空說明和金額，方便連續輸入。" sclass="cm-hint" />
+		<label value="新增後所有欄位都會保留，改一下日期或金額就能再新增下一筆；要重來請按「清空」。" sclass="cm-hint" />
 
 		<div sclass="cm-add-log">
 			<label id="lbApLogSummary" sclass="cm-sub" value="本次尚未新增" />

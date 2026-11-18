@@ -263,7 +263,8 @@
    ZK 9 的 hlayout 是 flex 排版，所以用 flex-wrap(white-space 沒有作用)。 */
 .z-hlayout.cm-bar,
 .cm-filter .z-hlayout,
-.cm-selbar .z-hlayout {
+.cm-selbar .z-hlayout,
+.z-hlayout.cm-period {
 	flex-wrap: wrap;
 	row-gap: 4px;
 }

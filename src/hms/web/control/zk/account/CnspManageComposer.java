@@ -26,7 +26,6 @@ import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Comboitem;
 import org.zkoss.zul.Datebox;
 import org.zkoss.zul.Div;
-import org.zkoss.zul.East;
 import org.zkoss.zul.Hlayout;
 import org.zkoss.zul.Include;
 import org.zkoss.zul.Intbox;
@@ -39,6 +38,7 @@ import org.zkoss.zul.ListitemRenderer;
 import org.zkoss.zul.Menupopup;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Vlayout;
+import org.zkoss.zul.West;
 import org.zkoss.zul.Window;
 
 import hms.account.bpu.AcntBpuType;
@@ -85,7 +85,15 @@ public class CnspManageComposer extends SelectorComposer<Component> {
 	@Wire
 	private Hlayout hlPeriod;
 	@Wire
-	private Datebox dtbStart, dtbEnd;
+	private Button btnToday, btnYesterday, btnLast3Days, btnLast7Days, btnThisMonth;
+	@Wire
+	private Button btnDateSingle, btnDateRange;
+	@Wire
+	private Hlayout hlSingleDay, hlDateRange;
+	@Wire
+	private Datebox dtbDay, dtbStart, dtbEnd;
+	/** true：只查單日(dtbDay)；false：查起迄(dtbStart～dtbEnd) */
+	private boolean singleDay;
 	@Wire
 	private Textbox txbKeyword;
 	@Wire
@@ -117,7 +125,7 @@ public class CnspManageComposer extends SelectorComposer<Component> {
 	private Intbox itbBillAmount;
 
 	@Wire
-	private East eastAdd;
+	private West westAdd;
 	@Wire
 	private Include icdAddPanel;
 	private CnspManageAddPanelComposer addPanelComposer;
@@ -158,8 +166,8 @@ public class CnspManageComposer extends SelectorComposer<Component> {
 			li.appendChild(new Listcell(NumberFormatUtil.getIntegerString(pm.getAmount())));
 		});
 
-		// 預設：本月
-		btnThisMonth_clicked();
+		// 預設：今天(打開就是看今天記帳了沒)
+		btnToday_clicked();
 	}
 
 	// ===============================================================================
@@ -200,30 +208,108 @@ public class CnspManageComposer extends SelectorComposer<Component> {
 	// ===============================================================================
 	// 全部明細：查詢
 	// ===============================================================================
+	// 快捷鍵：今天、昨天切到「單日」；近3天、近7天、本月切到「區間」
+	@Listen(Events.ON_CLICK + "=#btnToday")
+	public void btnToday_clicked() {
+		setSingleDay(today(), btnToday);
+	}
+
+	@Listen(Events.ON_CLICK + "=#btnYesterday")
+	public void btnYesterday_clicked() {
+		setSingleDay(today().minusDays(1), btnYesterday);
+	}
+
+	@Listen(Events.ON_CLICK + "=#btnLast3Days")
+	public void btnLast3Days_clicked() {
+		LocalDate today = today();
+		setPeriod(today.minusDays(2), today, btnLast3Days);
+	}
+
+	@Listen(Events.ON_CLICK + "=#btnLast7Days")
+	public void btnLast7Days_clicked() {
+		LocalDate today = today();
+		setPeriod(today.minusDays(6), today, btnLast7Days);
+	}
+
 	@Listen(Events.ON_CLICK + "=#btnThisMonth")
 	public void btnThisMonth_clicked() {
-		LocalDate today = DateUtil.toLocalDate(System.currentTimeMillis());
-		setPeriod(today.withDayOfMonth(1), today.withDayOfMonth(today.lengthOfMonth()));
+		LocalDate today = today();
+		setPeriod(today.withDayOfMonth(1), today.withDayOfMonth(today.lengthOfMonth()), btnThisMonth);
 	}
 
-	@Listen(Events.ON_CLICK + "=#btnLastMonth")
-	public void btnLastMonth_clicked() {
-		LocalDate d = DateUtil.toLocalDate(System.currentTimeMillis()).minusMonths(1);
-		setPeriod(d.withDayOfMonth(1), d.withDayOfMonth(d.lengthOfMonth()));
+	// 單日／區間切換
+	@Listen(Events.ON_CLICK + "=#btnDateSingle")
+	public void btnDateSingle_clicked() {
+		if (singleDay)
+			return;
+		LocalDate d = DateFormatUtil.parseLocalDate(dtbStart.getValue());
+		setSingleDay(d == null ? today() : d, null);
 	}
 
-	@Listen(Events.ON_CLICK + "=#btnThisYear")
-	public void btnThisYear_clicked() {
-		LocalDate today = DateUtil.toLocalDate(System.currentTimeMillis());
-		setPeriod(today.withDayOfYear(1), today.withDayOfYear(today.lengthOfYear()));
+	@Listen(Events.ON_CLICK + "=#btnDateRange")
+	public void btnDateRange_clicked() {
+		if (!singleDay)
+			return;
+		// 由單日切過來：起迄都帶入該日，結果不變，不必重查
+		dtbStart.setValue(dtbDay.getValue());
+		dtbEnd.setValue(dtbDay.getValue());
+		showDateMode(false);
 	}
 
-	private void setPeriod(LocalDate _start, LocalDate _end) {
-		dtbStart.setValue(DateUtil.toDate(_start));
-		dtbEnd.setValue(DateUtil.toDate(_end));
+	@Listen(Events.ON_CLICK + "=#btnPrevDay")
+	public void btnPrevDay_clicked() {
+		LocalDate d = DateFormatUtil.parseLocalDate(dtbDay.getValue());
+		setSingleDay(d == null ? today() : d.minusDays(1), null);
+	}
+
+	@Listen(Events.ON_CLICK + "=#btnNextDay")
+	public void btnNextDay_clicked() {
+		LocalDate d = DateFormatUtil.parseLocalDate(dtbDay.getValue());
+		setSingleDay(d == null ? today() : d.plusDays(1), null);
+	}
+
+	/** 手動改日期：直接查詢。 */
+	@Listen(Events.ON_CHANGE + "=#dtbDay; " + Events.ON_CHANGE + "=#dtbStart; " + Events.ON_CHANGE + "=#dtbEnd")
+	public void date_changed() {
+		markQuick(null);
+		search();
+	}
+
+	private void setSingleDay(LocalDate _day, Button _quick) {
+		dtbDay.setValue(DateUtil.toDate(_day));
+		showDateMode(true);
+		markQuick(_quick);
 		if (mode != Mode.ALL)
 			switchMode(Mode.ALL);
 		search();
+	}
+
+	private void setPeriod(LocalDate _start, LocalDate _end, Button _quick) {
+		dtbStart.setValue(DateUtil.toDate(_start));
+		dtbEnd.setValue(DateUtil.toDate(_end));
+		showDateMode(false);
+		markQuick(_quick);
+		if (mode != Mode.ALL)
+			switchMode(Mode.ALL);
+		search();
+	}
+
+	private void showDateMode(boolean _single) {
+		singleDay = _single;
+		toggleSclass(btnDateSingle, "cm-on", _single);
+		toggleSclass(btnDateRange, "cm-on", !_single);
+		hlSingleDay.setVisible(_single);
+		hlDateRange.setVisible(!_single);
+	}
+
+	/** 標示目前套用的快捷鍵；手動改日期時取消標示。 */
+	private void markQuick(Button _quick) {
+		for (Button btn : new Button[] { btnToday, btnYesterday, btnLast3Days, btnLast7Days, btnThisMonth })
+			toggleSclass(btn, "cm-on", btn == _quick);
+	}
+
+	private static LocalDate today() {
+		return DateUtil.toLocalDate(System.currentTimeMillis());
 	}
 
 	@Listen(Events.ON_CLICK + "=#btnSearch; " + Events.ON_OK + "=#txbKeyword")
@@ -302,8 +388,14 @@ public class CnspManageComposer extends SelectorComposer<Component> {
 		String kw = txbKeyword.getValue();
 		param.setDescription(DataFO.isEmptyString(kw) ? null : "%" + kw.trim() + "%");
 		// 消費日期
-		param.setConsumptionDateStart(DateFormatUtil.parseLocalDate(dtbStart.getValue()));
-		param.setConsumptionDateEnd(DateFormatUtil.parseLocalDate(dtbEnd.getValue()));
+		if (singleDay) {
+			LocalDate day = DateFormatUtil.parseLocalDate(dtbDay.getValue());
+			param.setConsumptionDateStart(day);
+			param.setConsumptionDateEnd(day);
+		} else {
+			param.setConsumptionDateStart(DateFormatUtil.parseLocalDate(dtbStart.getValue()));
+			param.setConsumptionDateEnd(DateFormatUtil.parseLocalDate(dtbEnd.getValue()));
+		}
 		// 付款日期
 		param.setPayDateStart(DateFormatUtil.parseLocalDate(dtbPayDateStart.getValue()));
 		param.setPayDateEnd(DateFormatUtil.parseLocalDate(dtbPayDateEnd.getValue()));
@@ -480,6 +572,15 @@ public class CnspManageComposer extends SelectorComposer<Component> {
 
 		li.appendChild(new Listcell()); // checkmark
 
+		// 複製(新增側欄在左邊，複製放在前面)
+		A aCopy = new A();
+		aCopy.setIconSclass("z-icon-copy");
+		aCopy.setSclass("cm-copy");
+		aCopy.setTooltiptext("複製到新增消費");
+		// 點複製不會勾選該列：點擊目標是 <a> 時 ZK 不做列選取(見 css .cm-copy i)
+		aCopy.addEventListener(Events.ON_CLICK, e -> openAddPanel(cnsp));
+		li.appendChild(cellOf(aCopy));
+
 		// 消費日期
 		if (editable) {
 			Datebox dtb = new Datebox(DateUtil.toDate(cnsp.getDate()));
@@ -505,6 +606,9 @@ public class CnspManageComposer extends SelectorComposer<Component> {
 			li.appendChild(cellOf(dtb));
 		} else
 			li.appendChild(new Listcell(cnsp.getDate().toString()));
+
+		// 狀態
+		li.appendChild(cellOf(statusPill(cnsp)));
 
 		// 目錄
 		Listcell lcCate = new Listcell(cnsp.getType().getCategory().getTitle());
@@ -656,18 +760,6 @@ public class CnspManageComposer extends SelectorComposer<Component> {
 			li.appendChild(lc);
 		}
 
-		// 狀態
-		li.appendChild(cellOf(statusPill(cnsp)));
-
-		// 複製
-		A aCopy = new A();
-		aCopy.setIconSclass("z-icon-copy");
-		aCopy.setSclass("cm-copy");
-		aCopy.setTooltiptext("複製到新增消費");
-		// 點複製不會勾選該列：點擊目標是 <a> 時 ZK 不做列選取(見 css .cm-copy i)
-		aCopy.addEventListener(Events.ON_CLICK, e -> openAddPanel(cnsp));
-		li.appendChild(cellOf(aCopy));
-
 		// 右鍵選單
 		li.setValue(cnsp);
 		li.addEventListener(Events.ON_RIGHT_CLICK, e -> {
@@ -700,12 +792,12 @@ public class CnspManageComposer extends SelectorComposer<Component> {
 	// ===============================================================================
 	@Listen(Events.ON_CLICK + "=#btnAdd")
 	public void btnAdd_clicked() {
-		eastAdd.setOpen(true);
+		westAdd.setOpen(true);
 		addPanelComposer.focusFirst();
 	}
 
 	private void openAddPanel(Consumption _cnsp) {
-		eastAdd.setOpen(true);
+		westAdd.setOpen(true);
 		addPanelComposer.copyCnsp(_cnsp);
 	}
 
