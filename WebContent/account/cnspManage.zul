@@ -5,28 +5,47 @@
 	<style src="/css/cnspManage.css?v=${hms:ver('/css/cnspManage.css')}" />
 
 	<borderlayout hflex="1" vflex="1" sclass="cm" apply="hms.web.control.zk.account.CnspManageComposer">
+		<!-- 新增消費側欄(不鎖定畫面，可一邊查詢一邊複製、連續輸入) -->
+		<west id="westAdd" width="330px" border="none" splittable="true" collapsible="true" open="false"
+			title="新增消費" sclass="cm-west">
+			<include id="icdAddPanel" />
+		</west>
+
 		<center border="none">
 			<vlayout vflex="1" hflex="1" spacing="0" id="vlMain" sclass="cm-main">
 
-				<!-- 第一列：模式、期間、搜尋、新增 -->
+				<!-- 第一列：新增、模式、期間、搜尋 -->
 				<hlayout sclass="cm-bar" valign="middle" spacing="6px">
+					<button id="btnAdd" label="新增消費" iconSclass="z-icon-plus" sclass="cm-btn cm-primary" />
+					<separator orient="vertical" bar="true" />
 					<button id="btnModeAll" label="全部明細" sclass="cm-btn cm-seg cm-on" />
 					<button id="btnModePayable" label="待付款" sclass="cm-btn cm-seg" />
 					<separator orient="vertical" bar="true" />
-					<hlayout id="hlPeriod" valign="middle" spacing="4px">
-						<button id="btnThisMonth" label="本月" sclass="cm-btn" />
-						<button id="btnLastMonth" label="上月" sclass="cm-btn" />
-						<button id="btnThisYear" label="今年" sclass="cm-btn" />
-						<datebox id="dtbStart" format="yyyy-MM-dd" width="115px" placeholder="消費日起" />
-						<label value="～" />
-						<datebox id="dtbEnd" format="yyyy-MM-dd" width="115px" placeholder="消費日迄" />
+					<hlayout id="hlPeriod" valign="middle" spacing="4px" sclass="cm-period">
+						<button id="btnToday" label="今天" sclass="cm-btn cm-quick" />
+						<button id="btnYesterday" label="昨天" sclass="cm-btn cm-quick" />
+						<button id="btnLast3Days" label="近3天" sclass="cm-btn cm-quick" />
+						<button id="btnLast7Days" label="近7天" sclass="cm-btn cm-quick" />
+						<button id="btnThisMonth" label="本月" sclass="cm-btn cm-quick" />
+						<separator orient="vertical" bar="true" />
+						<!-- 單日：只要選一個日期；區間：起迄 -->
+						<button id="btnDateSingle" label="單日" sclass="cm-btn cm-seg" />
+						<button id="btnDateRange" label="區間" sclass="cm-btn cm-seg cm-on" />
+						<hlayout id="hlSingleDay" valign="middle" spacing="2px" visible="false">
+							<button id="btnPrevDay" iconSclass="z-icon-chevron-left" tooltiptext="前一天" sclass="cm-btn" />
+							<datebox id="dtbDay" format="yyyy-MM-dd" width="115px" placeholder="消費日" />
+							<button id="btnNextDay" iconSclass="z-icon-chevron-right" tooltiptext="後一天" sclass="cm-btn" />
+						</hlayout>
+						<hlayout id="hlDateRange" valign="middle" spacing="4px">
+							<datebox id="dtbStart" format="yyyy-MM-dd" width="115px" placeholder="消費日起" />
+							<label value="～" />
+							<datebox id="dtbEnd" format="yyyy-MM-dd" width="115px" placeholder="消費日迄" />
+						</hlayout>
 					</hlayout>
 					<textbox id="txbKeyword" width="200px" placeholder="搜尋說明，按 Enter 查詢" />
 					<button id="btnSearch" label="查詢" sclass="cm-btn" />
 					<button id="btnToggleFilter" label="篩選" iconSclass="z-icon-filter" sclass="cm-btn" />
 					<label id="lbFilterHint" sclass="cm-hint" />
-					<space hflex="1" />
-					<button id="btnAdd" label="新增消費" iconSclass="z-icon-plus" sclass="cm-btn cm-primary" />
 				</hlayout>
 
 				<!-- 進階篩選(全部明細模式) -->
@@ -86,10 +105,12 @@
 
 				<!-- 消費列表 -->
 				<listbox id="lbxCnsp" vflex="1" hflex="1" sclass="cm-list" checkmark="true" multiple="true"
-					mold="paging" pageSize="100" span="9" emptyMessage="沒有符合條件的消費">
+					mold="paging" pageSize="100" span="11" emptyMessage="沒有符合條件的消費">
 					<listhead sizable="true">
 						<listheader width="32px" />
+						<listheader width="28px" />
 						<listheader label="消費日期" sort="auto('date')" width="98px" />
+						<listheader label="狀態" width="64px" />
 						<listheader label="目錄" sort="auto('type.category')" width="64px" />
 						<listheader label="類型" sort="auto('type')" width="92px" />
 						<listheader label="流向" sort="auto('direction')" width="54px" />
@@ -98,8 +119,6 @@
 						<listheader label="應付" sort="auto('payableAmount')" width="76px" align="right" />
 						<listheader label="付款方式" sort="auto('paymentType')" width="80px" />
 						<listheader label="說明" width="150px" />
-						<listheader label="狀態" width="64px" />
-						<listheader width="32px" />
 					</listhead>
 				</listbox>
 
@@ -233,12 +252,6 @@
 			</vlayout>
 
 		</center>
-
-		<!-- 新增消費側欄(不鎖定畫面，可一邊查詢一邊複製、連續輸入) -->
-		<east id="eastAdd" width="330px" border="none" splittable="true" collapsible="true" open="false"
-			title="新增消費" sclass="cm-east">
-			<include id="icdAddPanel" />
-		</east>
 	</borderlayout>
 
 </zk>

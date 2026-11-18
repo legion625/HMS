@@ -45,6 +45,7 @@ import hms_kernel.account.TypeEnum;
 import legion.BusinessServiceFactory;
 import legion.biz.BpuFacade;
 import legion.util.DateFormatUtil;
+import legion.util.DateUtil;
 import legion.util.NumberFormatUtil;
 import legion.util.TimeTraveler;
 import legion.web.zk.ZkUtil;
@@ -145,7 +146,7 @@ public class CnspManageAddPanelComposer extends SelectorComposer<Component> {
 		behaviorChanged();
 	}
 
-	/** 連續輸入：只清空說明、金額與代墊款，其他欄位保留。 */
+	/** 清空說明、金額與代墊款(只在「清空」時使用；新增後不清空任何欄位)。 */
 	private void clearForNext() {
 		txbApDescription.setValue(null);
 		itbApAmount.setValue(null);
@@ -234,7 +235,13 @@ public class CnspManageAddPanelComposer extends SelectorComposer<Component> {
 	@Listen(Events.ON_CLICK + "=#btnApYesterday")
 	public void btnApYesterday_clicked() {
 		Date d = dtbApDate.getValue() == null ? new Date(System.currentTimeMillis()) : dtbApDate.getValue();
-		dtbApDate.setValue(new Date(d.getTime() - 24L * 60 * 60 * 1000));
+		dtbApDate.setValue(DateUtil.toDate(DateFormatUtil.parseLocalDate(d).minusDays(1)));
+	}
+
+	@Listen(Events.ON_CLICK + "=#btnApNextDay")
+	public void btnApNextDay_clicked() {
+		Date d = dtbApDate.getValue() == null ? new Date(System.currentTimeMillis()) : dtbApDate.getValue();
+		dtbApDate.setValue(DateUtil.toDate(DateFormatUtil.parseLocalDate(d).plusDays(1)));
 	}
 
 	@Listen(Events.ON_CLICK + "=#btnApClear")
@@ -244,7 +251,7 @@ public class CnspManageAddPanelComposer extends SelectorComposer<Component> {
 
 	// -------------------------------------------------------------------------------
 	@Listen(Events.ON_CLICK + "=#btnApAdd; " + Events.ON_OK + "=#txbApDescription; " + Events.ON_OK
-			+ "=#itbApAmount; " + Events.ON_OK + "=#itbApInAdv")
+			+ "=#itbApAmount; " + Events.ON_OK + "=#itbApInAdv; " + Events.ON_OK + "=#dtbApDate")
 	public void btnApAdd_clicked() {
 		if (cbbApType.getSelectedItem() == null || cbbApType.getSelectedItem().getValue() == null) {
 			HmsNotification.warning("請選擇類型。");
@@ -331,9 +338,9 @@ public class CnspManageAddPanelComposer extends SelectorComposer<Component> {
 
 		csmAfterAdding.accept(set);
 
-		clearForNext();
+		// 連續輸入：所有欄位保留(例如同樣的午餐連續好幾天，只要改日期)；要重來請按「清空」
 		lbApCopied.setVisible(false);
-		txbApDescription.focus();
+		dtbApDate.focus();
 	}
 
 	/** 一般消費 */
